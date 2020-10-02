@@ -88,6 +88,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\Пользователь\source\repos\TurnBasedStrategy\TurnBasedStrategy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -139,7 +140,16 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="ClientCli.cpp" />
+    <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="TbsInterface.cpp" />
     <ClCompile Include="TurnBasedStrategy.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ClientCli.h" />
+    <ClInclude Include="Engine.h" />
+    <ClInclude Include="TbsInterface.h" />
+    <ClInclude Include="TurnBasedStrategy.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
