@@ -27,6 +27,9 @@
     <ClCompile Include="ClientCli.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="VoronoiMap.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="TbsInterface.h">
@@ -39,6 +42,9 @@
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
     <ClInclude Include="ClientCli.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="VoroniMap.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

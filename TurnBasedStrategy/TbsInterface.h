@@ -8,5 +8,11 @@
 #pragma once
 
 class TbInterface {
-
+public:
+  virtual void NextTurn();
+  virtual void Create();
+  // получать показывать методы конкр интерфейсов
+  // получить список конкретных инф
+  // вирт метод считать
+  // вир получить конкр инф
 };
