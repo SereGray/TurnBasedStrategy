@@ -5,8 +5,8 @@
 using namespace std;
 class point{
 	public:
-		vector<uint32_t> smej;
-		vector<uint8_t> list_neighbor;
+		vector<uint32_t> smej; // смежные точки 
+		vector<uint8_t> list_neighbor; // смежные точки принадлежащие другим игровым объектам
 		uint8_t N_owner=0;
 };
 
@@ -27,7 +27,36 @@ class map{
 			}
 		}
 void Generate_tab(){
-// таблица смежности
+	uint64_t max=height*width;
+	uint32_t w=0,h=0;
+	point pNull;
+	// заполняем таблицу нулевыми точками
+	for(uint64_t i=0;i<max;++i){
+		tabSmej.push_back(pNull);
+	}
+	// заполняем таблицу смежности
+for(uint64_t i=0;i<max;++i){
+	// просматриваю таблицу вправо вниз добавляю 
+	// к текущей точке следущую смежную и к следующей текущую
+	
+	// проверка правой границы
+	if(w<width-1){
+		tabSmej[i].smej.push_back(i+1);
+		tabSmej[i+1].smej.push_back(i); 
+	}
+	// нижней границы
+	if(h<height-1){
+		tabSmej[i].smej.push_back(i+width);
+		tabSmej[i+width].smej.push_back(i);
+	}
+	// опредление координаты на карте
+	++w;
+	if(w==width){
+	w=0;
+	++h;
+	}
+	if(h>=height) { cout << " Error ... Generate_tab .."; break;}
+	}
 }
 
 		void FillMap(){
@@ -49,18 +78,31 @@ void Generate_tab(){
 	public:
 		vector<uint32_t> list_smej;
 		map(uint32_t w,uint32_t h, uint32_t p): width(w), height(h){
+			// создаем таблицу смежности
 			Generate_tab();
+			// определяем положения точек
 			Generate_coord(p);
-
-
+			// заполняем территорию карты
 			//FillMap();
+		}
+		void PrintTabSmej(){
+			uint32_t i=0;
+			for(point p:tabSmej){
+				cout << i <<" num smej:"<< p.smej.size() << endl;
+				++i;
+				for(uint32_t v: p.smej){
+				cout << v <<" " ;
+				}
+			cout << endl;
+			}
 		}
 };
 
 
 int main(){
 	cout<< " test "<< endl;
-	map m(100,100,25);
+	map m(5,5,25);
+	m.PrintTabSmej();
 
 
 }
