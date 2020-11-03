@@ -12,15 +12,24 @@ class point{
 	point(){
 	border_map=false;
 	N_owner=0;
-	cout<< " point constructed owner="<<N_owner<<endl;
 	}
 };
 
+class kingdoom{ //  клас struct? предсавляющий изображение на карте территорию королевства и методы работы:
+	public:
+		vector<uint32_t> list_v; // список вершин
+		vector<uint32_t> borders; // список границ 
+		kingdoom(uint32_t num){
+			list_v.push_back(num);
+			borders.push_back(num);
+		}
+	};
 class map{
 	private:
 		uint32_t width,height;
 		vector<pair<uint32_t,uint32_t>> points;
 		vector<point> tabSmej; // таблица смежности представляет из себя список всех вершин
+		vector<kingdoom> list_kingdooms; // список королевств
 
 	public:
 	private:
@@ -35,12 +44,18 @@ void GenerateCoord(uint32_t p){
 			}
 }
 
+uint32_t getNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
+	return x+y*width;
+}
+// получение координат вершины по номеру
+pair<uint32_t,uint32_t> getCoord(uint32_t num){
+//TODO: this features
+}
+
 void GenerateTab(){
 	uint64_t max=height*width;
 	uint32_t w=0,h=0;
 	point pNull;
-	pNull.N_owner=0;
-	cout<<"pnull owner="<<pNull.N_owner<<endl;
 	// заполняем таблицу нулевыми точками
 	for(uint64_t i=0;i<max;++i){
 		tabSmej.push_back(pNull);
@@ -61,7 +76,6 @@ for(uint64_t i=0;i<max;++i){
 		tabSmej[i+width].smej.push_back(i);
 	}
 	// опредление координаты на карте
-	cout << "i="<<i<<" w="<<w<<" h="<<h<<endl;
 	++w;
 	if(w==width){
 	w=0;
@@ -70,10 +84,7 @@ for(uint64_t i=0;i<max;++i){
 	}
 }
 
-// обновление границ
-void RefreshBorders(){
 
-}
 // генерация и добавление начальных точек к карте
 void AddPoitsToMap( uint32_t po){ // ро - количество стартовых точек
 	if(po>height*width) return;
@@ -81,17 +92,28 @@ void AddPoitsToMap( uint32_t po){ // ро - количество стартов�
 		uint32_t x=rand()%width;
 		uint32_t y=rand()%height;
 		if(tabSmej[x+y*width].N_owner==0){
-			tabSmej[x+y*width].N_owner=po;
+			tabSmej[getNum(x,y)].N_owner=po;
 		}else{
-			while(tabSmej[x+y*width].N_owner!=0){
+			while(tabSmej[getNum(x,y)].N_owner!=0){
 		x=rand()%width;
 		y=rand()%height;
 			}
-			tabSmej[x+y*width].N_owner=po;
+			tabSmej[getNum(x,y)].N_owner=po;
+			kingdoom newKingdoom(getNum(x,y));
+			list_kingdooms.push_back(newKingdoom);
 		}
 		--po;
 	}
 }
+// обновление границ
+	void RefreshBorders(kingdoom kingd){
+		kingd.borders.clear();
+		for(numV: kingd.list_v){// обходим все вершины королевства по номерам и пров
+			//  условию границы
+		//TODO:	if(tabSmej[numV].)
+		}
+	}
+
 // вывод на экран карты
 void MapToScreen(){
 		// проходим по всем вершинам и форматируем в виде таблицы heigth x width
@@ -128,8 +150,7 @@ uint32_t k=0;
 			cout<<" gen tab\n";
 			GenerateTab();
 			cout<<"map to scre\n";
-			MapToScreen();
-			AddPoitsToMap(10); 
+			AddPoitsToMap(p); 
 			cout<<"poins scre\n";
 			MapToScreen();
 			// определяем положения точек
@@ -153,7 +174,7 @@ uint32_t k=0;
 
 int main(){
 	cout<< " test "<< endl;
-	map m(5,5,25);
+	map m(5,5,3);
 //	m.PrintTabSmej();
 
 
