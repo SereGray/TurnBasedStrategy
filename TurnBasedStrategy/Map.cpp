@@ -3,6 +3,7 @@
 #include <vector>
 
 using namespace std;
+
 class point{
 	public:
 		vector<uint32_t> smej; // смежные точки 
@@ -127,6 +128,10 @@ uint32_t k=0;
 	}
 }
 // функц вывода карты в файл с помощью CImg.h
+void MapToFile() {
+	CImg img;
+
+}
 		void FillMap(){
 			while(1){// пока свободные клетки не закончатся
 				//1)обход окружности точек

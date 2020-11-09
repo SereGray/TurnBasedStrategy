@@ -142,6 +142,8 @@
   <ItemGroup>
     <ClCompile Include="ClientCli.cpp" />
     <ClCompile Include="Engine.cpp" />
+    <ClCompile Include="Map.cpp" />
+    <ClCompile Include="Copy.sh" />
     <ClCompile Include="TbsInterface.cpp" />
     <ClCompile Include="TurnBasedStrategy.cpp" />
     <ClCompile Include="VoronoiMap.cpp" />
@@ -149,9 +151,13 @@
   <ItemGroup>
     <ClInclude Include="ClientCli.h" />
     <ClInclude Include="Engine.h" />
+    <ClInclude Include="Map.h" />
     <ClInclude Include="TbsInterface.h" />
     <ClInclude Include="TurnBasedStrategy.h" />
     <ClInclude Include="VoroniMap.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include=".ycm_extra_conf.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
