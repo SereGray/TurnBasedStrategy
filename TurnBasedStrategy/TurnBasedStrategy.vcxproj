@@ -149,6 +149,7 @@
     <ClCompile Include="VoronoiMap.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="CImg.h" />
     <ClInclude Include="ClientCli.h" />
     <ClInclude Include="Engine.h" />
     <ClInclude Include="Map.h" />
@@ -158,6 +159,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include=".ycm_extra_conf.py" />
+    <None Include="backup\.ycm_extra_conf.py" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

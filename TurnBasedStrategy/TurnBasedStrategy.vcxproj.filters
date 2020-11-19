@@ -56,8 +56,12 @@
     <ClInclude Include="Map.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
+    <ClInclude Include="CImg.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="backup\.ycm_extra_conf.py" />
     <None Include=".ycm_extra_conf.py" />
   </ItemGroup>
 </Project>
