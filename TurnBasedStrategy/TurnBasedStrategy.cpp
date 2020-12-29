@@ -10,8 +10,10 @@
 
 using namespace std;
 
-int main()
+int main(int argc, int** argv)
 {
-
+	// создание меню
+	// получение параметров 
+	// создание объектов
    cout << "Hello World!\n";
 }

@@ -117,6 +117,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>C:\Users\Юзверь\source\repos\SereGray\TurnBasedStrategy\TurnBasedStrategy;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -143,10 +144,8 @@
     <ClCompile Include="ClientCli.cpp" />
     <ClCompile Include="Engine.cpp" />
     <ClCompile Include="Map.cpp" />
-    <ClCompile Include="Copy.sh" />
     <ClCompile Include="TbsInterface.cpp" />
     <ClCompile Include="TurnBasedStrategy.cpp" />
-    <ClCompile Include="VoronoiMap.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CImg.h" />
@@ -155,7 +154,6 @@
     <ClInclude Include="Map.h" />
     <ClInclude Include="TbsInterface.h" />
     <ClInclude Include="TurnBasedStrategy.h" />
-    <ClInclude Include="VoroniMap.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include=".ycm_extra_conf.py" />

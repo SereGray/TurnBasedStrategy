@@ -9,8 +9,8 @@
 
 class TbInterface {
 public:
-  virtual void NextTurn();
-  virtual void Create();
+  virtual void NextTurn(); // реализовывает движок
+  virtual void Create(); // реализовывает движок
   // получать показывать методы конкр интерфейсов
   // получить список конкретных инф
   // вирт метод считать
