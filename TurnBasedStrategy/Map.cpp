@@ -2,6 +2,7 @@
 #include <iostream>
 #include "CImg.h"
 #include <vector>
+#include <algorithm>
 
 using namespace std;
 
@@ -71,6 +72,12 @@ void GenerateCoord(uint32_t p){
 
 uint32_t getNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
 	return x+y*width;
+}
+
+pair<uint32_t, uint32_t> getCoord(uint32_t Num){
+	uint32_t x = Num - (Num / width) * width ;
+	uint32_t y = Num / width ;
+	return make_pair(x ,y);
 }
 
 void GenerateTab(){
@@ -160,14 +167,35 @@ uint32_t k=0;
 	}
 }
 
-// функц вывода карты в файл с помощью CImg.h
+// функц вывода карты в графический файл с помощью CImg.h
 // TODO: this
-void MapToFile() {
+public:
+void toFile(uint8_t point_size=10) {
+	if(point_size < 10) point_size = 10;
 	using namespace cimg_library;
-	//CImg img;
-
+	// генерация цветов областей
+	vector<vector<unsigned char>> colors;
+	for(uint32_t i=0; i <= list_terrains.size(); ++i){ //TODO: check list size and N_owner 
+		unsigned char r,g,b;
+		r = rand() % UINT8_MAX;
+		g = rand() % UINT8_MAX;
+		b = rand() % UINT8_MAX;
+		vector<unsigned char> temp = { r, g, b};
+		colors.push_back(temp);
+	}
+	CImg<uint8_t> img(width * point_size, height * point_size, 1, 3); 
+	// двигаюсь по списку вершин и окрашиваю каждую точку в свой цвет области
+	uint32_t counter = 0;
+	for(point p: adjacentList){
+		uint32_t country = p.N_owner;
+		const unsigned char color[]={ colors[country][0],colors[country][1],colors[country][2]};
+		pair<uint32_t,uint32_t> coord = getCoord(counter);
+		img.draw_rectangle((coord.first * point_size),(coord.second * point_size),( coord.first * point_size + point_size),( coord.second * point_size + point_size), color);
+		++counter;
+	}
+	img.save_bmp("map.bmp");
 }
-
+private:
 bool freeSpace(){
 	static uint32_t maxIteration=100;
 	if(--maxIteration==0)return false;
@@ -180,7 +208,7 @@ bool freeSpace(){
 void DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path){
 	//считается что все вершины доступны иначе добавить вес ребра = бесконечности или др. промеж. варианты
 uint32_t n=adjacentList.size();
-vector<uint32_t> dist(n, UINT32_MAX), parent(n);
+vector<uint32_t> dist(n, UINT32_MAX/2), parent(n);
 dist[numBorderV] = 0; // // стартовая вершина
 vector<bool> used(n);
 for (uint32_t i = 0; i < n; ++i) {
@@ -188,7 +216,7 @@ for (uint32_t i = 0; i < n; ++i) {
 	for (uint32_t j = 0; j < n; ++j)
 		if (!used[j] && (vertex == -1 || dist[j] < dist[vertex]))
 			vertex = j;
-		if (dist[vertex] == UINT32_MAX)
+		if (dist[vertex] == UINT32_MAX/2)
 		break;
 		used[vertex] = true;
 		for (size_t j = 0; j < adjacentList[vertex].adjacentPoints.size(); ++j) {
@@ -219,23 +247,25 @@ for (uint32_t i = 0; i < n; ++i) {
 
 }
 
-void createDxDTable( vector<vector<uint32_t>> & inDxD){
+void createDxDTable( vector<vector<uint32_t>> & inDxD){  // TODO: some wrong
 	uint32_t i=0;
+	inDxD.clear(); // 
 	for(point p : adjacentList){
 		for( uint32_t j: p.adjacentPoints){
-			inDxD[i][j]=1;  // set 1 to contiguous(smej) vertex
+			inDxD[i][j] = 1;  // set 1 to contiguous(smej) vertex
+			inDxD[j][i] = 1;
 		}
 	++i;	
 	}
 }
 
-void adjacentMatrix(vector<vector<uint32_t>> & inMatrix) {
+void adjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 	inMatrix.clear();
 	const uint32_t cost = 1; // default cost to move between two adjacent vertex
 	uint32_t n = adjacentList.size();
 	vector<uint32_t> v;
 	for (uint32_t j = 0; j < n; ++j) {
-		v.push_back(UINT32_MAX);
+		v.push_back(UINT32_MAX/2);
 	}
 	for (uint32_t i = 0; i < n; ++i) {
 		inMatrix.push_back(v);
@@ -245,46 +275,50 @@ void adjacentMatrix(vector<vector<uint32_t>> & inMatrix) {
 	for (uint32_t i = 0; i < n; i++){
 		for (uint32_t vertex : adjacentList[i].adjacentPoints){
 			inMatrix[i][vertex] = cost;
+			inMatrix[vertex][i] = cost; 
 		}
+	}
+
+}
+
+void recoveryPath(uint32_t a, uint32_t b, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path) {
+	if (parent[a][b] == a) {   // TODO : out of range
+		path.push_back(a);
+	}
+	else {
+		recoveryPath(a, parent[a][b], parent, path);
+		recoveryPath(parent[a][b], b, parent, path);
 	}
 }
 
-vector<uint32_t> Floid_Yorshell(uint32_t start, uint32_t end) { // start and end path vertex numbers
-	bool revers = false;
-	static bool used = false;
-	vector<uint32_t> path;
-	if (end < start) {  // switch at place
-		end += start;
-		start = end - start;
-		end -= start;
-		revers = true;
+void Floyd_Warshall(vector<vector<uint32_t>> & parentsMatrix) {
+	vector<vector<uint32_t>> adjacentMatrix;
+	adjacentMatrixFill(adjacentMatrix);
+	//createDxDTable(adjacentMatrix);
+	uint32_t n = adjacentMatrix.size();
+	parentsMatrix.clear();
+	for (unsigned i = 0; i < n; ++i) {
+		vector<uint32_t> p;
+		for (unsigned j = 0; j < n; ++j)p.push_back(i);
+		parentsMatrix.push_back(p);
 	}
+	for (uint32_t k = 0; k < n; ++k)
+		for (uint32_t i = 0; i < n; ++i)
+			for (uint32_t j = 0; j < n; ++j) {
+				if (adjacentMatrix[i][j] > adjacentMatrix[i][k] + adjacentMatrix[k][j]) {
+					adjacentMatrix[i][j] = adjacentMatrix[i][k] + adjacentMatrix[k][j];
+					parentsMatrix[i][j] = k;
+				}
+			}
+
+}
+
+vector<uint32_t> Floyd_Warhsall_Path(uint32_t start , uint32_t end, bool restart = false) { // start and end path vertex numbers
+	vector<uint32_t> path ;
 	static vector<vector<uint32_t>> parentsMatrix;
-	if (!used) {
-		vector<vector<uint32_t>> adjacentMatrix;
-		createDxDTable(adjacentMatrix);
-		uint32_t n = adjacentMatrix.size();
-		for (unsigned i = 0; i < n; ++i) {
-			vector<uint32_t> p;
-			for (unsigned j = 0; j < n; ++j)p.push_back(i);
-			parentsMatrix.push_back(p);
-		}
-		for (uint32_t k = 0; k < n; ++k)
-			for (uint32_t i = 0; i < n; ++i)
-				for (uint32_t j = 0; j < n; ++j)
-					if (adjacentMatrix[i][j] > adjacentMatrix[i][k] + adjacentMatrix[k][j]) {
-						adjacentMatrix[i][j] = adjacentMatrix[i][k] + adjacentMatrix[k][j];
-						parentsMatrix[i][j] = k;
-					}
-		used = true;
-	}
-	// TODO:recover path;
-	do {
-		path.push_back(end);
-		end = parentsMatrix[start][end];
-	} while (end != parentsMatrix[start][end]);
-	path.push_back(start);
-	if (!revers)reverse(path.begin(), path.end());
+	if (parentsMatrix.empty() || restart == true) Floyd_Warshall(parentsMatrix);
+	recoveryPath(start, end, parentsMatrix, path);
+	path.push_back(end);
 	return path;
 }
 	
@@ -293,20 +327,41 @@ void BalanceArea() {
 		std::sort(list_terrains.begin(), list_terrains.end(), [](terrain lkdm, terrain rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
 		terrain kingdMin = *list_terrains.begin();
 		terrain kingdMax = *(list_terrains.end() - 1);
-		vector<vector<uint32_t>> pathList;
+		// ищу путь наименьшей длины с прим. Флойд-Уоршелла
+		vector<uint32_t> path;   // после должен быть наикоротким
+		uint32_t lengthMinPath = UINT32_MAX;
 		for (auto numBorderKingdMin : kingdMin.borders) {//any vertex from nim terrain
-			// по алгоритму флойда-уоршелла ищем все пути и выбираем наиболее короткий между 2умя королевствами ( рассматриваем пограниные точки )
 			for (auto numBorderKingdMax : kingdMax.borders) {
-				pathList.push_back(Floid_Yorshell(numBorderKingdMin, numBorderKingdMax));
-			}	
+				vector<uint32_t> tempPath = Floyd_Warhsall_Path(numBorderKingdMin, numBorderKingdMax);
+				if (tempPath.size() < lengthMinPath) {
+					path = tempPath;   // выбор наикороткого пути
+					lengthMinPath = tempPath.size();
+				}
+			}
 		}
-		std::sort(pathList.begin(), pathList.end(), [](vector<vector<uint32_t>> lpath, vector<vector<uint32_t>> rpath) { return lpath.size() < rpath.size(); });
 		// push points from max terrain to min terrain
-		// TODO: trace path acros all terrain
 		// двигаясь по пути
-		// смотрю следующего владельца 
-		// забираю его точку
-		// если это не kingdMax то продолжаю
+		reverse(path.begin(), path.end());
+		uint32_t prevNumPoint = 0;
+		vector<terrain>::iterator prevKingd = list_terrains.end() - 1;
+		for(uint32_t NumPoint : path) {
+			// если текущий владелец отличается от владельца предыдущей точки меняю владельца точки
+			auto owner = adjacentList[NumPoint].N_owner;
+			vector<terrain>::iterator currentKingd = find_if(list_terrains.begin(), list_terrains.end(), [owner](terrain& kingd) { return owner == kingd.my_N(); });																																						   //NumCurrentTerr = adjacentList[NumPoint].N_owner;
+			if (currentKingd->my_N() != prevKingd->my_N()){
+				// найти предыдущ terrain и убрать у него точку из списка   find_if
+				
+				// нахожу текущую точку(указатель на нее) у предыдущего королевства
+				
+				vector<uint32_t>::iterator prevPointIt = find_if(prevKingd->list_v.begin(), prevKingd->list_v.end(), [prevNumPoint](uint32_t& pnt) { return prevNumPoint == pnt; }); //and there
+				prevKingd->list_v.erase(prevPointIt); // удалил вершину из пред списка
+				currentKingd->list_v.push_back(prevNumPoint); // добавил вершину в текущ список 
+				prevKingd = currentKingd; 
+				adjacentList[prevNumPoint].N_owner = currentKingd->my_N(); // присвоил вершину окончательно в списке смежности
+			}
+			prevNumPoint = NumPoint;
+		}
+		for(auto & kingd : list_terrains) RefreshBorders(kingd);
 	}
 }
 
@@ -368,9 +423,6 @@ void FillMap(){
 		for(auto & kingd : list_terrains) RefreshBorders(kingd);
 	}
 	
-	// выравниваем площадь
-	BalanceArea();
-	
 }
 	public:
 		map(uint32_t w,uint32_t h, uint32_t p): width(w), height(h){
@@ -384,6 +436,10 @@ void FillMap(){
 			// заполняем территорию карты
 			FillMap();//TODO: infinity loop there !!!!
 			cout << endl;
+			MapToScreen();
+			// Выравниваю карту на 1 пиксель
+			BalanceArea();
+			cout << "Balancing ...\n";
 			MapToScreen();
 		}
 		void PrintTabSmej(){
@@ -399,11 +455,10 @@ void FillMap(){
 		}
 };
 
-
+/*
 int main(){
 	cout<< " test "<< endl;
-	map m(5,5,3);
+	map m(10,10,7);
+	m.toFile(10);
 //	m.PrintTabSmej();
-
-
-}
+}*/
