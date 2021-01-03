@@ -113,7 +113,6 @@ for(uint32_t i=0;i<max;++i){
 	}
 }
 
-// TODO: что будет если 2 начальых точки соседи ?(ничего?!?!!)	
 // // генерация и добавление начальных точек к карте
 void AddPoitsToMap( uint32_t po){ // ро - количество стартовых точек
 	if(po>height*width) return;
@@ -168,7 +167,6 @@ uint32_t k=0;
 }
 
 // функц вывода карты в графический файл с помощью CImg.h
-// TODO: this
 public:
 void toFile(uint8_t point_size=10) {
 	if(point_size < 10) point_size = 10;
@@ -247,7 +245,7 @@ for (uint32_t i = 0; i < n; ++i) {
 
 }
 
-void createDxDTable( vector<vector<uint32_t>> & inDxD){  // TODO: some wrong
+void createDxDTable( vector<vector<uint32_t>> & inDxD){  
 	uint32_t i=0;
 	inDxD.clear(); // 
 	for(point p : adjacentList){
@@ -396,11 +394,6 @@ void FillMap(){
 	for(uint32_t i=0;i< list_terrains.size();++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
 
 	while(freeSpace()){// пока свободные клетки не закончатся
-	
-	//1)обход окружности точек
-	//добавление незанятых (окрашивание)
-	//2)определение новых границ
-	
 	//Обход
 		for(auto &kingd: list_terrains){
 			// движение по окружности границы по их порядку начиная с правой
@@ -434,7 +427,7 @@ void FillMap(){
 			cout<<"poins scre\n";
 			MapToScreen();
 			// заполняем территорию карты
-			FillMap();//TODO: infinity loop there !!!!
+			FillMap();
 			cout << endl;
 			MapToScreen();
 			// Выравниваю карту на 1 пиксель

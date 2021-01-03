@@ -2,11 +2,8 @@
 //
 // TODO: client
 
-#include <iostream>
+include <iostream>
 #include <ClientCli.h>
-#include <Engine.h>
-#include <TbsInterface.h>
-#include <TurnBasedStrategy.h>
 
 using namespace std;
 
