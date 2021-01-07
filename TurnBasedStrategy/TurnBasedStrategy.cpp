@@ -2,12 +2,12 @@
 //
 // TODO: client
 
-include <iostream>
-#include <ClientCli.h>
+#include <iostream>
+//#include "ClientCli.h"
 
 using namespace std;
 
-int main(int argc, int** argv)
+int main(int argc, char** argv)
 {
 	// создание меню
 	// получение параметров 
