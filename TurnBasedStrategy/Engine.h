@@ -16,8 +16,17 @@
 #ifndef ENGINE
 #define ENGINE
 // список игоровых объектов
-// функция NextTurn : обход игровых объектов по списку и вызов метода NextTurnObj
-// функция GameLoop : бесконечного игрового цикла
 
+// метод NextTurn : обход игровых объектов по списку и вызов метода NextTurnObj
+// вызов игровых объектов как потомков EngineInterface и вызов их метода NextTurn
+
+// метод GameLoop : бесконечного игрового цикла
+
+
+// класс взаимодействия игровых объектов движка между собой
+class EngineInterface {
+	virtual void NextTurn();
+	virtual void GetCountSpecialists(); // получить количество занятых специалистов
+};
 
 #endif 
