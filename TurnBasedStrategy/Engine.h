@@ -11,10 +11,10 @@
 
 // карта создается явля игровыми объектом с к и
 // представляет из себя граф
-//
-
 #ifndef ENGINE
 #define ENGINE
+#include"TbsInterface.h"
+
 // список игоровых объектов
 
 // метод NextTurn : обход игровых объектов по списку и вызов метода NextTurnObj
@@ -24,9 +24,14 @@
 
 
 // класс взаимодействия игровых объектов движка между собой
-class EngineInterface {
+class EngineGameObjInterface {
+	public:
 	virtual void NextTurn();
 	virtual void GetCountSpecialists(); // получить количество занятых специалистов
+};
+
+class Engine: public TbsInterface{
+	void NextTurn(); // запускает цепочку расчетов следующего 
 };
 
 #endif 

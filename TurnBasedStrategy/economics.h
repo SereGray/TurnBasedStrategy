@@ -2,7 +2,6 @@
 #define ECONOMICS
 #include"TbsInterface.h"
 #include"Engine.h"
-//
 // модель экономики: (+демографии)
 // посев доступного зерна (из остатков или покупного)
 // на доступной территории
@@ -25,7 +24,7 @@ private:
 	void decreaseFermersPeople(); // функция 
 };
 
-class Economics : public TbsInterface, public EngineInterface {
+class Economics : public TbsInterface, public EngineGameObjInterface {
 public:
 	uint64_t gold; // накапливаемый ресурс
 	uint64_t profit_gold; // прибыль на следующий ход ??
