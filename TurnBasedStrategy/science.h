@@ -10,7 +10,8 @@
 class TheScience{
 	// класс наука
 	public:
-		// TODO: проверить что прирост идет у предметной области а не у всей
+		TheScience(std::string nameScience);
+		// TODO: проверить что прирост идет у предметной области науки а не у всей
 	static unsigned scienceLvl; //общий научный уровень 
 	std::string name; // name 
         private:	
@@ -30,14 +31,13 @@ class SubjectScience: public TheScience{
 // игровой объект наука
 class ScienseObject: public TbsInterface, public EngineGameObjInterface{
 	public:
-		ScienseObject(){
-			// science_vector= add demography incrase, demography density,  ...
-		}
+		ScienseObject();
+			
 	private:
 		void NextTurn(); // расчет сл хода
 	// the_science base_science(); // базовая наука
 	// пример :std::unique_ptr<the_science> scns(new the_science);
-	std::vector<std::unique_ptr<SubjectScience>> science_vector; // список наук
+	std::vector<std::unique_ptr<TheScience>> scienceList_vector; // список наук
 };
 
 #endif
