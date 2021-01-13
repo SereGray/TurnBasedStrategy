@@ -27,7 +27,7 @@
 class EngineGameObjInterface {
 	public:
 	virtual void NextTurn();
-	virtual void GetCountSpecialists(); // получить количество занятых специалистов
+	virtual unsigned GetCountSpecialists(); // получить количество занятых специалистов
 };
 
 class Engine: public TbsInterface{

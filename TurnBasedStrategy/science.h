@@ -15,10 +15,12 @@ class TheScience{
 	static unsigned scienceLvl; //общий научный уровень 
 	std::string name; // name 
         private:	
-	unsigned progress;    // количество работы ученых над текущим уровнем
-	unsigned progressLimit; // макс прогресс для этого уровняя (если больше то повыш ур.)
-	float scienistForce; // сколько прогресса добавляет один ученый
+	unsigned	progress_;    // количество работы ученых над текущим уровнем
+	unsigned	progress_limit_; // макс прогресс для этого уровняя (если больше то повыш ур.)
+	float		scienist_force_; // сколько прогресса добавляет один ученый
+	unsigned	count_scienist_; 
 	void Increase(unsigned scienist_count); // увеличение науки 
+	unsigned GetCountSpecialists();
 };
 
 // предметная наука - скорость(сила) прироста параметра в конкретной области
