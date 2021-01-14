@@ -12,13 +12,14 @@ class TheScience{
 	public:
 		TheScience(std::string nameScience);
 		// TODO: проверить что прирост идет у предметной области науки а не у всей
-	static unsigned scienceLvl; //общий научный уровень 
-	std::string name; // name 
+	static unsigned scienceLvl_;		//общий научный уровень 
+	std::string name;					// name 
         private:	
-	unsigned	progress_;    // количество работы ученых над текущим уровнем
-	unsigned	progress_limit_; // макс прогресс для этого уровняя (если больше то повыш ур.)
-	float		scienist_force_; // сколько прогресса добавляет один ученый
-	unsigned	count_scienist_; 
+	unsigned		progress_;			// количество работы ученых над текущим уровнем
+	unsigned		progress_limit_;	// макс прогресс для этого уровняя (если больше то повыш ур.)
+	static float	scienist_force_;	// сколько прогресса добавляет один ученый
+	unsigned		count_scienist_; 
+	float Scienist_force();				// подсчет силы ученого запускать в NextTurn() т.к.результат static
 	void Increase(unsigned scienist_count); // увеличение науки 
 	unsigned GetCountSpecialists();
 };
