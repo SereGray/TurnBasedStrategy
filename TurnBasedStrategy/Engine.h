@@ -27,6 +27,9 @@
 class EngineGameObjInterface {
 	public:
 	virtual void NextTurn();
+	virtual void SaveState();
+	virtual void LoadState();
+	virtual void CreateState();
 	virtual unsigned GetCountSpecialists(); // получить количество занятых специалистов
 };
 
