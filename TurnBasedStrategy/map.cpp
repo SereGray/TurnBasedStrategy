@@ -1,86 +1,34 @@
 // This file is part of game engine TurnBasedGame
-#include <iostream>
-#include "CImg.h"
-#include <vector>
-#include <algorithm>
+#include"map.h"
 
-using namespace std;
-
-class point{
-	uint32_t x,y; //   TODO: не инициализированны
-	public:
-		vector<uint32_t> adjacentPoints; // смежные точки 
-		vector<uint32_t> list_neighbor; // смежные точки принадлежащие другим игровым объектам                        NULL 
-		bool border_map;
-		uint16_t N_owner;
-	point(){
-	border_map=false;
-	N_owner=0;
-	}
-
-	// получение координат вершины по номеру
-	pair<uint32_t,uint32_t> getCoord(){
-		return std::make_pair(x,y);
-	}
-
-	void setX(uint32_t X){
-		x=X;
-	}
-
-	void setY(uint32_t Y){
-		y=Y;
-	}
-
-};
-
-class terrain{ //  клас предсавляющий изображение на карте территорию королевства и методы работы:
-	public:
-
-		uint32_t N;
-		vector<uint32_t> list_v; // список вершин
-		vector<uint32_t> borders; // список границ 
-		// создание экземпляра из первой точки
-		terrain(uint32_t num,uint32_t n){
-			N=n;
-			list_v.push_back(num);
-			borders.push_back(num);
-		}
-		uint32_t my_N(){
-			return N;
-		}
-};
-
-class map{
-	//friend class terrain;
-	private:
-		uint32_t width,height;
-		vector<pair<uint32_t,uint32_t>> points;//TODO: not used ?
-	public:
-		 vector<point> adjacentList; // таблица смежности представляет из себя список всех вершин
-		 vector<terrain> list_terrains;
-	private:
-		//  генерирует вектор координат ( ВНИМАНИЕ  повторяющихся)
-void GenerateCoord(uint32_t p){
-	for(uint32_t i=0;i<p;i++){
-		int32_t cx=0,cy=0;
-		cx=rand()%width;
-		cy=rand()%height;
-		cout<< "cx="<<cx<<" cy="<<cy<<endl;
-		points.push_back(std::make_pair(cx,cy));
-	}
+// получение координат вершины по номеру
+pair<uint32_t,uint32_t> point::getCoord(){
+	return std::make_pair(x,y);
 }
 
-uint32_t getNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
+void point::setX(uint32_t X){
+	x=X;
+}
+
+void point::setY(uint32_t Y){
+	y=Y;
+}
+
+uint32_t terrain::my_N(){
+	return N;
+}
+
+uint32_t map::getNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
 	return x+y*width;
 }
 
-pair<uint32_t, uint32_t> getCoord(uint32_t Num){
+pair<uint32_t, uint32_t> map::getCoord(uint32_t Num){
 	uint32_t x = Num - (Num / width) * width ;
 	uint32_t y = Num / width ;
 	return make_pair(x ,y);
 }
 
-void GenerateTab(){
+void map::GenerateTab(){
 	uint32_t max=height*width; // maby uint64_t
 	uint32_t w=0,h=0;
 	point pNull;
@@ -114,7 +62,7 @@ for(uint32_t i=0;i<max;++i){
 }
 
 // // генерация и добавление начальных точек к карте
-void AddPoitsToMap( uint32_t po){ // ро - количество стартовых точек
+void map::AddPoitsToMap( uint32_t po){ // ро - количество стартовых точек
 	if(po>height*width) return;
 	while(po>0){
 		uint32_t x=rand()%width;
@@ -136,7 +84,7 @@ void AddPoitsToMap( uint32_t po){ // ро - количество стартов�
 }
 
 // обновление границ (решение влоб)
-void RefreshBorders(terrain & terr){
+void map::RefreshBorders(terrain & terr){
 	terr.borders.clear();
 	for(auto numV: terr.list_v){// обходим все вершины королевства по номерам и пров
 		//  условию границы  (список точек принадлежащ соседям не пуст или соседняя 
@@ -154,7 +102,7 @@ void RefreshBorders(terrain & terr){
 }
 
 // вывод на экран карты
-void MapToScreen(){
+void map::MapToScreen(){
 		// проходим по всем вершинам и форматируем в виде таблицы heigth x width
 uint32_t k=0;
 	for(uint32_t j=0;j<height;++j){
@@ -167,8 +115,7 @@ uint32_t k=0;
 }
 
 // функц вывода карты в графический файл с помощью CImg.h
-public:
-void toFile(uint8_t point_size=10) {
+void map::toFile(uint8_t point_size=10) {
 	if(point_size < 10) point_size = 10;
 	using namespace cimg_library;
 	// генерация цветов областей
@@ -193,8 +140,7 @@ void toFile(uint8_t point_size=10) {
 	}
 	img.save_bmp("map.bmp");
 }
-private:
-bool freeSpace(){
+bool map::freeSpace(){
 	static uint32_t maxIteration=100;
 	if(--maxIteration==0)return false;
 	for(point p: adjacentList){
@@ -203,7 +149,7 @@ bool freeSpace(){
 	return false;
 }
 
-void DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path){
+void map::DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path){
 	//считается что все вершины доступны иначе добавить вес ребра = бесконечности или др. промеж. варианты
 uint32_t n=adjacentList.size();
 vector<uint32_t> dist(n, UINT32_MAX/2), parent(n);
@@ -245,7 +191,7 @@ for (uint32_t i = 0; i < n; ++i) {
 
 }
 
-void createDxDTable( vector<vector<uint32_t>> & inDxD){  
+void map::createDxDTable( vector<vector<uint32_t>> & inDxD){  
 	uint32_t i=0;
 	inDxD.clear(); // 
 	for(point p : adjacentList){
@@ -257,7 +203,7 @@ void createDxDTable( vector<vector<uint32_t>> & inDxD){
 	}
 }
 
-void adjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
+void map::adjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 	inMatrix.clear();
 	const uint32_t cost = 1; // default cost to move between two adjacent vertex
 	uint32_t n = adjacentList.size();
@@ -279,7 +225,7 @@ void adjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 
 }
 
-void recoveryPath(uint32_t a, uint32_t b, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path) {
+void map::recoveryPath(uint32_t a, uint32_t b, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path) {
 	if (parent[a][b] == a) {   // TODO : out of range
 		path.push_back(a);
 	}
@@ -289,7 +235,7 @@ void recoveryPath(uint32_t a, uint32_t b, vector<vector<uint32_t>> & parent, vec
 	}
 }
 
-void Floyd_Warshall(vector<vector<uint32_t>> & parentsMatrix) {
+void map::Floyd_Warshall(vector<vector<uint32_t>> & parentsMatrix) {
 	vector<vector<uint32_t>> adjacentMatrix;
 	adjacentMatrixFill(adjacentMatrix);
 	//createDxDTable(adjacentMatrix);
@@ -311,7 +257,7 @@ void Floyd_Warshall(vector<vector<uint32_t>> & parentsMatrix) {
 
 }
 
-vector<uint32_t> Floyd_Warhsall_Path(uint32_t start , uint32_t end, bool restart = false) { // start and end path vertex numbers
+vector<uint32_t> map::Floyd_Warhsall_Path(uint32_t start , uint32_t end, bool restart = false) { // start and end path vertex numbers
 	vector<uint32_t> path ;
 	static vector<vector<uint32_t>> parentsMatrix;
 	if (parentsMatrix.empty() || restart == true) Floyd_Warshall(parentsMatrix);
@@ -320,7 +266,7 @@ vector<uint32_t> Floyd_Warhsall_Path(uint32_t start , uint32_t end, bool restart
 	return path;
 }
 	
-void BalanceArea() {
+void map::BalanceArea() {
 	while (terrainsDisbalanced(1)) {
 		std::sort(list_terrains.begin(), list_terrains.end(), [](terrain lkdm, terrain rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
 		terrain kingdMin = *list_terrains.begin();
@@ -363,7 +309,7 @@ void BalanceArea() {
 	}
 }
 
-bool terrainsDisbalanced(uint32_t offset){ // offset - допуск на равенство 
+bool map::terrainsDisbalanced(uint32_t offset){ // offset - допуск на равенство 
 	uint32_t max=list_terrains[0].list_v.size();
 	for(auto terr : list_terrains){
 		if(max < terr.list_v.size())max=terr.list_v.size();
@@ -376,7 +322,7 @@ bool terrainsDisbalanced(uint32_t offset){ // offset - допуск на рав�
 	return false;
 }
 		
-terrain get_minTerrain(){
+terrain map::get_minTerrain(){
 	uint32_t min = 0 - 1;
 	terrain res = list_terrains[0];
 	for(auto terr : list_terrains){
@@ -388,7 +334,7 @@ terrain get_minTerrain(){
 	return res;
 }
 
-void FillMap(){
+void map::FillMap(){
 	vector<uint32_t> iterOnBorders;		// список текущего положения итератора перебора 
 					//по пограничным вершинам для всех королевств ( массив итераторов по одному на королевство)
 	for(uint32_t i=0;i< list_terrains.size();++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
@@ -417,25 +363,7 @@ void FillMap(){
 	}
 	
 }
-	public:
-		map(uint32_t w,uint32_t h, uint32_t p): width(w), height(h){
-			// создаем таблицу списков смежности
-			cout<<" gen tab\n";
-			GenerateTab();
-			cout<<"map to scre\n";
-			AddPoitsToMap(p); 
-			cout<<"poins scre\n";
-			MapToScreen();
-			// заполняем территорию карты
-			FillMap();
-			cout << endl;
-			MapToScreen();
-			// Выравниваю карту на 1 пиксель
-			BalanceArea();
-			cout << "Balancing ...\n";
-			MapToScreen();
-		}
-		void PrintTabSmej(){
+		void map::PrintTabSmej(){
 			uint32_t i=0;
 			for(point p:adjacentList){
 				cout << i <<" num smej:"<< p.adjacentPoints.size() << endl;
@@ -446,7 +374,6 @@ void FillMap(){
 			cout << endl;
 			}
 		}
-};
 
 /*
 int main(){
