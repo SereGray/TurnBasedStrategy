@@ -1,5 +1,5 @@
-#include"TbsInterface.h"
-#include"Engine.h"
+#include"tbs_interface.h"
+#include"engine.h"
 
 #pragma once
 #ifndef TURNBASEDSTRATEGY

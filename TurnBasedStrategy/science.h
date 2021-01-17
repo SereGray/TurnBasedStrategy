@@ -1,7 +1,7 @@
 #ifndef SCIENCE 
 #define SCIENCE
-#include "TbsInterface.h"
-#include "Engine.h"
+#include "tbs_interface.h"
+#include "engine.h"
 #include <string>
 #include <vector>
 #include <memory>

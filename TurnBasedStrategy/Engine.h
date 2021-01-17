@@ -13,7 +13,7 @@
 // представляет из себя граф
 #ifndef ENGINE
 #define ENGINE
-#include"TbsInterface.h"
+#include"tbs_interface.h"
 
 // список игоровых объектов
 

@@ -1,7 +1,7 @@
 #ifndef ECONOMICS
 #define ECONOMICS
-#include"TbsInterface.h"
-#include"Engine.h"
+#include"tbs_interface.h"
+#include"engine.h"
 // модель экономики: (+демографии)
 // посев доступного зерна (из остатков или покупного)
 // на доступной территории

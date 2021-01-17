@@ -1,7 +1,7 @@
 #ifndef WAR 
 #define WAR
 #include<string>
-#include"Engine.h"
+#include"engine.h"
 #include<vector>
 
 // правила войны
