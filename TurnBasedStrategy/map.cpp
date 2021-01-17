@@ -2,55 +2,55 @@
 #include"map.h"
 
 // получение координат вершины по номеру
-pair<uint32_t,uint32_t> point::getCoord(){
+pair<uint32_t,uint32_t> MapPoint::GetCoord(){
 	return std::make_pair(x,y);
 }
 
-void point::setX(uint32_t X){
+void MapPoint::SetX(uint32_t X){
 	x=X;
 }
 
-void point::setY(uint32_t Y){
+void MapPoint::SetY(uint32_t Y){
 	y=Y;
 }
 
-uint32_t terrain::my_N(){
+uint32_t MapTerrain::my_N(){
 	return N;
 }
 
-uint32_t map::getNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
+uint32_t Map::GetNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
 	return x+y*width;
 }
 
-pair<uint32_t, uint32_t> map::getCoord(uint32_t Num){
+pair<uint32_t, uint32_t> Map::GetCoord(uint32_t Num){
 	uint32_t x = Num - (Num / width) * width ;
 	uint32_t y = Num / width ;
 	return make_pair(x ,y);
 }
 
-void map::GenerateTab(){
+void Map::GenerateTab(){
 	uint32_t max=height*width; // maby uint64_t
 	uint32_t w=0,h=0;
-	point pNull;
+	MapPoint pNull;
 	// заполняем таблицу нулевыми точками
 	for(uint32_t i=0;i<max;++i){
 		adjacentList.push_back(pNull);
 	}
 	// заполняем таблицу смежности
 for(uint32_t i=0;i<max;++i){
-	adjacentList[i].setX(h);
-	adjacentList[i].setY(w);	
+	adjacentList[i].SetX(h);
+	adjacentList[i].SetY(w);	
 	// просматриваю таблицу вправо вниз добавляю 
 	// к текущей точке следущую смежную и к следующей текущую
 	// проверка правой границы
 	if(w<width-1){
-		adjacentList[i].adjacentPoints.push_back(i+1);
-		adjacentList[i+1].adjacentPoints.push_back(i); 
+		adjacentList[i].adjacent_points.push_back(i+1);
+		adjacentList[i+1].adjacent_points.push_back(i); 
 	}
 	// нижней границы
 	if(h<height-1){
-		adjacentList[i].adjacentPoints.push_back(i+width);
-		adjacentList[i+width].adjacentPoints.push_back(i);
+		adjacentList[i].adjacent_points.push_back(i+width);
+		adjacentList[i+width].adjacent_points.push_back(i);
 	}
 	// опредление координаты на карте
 	++w;
@@ -62,21 +62,21 @@ for(uint32_t i=0;i<max;++i){
 }
 
 // // генерация и добавление начальных точек к карте
-void map::AddPoitsToMap( uint32_t po){ // ро - количество стартовых точек
+void Map::AddPoitsToMap( uint32_t po){ // ро - количество стартовых точек
 	if(po>height*width) return;
 	while(po>0){
 		uint32_t x=rand()%width;
 		uint32_t y=rand()%height;
 		if(adjacentList[x+y*width].N_owner==0){
-			adjacentList[getNum(x,y)].N_owner=po;
+			adjacentList[GetNum(x,y)].N_owner=po;
 		}else{
-			while(adjacentList[getNum(x,y)].N_owner!=0){
+			while(adjacentList[GetNum(x,y)].N_owner!=0){
 		x=rand()%width;
 		y=rand()%height;
 			}
-			adjacentList[getNum(x,y)].N_owner=po;
+			adjacentList[GetNum(x,y)].N_owner=po;
 		}
-		terrain newKingdoom(getNum(x,y),po);
+		MapTerrain newKingdoom(GetNum(x,y),po);
 		cout<<" new kingd n="<<newKingdoom.my_N()<<endl;
 		list_terrains.push_back(newKingdoom);
 		--po;
@@ -84,7 +84,7 @@ void map::AddPoitsToMap( uint32_t po){ // ро - количество старт
 }
 
 // обновление границ (решение влоб)
-void map::RefreshBorders(terrain & terr){
+void Map::RefreshBorders(MapTerrain & terr){
 	terr.borders.clear();
 	for(auto numV: terr.list_v){// обходим все вершины королевства по номерам и пров
 		//  условию границы  (список точек принадлежащ соседям не пуст или соседняя 
@@ -92,7 +92,7 @@ void map::RefreshBorders(terrain & terr){
 
 	//  получаю вершину смотрю список смежных  и владельца
 		// цикл проверяет соседние точки если соседняя точка не моя то значит проверяемая точка - гранинкая
-		for (auto smej_V : adjacentList[numV].adjacentPoints) {
+		for (auto smej_V : adjacentList[numV].adjacent_points) {
 			if (adjacentList[smej_V].N_owner != terr.my_N()) {
 				terr.borders.push_back(numV);
 				break; //  эта вершина граничная  выходим
@@ -102,7 +102,7 @@ void map::RefreshBorders(terrain & terr){
 }
 
 // вывод на экран карты
-void map::MapToScreen(){
+void Map::MapToScreen(){
 		// проходим по всем вершинам и форматируем в виде таблицы heigth x width
 uint32_t k=0;
 	for(uint32_t j=0;j<height;++j){
@@ -115,7 +115,7 @@ uint32_t k=0;
 }
 
 // функц вывода карты в графический файл с помощью CImg.h
-void map::toFile(uint8_t point_size=10) {
+void Map::ToFile(uint8_t point_size=10) {
 	if(point_size < 10) point_size = 10;
 	using namespace cimg_library;
 	// генерация цветов областей
@@ -131,25 +131,25 @@ void map::toFile(uint8_t point_size=10) {
 	CImg<uint8_t> img(width * point_size, height * point_size, 1, 3); 
 	// двигаюсь по списку вершин и окрашиваю каждую точку в свой цвет области
 	uint32_t counter = 0;
-	for(point p: adjacentList){
+	for(MapPoint p: adjacentList){
 		uint32_t country = p.N_owner;
 		const unsigned char color[]={ colors[country][0],colors[country][1],colors[country][2]};
-		pair<uint32_t,uint32_t> coord = getCoord(counter);
+		pair<uint32_t,uint32_t> coord = GetCoord(counter);
 		img.draw_rectangle((coord.first * point_size),(coord.second * point_size),( coord.first * point_size + point_size),( coord.second * point_size + point_size), color);
 		++counter;
 	}
 	img.save_bmp("map.bmp");
 }
-bool map::freeSpace(){
+bool Map::FreeSpace(){
 	static uint32_t maxIteration=100;
 	if(--maxIteration==0)return false;
-	for(point p: adjacentList){
+	for(MapPoint p: adjacentList){
 		if(p.N_owner==0) return true;
 	}
 	return false;
 }
 
-void map::DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path){
+void Map::DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path){
 	//считается что все вершины доступны иначе добавить вес ребра = бесконечности или др. промеж. варианты
 uint32_t n=adjacentList.size();
 vector<uint32_t> dist(n, UINT32_MAX/2), parent(n);
@@ -163,8 +163,8 @@ for (uint32_t i = 0; i < n; ++i) {
 		if (dist[vertex] == UINT32_MAX/2)
 		break;
 		used[vertex] = true;
-		for (size_t j = 0; j < adjacentList[vertex].adjacentPoints.size(); ++j) {
-			uint32_t to = adjacentList[vertex].adjacentPoints[j];
+		for (size_t j = 0; j < adjacentList[vertex].adjacent_points.size(); ++j) {
+			uint32_t to = adjacentList[vertex].adjacent_points[j];
 			const uint32_t len =1; // вес ребра
 			if (dist[vertex] + len < dist[to]) {
 				dist[to] = dist[vertex] + len;
@@ -191,11 +191,11 @@ for (uint32_t i = 0; i < n; ++i) {
 
 }
 
-void map::createDxDTable( vector<vector<uint32_t>> & inDxD){  
+void Map::CreateDxDTable( vector<vector<uint32_t>> & inDxD){  
 	uint32_t i=0;
 	inDxD.clear(); // 
-	for(point p : adjacentList){
-		for( uint32_t j: p.adjacentPoints){
+	for(MapPoint p : adjacentList){
+		for( uint32_t j: p.adjacent_points){
 			inDxD[i][j] = 1;  // set 1 to contiguous(smej) vertex
 			inDxD[j][i] = 1;
 		}
@@ -203,7 +203,7 @@ void map::createDxDTable( vector<vector<uint32_t>> & inDxD){
 	}
 }
 
-void map::adjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
+void Map::AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 	inMatrix.clear();
 	const uint32_t cost = 1; // default cost to move between two adjacent vertex
 	uint32_t n = adjacentList.size();
@@ -217,7 +217,7 @@ void map::adjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 	for (uint32_t i = 0; i < n; ++i) inMatrix[i][i] = 0;
 	// перевод из списка смежности в матрицу смежности
 	for (uint32_t i = 0; i < n; i++){
-		for (uint32_t vertex : adjacentList[i].adjacentPoints){
+		for (uint32_t vertex : adjacentList[i].adjacent_points){
 			inMatrix[i][vertex] = cost;
 			inMatrix[vertex][i] = cost; 
 		}
@@ -225,19 +225,19 @@ void map::adjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 
 }
 
-void map::recoveryPath(uint32_t a, uint32_t b, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path) {
+void Map::RecoveryPath(uint32_t a, uint32_t b, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path) {
 	if (parent[a][b] == a) {   // TODO : out of range
 		path.push_back(a);
 	}
 	else {
-		recoveryPath(a, parent[a][b], parent, path);
-		recoveryPath(parent[a][b], b, parent, path);
+		RecoveryPath(a, parent[a][b], parent, path);
+		RecoveryPath(parent[a][b], b, parent, path);
 	}
 }
 
-void map::Floyd_Warshall(vector<vector<uint32_t>> & parentsMatrix) {
+void Map::FloydWarshall(vector<vector<uint32_t>> & parentsMatrix) {
 	vector<vector<uint32_t>> adjacentMatrix;
-	adjacentMatrixFill(adjacentMatrix);
+	AdjacentMatrixFill(adjacentMatrix);
 	//createDxDTable(adjacentMatrix);
 	uint32_t n = adjacentMatrix.size();
 	parentsMatrix.clear();
@@ -257,26 +257,26 @@ void map::Floyd_Warshall(vector<vector<uint32_t>> & parentsMatrix) {
 
 }
 
-vector<uint32_t> map::Floyd_Warhsall_Path(uint32_t start , uint32_t end, bool restart = false) { // start and end path vertex numbers
+vector<uint32_t> Map::FloydWarhsallPath(uint32_t start , uint32_t end, bool restart = false) { // start and end path vertex numbers
 	vector<uint32_t> path ;
 	static vector<vector<uint32_t>> parentsMatrix;
-	if (parentsMatrix.empty() || restart == true) Floyd_Warshall(parentsMatrix);
-	recoveryPath(start, end, parentsMatrix, path);
+	if (parentsMatrix.empty() || restart == true) FloydWarshall(parentsMatrix);
+	RecoveryPath(start, end, parentsMatrix, path);
 	path.push_back(end);
 	return path;
 }
 	
-void map::BalanceArea() {
-	while (terrainsDisbalanced(1)) {
-		std::sort(list_terrains.begin(), list_terrains.end(), [](terrain lkdm, terrain rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
-		terrain kingdMin = *list_terrains.begin();
-		terrain kingdMax = *(list_terrains.end() - 1);
+void Map::BalanceArea() {
+	while (TerrainsDisbalanced(1)) {
+		std::sort(list_terrains.begin(), list_terrains.end(), [](MapTerrain lkdm, MapTerrain rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
+		MapTerrain kingdMin = *list_terrains.begin();
+		MapTerrain kingdMax = *(list_terrains.end() - 1);
 		// ищу путь наименьшей длины с прим. Флойд-Уоршелла
 		vector<uint32_t> path;   // после должен быть наикоротким
 		uint32_t lengthMinPath = UINT32_MAX;
 		for (auto numBorderKingdMin : kingdMin.borders) {//any vertex from nim terrain
 			for (auto numBorderKingdMax : kingdMax.borders) {
-				vector<uint32_t> tempPath = Floyd_Warhsall_Path(numBorderKingdMin, numBorderKingdMax);
+				vector<uint32_t> tempPath = FloydWarhsallPath(numBorderKingdMin, numBorderKingdMax);
 				if (tempPath.size() < lengthMinPath) {
 					path = tempPath;   // выбор наикороткого пути
 					lengthMinPath = tempPath.size();
@@ -287,11 +287,11 @@ void map::BalanceArea() {
 		// двигаясь по пути
 		reverse(path.begin(), path.end());
 		uint32_t prevNumPoint = 0;
-		vector<terrain>::iterator prevKingd = list_terrains.end() - 1;
+		vector<MapTerrain>::iterator prevKingd = list_terrains.end() - 1;
 		for(uint32_t NumPoint : path) {
 			// если текущий владелец отличается от владельца предыдущей точки меняю владельца точки
 			auto owner = adjacentList[NumPoint].N_owner;
-			vector<terrain>::iterator currentKingd = find_if(list_terrains.begin(), list_terrains.end(), [owner](terrain& kingd) { return owner == kingd.my_N(); });																																						   //NumCurrentTerr = adjacentList[NumPoint].N_owner;
+			vector<MapTerrain>::iterator currentKingd = find_if(list_terrains.begin(), list_terrains.end(), [owner](MapTerrain& kingd) { return owner == kingd.my_N(); });																																						   //NumCurrentTerr = adjacentList[NumPoint].N_owner;
 			if (currentKingd->my_N() != prevKingd->my_N()){
 				// найти предыдущ terrain и убрать у него точку из списка   find_if
 				
@@ -309,7 +309,7 @@ void map::BalanceArea() {
 	}
 }
 
-bool map::terrainsDisbalanced(uint32_t offset){ // offset - допуск на равенство 
+bool Map::TerrainsDisbalanced(uint32_t offset){ // offset - допуск на равенство 
 	uint32_t max=list_terrains[0].list_v.size();
 	for(auto terr : list_terrains){
 		if(max < terr.list_v.size())max=terr.list_v.size();
@@ -322,9 +322,9 @@ bool map::terrainsDisbalanced(uint32_t offset){ // offset - допуск на р
 	return false;
 }
 		
-terrain map::get_minTerrain(){
+MapTerrain Map::GetMinTerrain(){
 	uint32_t min = 0 - 1;
-	terrain res = list_terrains[0];
+	MapTerrain res = list_terrains[0];
 	for(auto terr : list_terrains){
 		if(terr.list_v.size() < min) {
 		       	min = terr.list_v.size();
@@ -334,12 +334,12 @@ terrain map::get_minTerrain(){
 	return res;
 }
 
-void map::FillMap(){
+void Map::FillMap(){
 	vector<uint32_t> iterOnBorders;		// список текущего положения итератора перебора 
 					//по пограничным вершинам для всех королевств ( массив итераторов по одному на королевство)
 	for(uint32_t i=0;i< list_terrains.size();++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
 
-	while(freeSpace()){// пока свободные клетки не закончатся
+	while(FreeSpace()){// пока свободные клетки не закончатся
 	//Обход
 		for(auto &kingd: list_terrains){
 			// движение по окружности границы по их порядку начиная с правой
@@ -350,7 +350,7 @@ void map::FillMap(){
 			//  если заграничная точка ничья то присваиваем (только 1)
 			//  далее прохожу по границе numV - номер заграничной вершины(точки)
 			// двигаюсь по списку смежности - по смежным вершинам вершины "tabSmej[kingd.borders[iterOnBorders[i]]]"
-			for(uint32_t numV: adjacentList[kingd.borders[iterOnBorders[kingd.my_N() - 1]]].adjacentPoints){
+			for(uint32_t numV: adjacentList[kingd.borders[iterOnBorders[kingd.my_N() - 1]]].adjacent_points){
 				if(adjacentList[numV].N_owner==0){
 					adjacentList[numV].N_owner=kingd.my_N();
 					kingd.list_v.push_back(numV);
@@ -363,12 +363,12 @@ void map::FillMap(){
 	}
 	
 }
-		void map::PrintTabSmej(){
+		void Map::PrintTabSmej(){
 			uint32_t i=0;
-			for(point p:adjacentList){
-				cout << i <<" num smej:"<< p.adjacentPoints.size() << endl;
+			for(MapPoint p:adjacentList){
+				cout << i <<" num smej:"<< p.adjacent_points.size() << endl;
 				++i;
-				for(uint32_t v: p.adjacentPoints){
+				for(uint32_t v: p.adjacent_points){
 				cout << v <<" " ;
 				}
 			cout << endl;

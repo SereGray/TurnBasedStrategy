@@ -20,8 +20,8 @@ public:
 	uint64_t fermers_people;// общее количество людей занятых в экономике
 	
 private:
-	void increaseFermersPeople(); // функция прироста населения
-	void decreaseFermersPeople(); // функция 
+	void TncreaseFermersPeople(); // функция прироста населения
+	void DecreaseFermersPeople(); // функция 
 };
 
 class Economics : public TbsInterface, public EngineGameObjInterface {
