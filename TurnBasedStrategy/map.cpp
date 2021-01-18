@@ -18,6 +18,24 @@ uint32_t MapTerrain::my_N(){
 	return N;
 }
 
+Map::Map(uint32_t w, uint32_t h, uint32_t p) : width(w), height(h) {
+	// создаем таблицу списков смежности
+	cout << " gen tab\n";
+	GenerateTab();
+	cout << "map to scre\n";
+	AddPoitsToMap(p);
+	cout << "poins scre\n";
+	MapToScreen();
+	// заполняем территорию карты
+	FillMap();
+	cout << endl;
+	MapToScreen();
+	// Выравниваю карту на 1 пиксель
+	BalanceArea();
+	cout << "Balancing ...\n";
+	MapToScreen();
+}
+
 uint32_t Map::GetNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
 	return x+y*width;
 }
@@ -226,7 +244,7 @@ void Map::AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 }
 
 void Map::RecoveryPath(uint32_t a, uint32_t b, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path) {
-	if (parent[a][b] == a) {   // TODO : out of range
+	if (parent[a][b] == a) {   
 		path.push_back(a);
 	}
 	else {

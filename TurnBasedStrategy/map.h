@@ -1,4 +1,7 @@
-
+/*
+* Карта хранит положение королевств и осуществляет передачу земель друг другу
+* Определяет соседей
+*/
 #ifndef MAP
 #define MAP
 
@@ -43,11 +46,25 @@ class MapTerrain{ //  клас предсавляющий изображение
 };
 
 class Map: public EngineGameObjInterface{
-	private:
-		uint32_t width,height;
 	public:
 		vector<MapPoint> adjacentList; // таблица смежности представляет из себя список всех вершин
 		vector<MapTerrain> list_terrains;
+	private:
+		uint32_t width,height;
+	public:
+		void SaveState();
+		void LoadState();
+		void CreateState();
+		// переход территории от одного владельца к другому
+		void ExchangeArea(); 
+		// получить писок соседей 
+		vector<uint32_t> GetNeighborsList(uint32_t my_N);
+		// получить цвет территории
+		uint32_t GetColor(); // color is  +8empty bits +RGB 24b ( 8-8-8 bit)
+		Map(uint32_t w, uint32_t h, uint32_t p);
+		void PrintTabSmej();
+		void ToFile(uint8_t);
+		void MapToScreen();
 	private:
 		void NextTurn(); // TODO:this
 		unsigned GetCountSpecialists(); // must return 0
@@ -67,28 +84,6 @@ class Map: public EngineGameObjInterface{
 		void GenerateTab();
 		pair<uint32_t, uint32_t> GetCoord(uint32_t Num);
 		uint32_t GetNum(uint32_t x, uint32_t y);
-
-	public:
-		Map(uint32_t w,uint32_t h, uint32_t p): width(w), height(h){
-			// создаем таблицу списков смежности
-			cout<<" gen tab\n";
-			GenerateTab();
-			cout<<"map to scre\n";
-			AddPoitsToMap(p); 
-			cout<<"poins scre\n";
-			MapToScreen();
-			// заполняем территорию карты
-			FillMap();
-			cout << endl;
-			MapToScreen();
-			// Выравниваю карту на 1 пиксель
-			BalanceArea();
-			cout << "Balancing ...\n";
-			MapToScreen();
-}
-		void PrintTabSmej();	 
-		void ToFile(uint8_t);
-		void MapToScreen();
 };
 
 #endif

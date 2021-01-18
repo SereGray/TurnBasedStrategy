@@ -25,7 +25,11 @@
 
 // класс взаимодействия игровых объектов движка между собой
 class EngineGameObjInterface {
-	public:
+public:
+	
+private:
+
+public:
 	virtual void NextTurn();
 	virtual void SaveState();
 	virtual void LoadState();
