@@ -1,3 +1,6 @@
+/* Хранит состояние генералов солдат 
+* Реализует механику битвы,  
+*/
 #ifndef WAR 
 #define WAR
 #include<string>
@@ -19,6 +22,7 @@ class General
 	void Workout();
 	void Study();
 	void Defense(unsigned count_defenders);
+	void NextTurn(); // change general condition 
 
 };
 
@@ -27,15 +31,19 @@ class Defense: public EngineGameObjInterface
 	std::vector<General> vGeneral_list;
 	General landaun_; // default bad general 
 	unsigned solders_;
-	float solder_force_;	
+	float solder_force_;
+
 	void SaveState();
 	void LoadState();
 	void CreateState();
 	void NextTurn();
 	unsigned GetCountSpecialists();
 	float GetSolderForce();
-	void AddGeneral();
 	void Battle();  // расчет битвы вызывается в NextTurn()
+	std::string GetSummariesString();
+public:
+	void AddGeneral();
+	void AddSolder();
 };
 
 #endif

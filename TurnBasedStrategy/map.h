@@ -2,6 +2,7 @@
 * Карта хранит положение королевств и осуществляет передачу земель друг другу
 * Определяет соседей
 */
+// TODO: добавить членам класса нижнее подчеркивание в конце
 #ifndef MAP
 #define MAP
 
@@ -66,8 +67,13 @@ class Map: public EngineGameObjInterface{
 		void ToFile(uint8_t);
 		void MapToScreen();
 	private:
+		void SaveState();
+		void LoadState();
+		void CreateState();
 		void NextTurn(); // TODO:this
 		unsigned GetCountSpecialists(); // must return 0
+		std::string GetSummariesString(); // сводки за предыдущий ход
+
 		void FillMap();
 		MapTerrain GetMinTerrain();
 		bool TerrainsDisbalanced(uint32_t offset);
