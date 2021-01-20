@@ -62,6 +62,7 @@ class Map: public EngineGameObjInterface{
 		vector<uint32_t> GetNeighborsList(uint32_t my_N);
 		// получить цвет территории
 		uint32_t GetColor(); // color is  +8empty bits +RGB 24b ( 8-8-8 bit)
+		std::string GetSummariesString();
 		Map(uint32_t w, uint32_t h, uint32_t p);
 		void PrintTabSmej();
 		void ToFile(uint8_t);

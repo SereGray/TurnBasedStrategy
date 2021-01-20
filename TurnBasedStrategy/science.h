@@ -43,9 +43,7 @@ class ScienseObject: public TbsInterface, public EngineGameObjInterface{
 	private:
 		void NextTurn(); // расчет сл хода
 		std::string GetSummariesString();
-	// the_science base_science(); // базовая наука
-	// пример :std::unique_ptr<the_science> scns(new the_science);
-	std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
+		std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
 };
 
 #endif
