@@ -2,13 +2,29 @@
 
 void General::Workout()
 {
-	skill_float_ += ((intelegence / 10) * (spirit / 100));
-	skill = static_cast<unsigned> skill_float_;
+	skill_float_ += ((intelegence_ / 10) * (spirit_ / 100));
+	skill_ = static_cast<unsigned>(skill_float_);
 }
 
 void General::Study()
 {
-	++intelegence;
+	++intelegence_;
+}
+
+General::General(std::string name, unsigned skill, unsigned spirit, unsigned intelegence, unsigned age): skill_(skill), intelegence_(intelegence), spirit_(spirit), age_(age), name_(name)
+{
+	skill_float_ = static_cast<float>(skill);	
+}
+
+void Kingdoom_defense::AddSolder(unsigned count)
+{
+	solders_+=count;	
+}
+
+void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned age)
+{
+	General new_general(name, skill, 100, intelegence, age);
+	this->vGeneral_list.push_back(new_general);
 }
 
 void Defense::CreateState(unsigned num_players, unsigned map_size)
