@@ -34,7 +34,7 @@ public:
 	virtual void NextTurn();
 	virtual void SaveState();
 	virtual void LoadState();
-	virtual void CreateState();
+	virtual void CreateState(unsigned num_players, unsigned map_size);
 	virtual unsigned GetCountSpecialists(); // получить количество занятых специалистов
 	virtual std::string GetSummariesString(); // сводки за предыдущий ход
 };

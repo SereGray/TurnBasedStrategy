@@ -31,6 +31,8 @@ class Kingdoom_defense {
 	unsigned solders_;
 	float solder_force_;
 public:
+	const unsigned my_n_;
+	Kingdoom_defense(unsigned my_number):solders_(10), solder_force_(1.0), my_n_ = (my_number);
 	std::vector<General> vGeneral_list;
 	void AddGeneral(std::string name);
 	void AddSolder(unsigned count);
@@ -46,7 +48,7 @@ class Defense: public EngineGameObjInterface
 
 	void SaveState();
 	void LoadState();
-	void CreateState();
+	void CreateState(unsigned num_players, unsigned map_size);
 	void NextTurn();
 	unsigned GetCountSpecialists();
 	float GetSolderForce();
