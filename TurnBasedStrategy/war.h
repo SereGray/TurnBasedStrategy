@@ -7,6 +7,7 @@
 #include"engine.h"
 #include<vector>
 
+
 // правила войны
 // расчет сражений
 class General
@@ -49,15 +50,13 @@ class Defense: public EngineGameObjInterface
 {
 	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков
 	General landaun_ // default bad general TODO: inicialization
-	
-
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);
 	void NextTurn();
 	unsigned GetCountSpecialists();
 	float GetSolderForce();
-	void Battle();  // расчет битвы вызывается в NextTurn()
+	int Battle(General & attacker, General & defender);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
 	std::string GetSummariesString();
 public:
 	unsigned DefenseBattle(); // return territory area

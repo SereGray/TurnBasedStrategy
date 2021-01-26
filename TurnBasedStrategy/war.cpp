@@ -1,16 +1,19 @@
 #include "war.h"
+#include <cmath>
 
 void General::Workout()
 {
 	action_ = 2;
 	//skill_float_ += ((intelegence_ / 10) * (spirit_ / 100));
 	//skill_ = static_cast<unsigned>(skill_float_);
+	// TODO: return solders
 }
 
 void General::Study()
 {
 	
 	action_ = 1;
+	// TODO: return solders
 }
 
 void General::Defense(unsigned count_defenders)
@@ -74,6 +77,34 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 		Kingdoom_defense kingd(i);
 		vkingdoom_def.push_back(kingd);
 	}
+}
+
+int Defense::Battle(General& attacker, General& defender)
+{
+	int res = 0;
+	for (int i = 0; i < 3; ++i) {
+		float attacker_k = (attacker.skill_ / 100) * (attacker.intelegence_ / 100) * (attacker.spirit_ / 100) * (attacker.speed_ / 100);
+		float defener_k = (defender.skill_ / 100) * (defender.intelegence_ / 100) * (defender.spirit_ / 100) * (defender.speed_ / 100);
+		float total_count_relation = (defender.count_solders_ * defender_k) / (attacker.count_solders_ * attacker_k);
+		if (total_count_relation < 0.1) { // полное превосходство атакующего
+			res = 100;
+			defender.count_solders_ = 0;
+			break;
+		}else if(total_count_relation > 10.0){ // полное превосходство защиты
+			res = -100;
+			attacker.count_solders_ = 0;
+			break;
+		}
+		else { // некритическое превосходство
+			// потери солдат в бою
+			attacker.count_solders_ = attacker.count_solders_ * 70 / 100;
+			defender.count_solders_ = defender.count_solders_ * 70 / 100;
+			// усталость генералов ( чем меньше дух тем быстрее он падает)
+			attacker.spirit_ = attacker.spirit_ - static_cast<unsigned>(log(100 - attacker.spirit_)) * 3;
+			defender.spirit_ = attacker.spirit_ - static_cast<unsigned>(log(100 - attacker.spirit_)) * 3;
+		}
+	}
+	return res;
 }
 
 Kingdoom_defense::Kingdoom_defense(unsigned my_number)
