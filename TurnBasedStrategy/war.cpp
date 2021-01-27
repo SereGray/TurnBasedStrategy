@@ -13,7 +13,7 @@ void General::Study()
 {
 	
 	action_ = 1;
-	// TODO: return solders
+	// TODO : return solders
 }
 
 void General::Defense(unsigned count_defenders)
@@ -79,13 +79,14 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 	}
 }
 
-int Defense::Battle(General& attacker, General& defender)
+//TODO: balance game Battle
+int Defense::Battle(General& attacker, float attacker_force, General& defender, float defender_force)
 {
 	int res = 0;
 	for (int i = 0; i < 3; ++i) {
 		float attacker_k = (attacker.skill_ / 100) * (attacker.intelegence_ / 100) * (attacker.spirit_ / 100) * (attacker.speed_ / 100);
 		float defener_k = (defender.skill_ / 100) * (defender.intelegence_ / 100) * (defender.spirit_ / 100) * (defender.speed_ / 100);
-		float total_count_relation = (defender.count_solders_ * defender_k) / (attacker.count_solders_ * attacker_k);
+		float total_count_relation = (defender.count_solders_ * defender_k * defender_force) / (attacker.count_solders_ * attacker_k * attacker_force);
 		if (total_count_relation < 0.1) { // полное превосходство атакующего
 			res = 100;
 			defender.count_solders_ = 0;
@@ -100,8 +101,10 @@ int Defense::Battle(General& attacker, General& defender)
 			attacker.count_solders_ = attacker.count_solders_ * 70 / 100;
 			defender.count_solders_ = defender.count_solders_ * 70 / 100;
 			// усталость генералов ( чем меньше дух тем быстрее он падает)
-			attacker.spirit_ = attacker.spirit_ - static_cast<unsigned>(log(100 - attacker.spirit_)) * 3;
-			defender.spirit_ = attacker.spirit_ - static_cast<unsigned>(log(100 - attacker.spirit_)) * 3;
+			attacker.spirit_ = attacker.spirit_ - static_cast<unsigned>(log(110 - attacker.spirit_)) * 3;
+			defender.spirit_ = attacker.spirit_ - static_cast<unsigned>(log(110 - attacker.spirit_)) * 3;
+			attacker.skill_ += log(defender.count_solders_ + 1);
+			defender.skill_ += log(attacker.count_solders_ + 1);
 		}
 	}
 	return res;

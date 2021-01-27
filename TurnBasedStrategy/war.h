@@ -35,7 +35,7 @@ public:
 
 class Kingdoom_defense {
 	unsigned solders_;
-	float solder_force_;
+	float solder_force_; // 1.0 at def , always > 1.0
 public:
 	const unsigned my_n_;
 	Kingdoom_defense(unsigned my_number):solders_(10), solder_force_(1.0), my_n_ = (my_number);
@@ -56,7 +56,7 @@ class Defense: public EngineGameObjInterface
 	void NextTurn();
 	unsigned GetCountSpecialists();
 	float GetSolderForce();
-	int Battle(General & attacker, General & defender);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
+	int Battle(General & attacker, float attacker_force, General & defender, float defender_force);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
 	std::string GetSummariesString();
 public:
 	unsigned DefenseBattle(); // return territory area
