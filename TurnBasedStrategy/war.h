@@ -10,10 +10,17 @@
 
 // правила войны
 // расчет сражений
+
+class Kingdoom_defense;// forward declaration
+
 class General
 {
+	friend class Kingdoom_defense; // only kingdom may create own generals
 	float skill_float_;
-public:
+	General();
+	Kingdoom_defense * p_my_master;
+	General(Kingdoom_defense* my_master, std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
+	public:
 	unsigned skill_; // max 100
 	unsigned intelegence_; // max 100
 	unsigned spirit_; // max 100
@@ -23,7 +30,6 @@ public:
 	unsigned target_;  // number of kingdom to attack
 	unsigned count_solders_;
 	std::string name_;
-	General(std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
 	void AttackTo(unsigned count_attack, unsigned number_kingd);
 	void Rest();
 	void Workout();
@@ -40,7 +46,8 @@ public:
 	const unsigned my_n_;
 	Kingdoom_defense(unsigned my_number):solders_(10), solder_force_(1.0), my_n_ = (my_number);
 	std::vector<General> vGeneral_list;
-	void AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned age);
+	General landaun_ // default bad general TODO: inicialization
+	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age);
 	void AddSolder(unsigned count);
 	unsigned GetCountSpecialists();
 	void NextTurn();
@@ -49,7 +56,6 @@ public:
 class Defense: public EngineGameObjInterface 
 {
 	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков
-	General landaun_ // default bad general TODO: inicialization
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);

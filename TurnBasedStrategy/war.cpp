@@ -6,14 +6,16 @@ void General::Workout()
 	action_ = 2;
 	//skill_float_ += ((intelegence_ / 10) * (spirit_ / 100));
 	//skill_ = static_cast<unsigned>(skill_float_);
-	// TODO: return solders
+	p_my_master->AddSolder(count_solders_);
+	count_solders_ = 0;
 }
 
 void General::Study()
 {
 	
 	action_ = 1;
-	// TODO : return solders
+	p_my_master->AddSolder(count_solders_);
+	count_solders_ = 0;
 }
 
 void General::Defense(unsigned count_defenders)
@@ -40,7 +42,7 @@ void General::NextTurn()
 	}
 }
 
-General::General(std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence, unsigned age): skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed), age_(age), name_(name)
+General::General(Kingdoom_defense* my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence, unsigned age):p_my_master(my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name)
 {
 	skill_float_ = static_cast<float>(skill);	
 }
@@ -65,9 +67,9 @@ unsigned Kingdoom_defense::GetCountSpecialists()
 	return solders_;
 }
 
-void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned age)
+void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
 {
-	General new_general(name, skill, 100, intelegence, age);
+	General new_general(this,name, skill, 100, intelegence, speed, age);
 	this->vGeneral_list.push_back(new_general);
 }
 
