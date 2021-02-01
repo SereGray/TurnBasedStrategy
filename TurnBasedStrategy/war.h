@@ -45,9 +45,9 @@ class Kingdoom_defense {
 	float solder_force_; // 1.0 at def , always > 1.0
 public:
 	const unsigned my_n_;
-	Kingdoom_defense(unsigned my_number):solders_(10), solder_force_(1.0), my_n_ = (my_number);
+	Kingdoom_defense(unsigned my_number):solders_(10), solder_force_(1.0), my_n_(my_number);
 	std::vector<General> vGeneral_list;
-	General landaun_ // default bad general TODO: inicialization
+	General landaun_; // default bad general TODO: inicialization
 	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age);
 	void AddSolder(unsigned count);
 	unsigned GetCountSpecialists();

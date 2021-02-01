@@ -35,6 +35,10 @@ class SubjectScience: public TheScience{
 
 };
 
+union Science_list{
+		
+};
+
 class KingdoomScience{
 	public:
 		const unsigned my_n_;
@@ -51,7 +55,7 @@ class KingdoomScience{
 class ScienceGameObj :public TbsInterface, public EngineGameObjInterface {
 public:
 	ScienceGameObj();
-	GetScienceLvl_from_Kingdom(unsigned N, unsigned kingdom_n);
+	unsigned GetScienceLvl_from_Kingdom(unsigned N, unsigned kingdom_n);
 private:
 	vector<KingdoomScience> v_kingdom_science;
 	void SaveState();
