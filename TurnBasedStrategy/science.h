@@ -15,7 +15,7 @@ class TheScience{
 	public:
 		TheScience(std::string nameScience);
 		// TODO: проверить что прирост идет у предметной области науки а не у всей
-	static unsigned scienceLvl_;		//общий научный уровень 
+	static unsigned scienceLvl_;		//общий научный уровень   TODO: test static ?
 	std::string name;					// name 
         private:	
 	unsigned		progress_;			// количество работы ученых над текущим уровнем
@@ -35,15 +35,30 @@ class SubjectScience: public TheScience{
 
 };
 
-// игровой объект наука
-class ScienseObject: public TbsInterface, public EngineGameObjInterface{
+class KingdoomScience{
 	public:
-		ScienseObject();
-			
+		const unsigned my_n_;
+		KingdoomScience();
+		std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
+		unsigned GetScienceLvl(unsigned N);
 	private:
 		void NextTurn(); // расчет сл хода
 		std::string GetSummariesString();
-		std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
+		
+};
+
+// игровой объект наука
+class ScienceGameObj :public TbsInterface, public EngineGameObjInterface {
+public:
+	ScienceGameObj();
+	GetScienceLvl_from_Kingdom(unsigned N, unsigned kingdom_n);
+private:
+	vector<KingdoomScience> v_kingdom_science;
+	void SaveState();
+	void LoadState();
+	void CreateState(unsigned num_players, unsigned map_size);
+	void NextTurn();
+	unsigned GetCountSpecialists();
 };
 
 #endif

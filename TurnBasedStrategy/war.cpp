@@ -4,8 +4,6 @@
 void General::Workout()
 {
 	action_ = 2;
-	//skill_float_ += ((intelegence_ / 10) * (spirit_ / 100));
-	//skill_ = static_cast<unsigned>(skill_float_);
 	p_my_master->AddSolder(count_solders_);
 	count_solders_ = 0;
 }
@@ -65,6 +63,19 @@ void Kingdoom_defense::AddSolder(unsigned count)
 unsigned Kingdoom_defense::GetCountSpecialists()
 {
 	return solders_;
+}
+
+float Kingdoom_defense::GetSolderForce()
+{
+	// TODO: this
+	return 1.0f ;
+}
+
+void Kingdoom_defense::NextTurn()
+{
+	for (General& gen : vGeneral_list) {
+		gen.NextTurn();
+	}
 }
 
 void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)

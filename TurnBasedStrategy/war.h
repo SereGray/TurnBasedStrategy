@@ -6,6 +6,7 @@
 #include<string>
 #include"engine.h"
 #include<vector>
+#include"science.h"
 
 
 // правила войны
@@ -50,6 +51,7 @@ public:
 	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age);
 	void AddSolder(unsigned count);
 	unsigned GetCountSpecialists();
+	float GetSolderForce();
 	void NextTurn();
 };
 
@@ -65,6 +67,7 @@ class Defense: public EngineGameObjInterface
 	int Battle(General & attacker, float attacker_force, General & defender, float defender_force);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
 	std::string GetSummariesString();
 public:
+	Defense();
 	unsigned DefenseBattle(); // return territory area
 	unsigned AttackBattle();  // return territory area
 };

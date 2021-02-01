@@ -22,7 +22,7 @@ void TheScience::Increase(unsigned scienist_count)
 	}
 }
 
-ScienseObject::ScienseObject()
+KingdoomScience::KingdoomScience()
 {
 	std::vector<std::string> scienseList = { "Densety People", "Increase People", "Harvesting","Selling Res", "War craft" };
 	// TODO: 1) for in sciense_list создать scienseList_vector
@@ -35,7 +35,7 @@ ScienseObject::ScienseObject()
 	science_list_vector.push_back(std::unique_ptr<TheScience>(new TheScience("Science")));
 }
 
-void ScienseObject::NextTurn()
+void KingdoomScience::NextTurn()
 {
 	// двигаюсь по списку научных объектов
 	// высчитываю новое значение прогесса

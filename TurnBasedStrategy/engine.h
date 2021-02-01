@@ -15,6 +15,10 @@
 #define ENGINE
 #include"tbs_interface.h"
 #include<string>
+#include"science.h"
+#include"war.h"
+#include"map.h"
+#include"economics.h"
 
 // список игоровых объектов
 
@@ -36,10 +40,14 @@ public:
 	virtual void LoadState();
 	virtual void CreateState(unsigned num_players, unsigned map_size);
 	virtual unsigned GetCountSpecialists(); // получить количество занятых специалистов
+	virtual unsigned GetScienceLvl_from_Kingdom(unsigned N, unsigned kingdom_n = 0);  // получить уровень науки 
 	virtual std::string GetSummariesString(); // сводки за предыдущий ход
 };
 
 class Engine: public TbsInterface{
+public:
+	ScienceGameObj science_game_obj_;
+
 	void NextTurn(); // запускает цепочку расчетов следующего 
 };
 
