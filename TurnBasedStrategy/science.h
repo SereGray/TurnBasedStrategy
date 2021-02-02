@@ -15,7 +15,7 @@ class TheScience{
 	public:
 		TheScience(std::string nameScience);
 		// TODO: проверить что прирост идет у предметной области науки а не у всей
-	unsigned scienceLvl_;		//общий научный уровень   TODO: test static ?
+	unsigned science_lvl_;		//общий научный уровень   TODO: test static ?
 	std::string name_;					// name 
         private:	
 	unsigned		progress_;			// количество работы ученых над текущим уровнем
@@ -56,7 +56,7 @@ public:
 	ScienceGameObj();
 	KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_n);
 private:
-	vector<KingdoomScience> v_kingdom_science;
+	vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_n_
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);

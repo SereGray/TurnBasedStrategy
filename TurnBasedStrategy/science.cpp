@@ -16,7 +16,7 @@ void TheScience::Increase(unsigned scienist_count)
 	progress_ = progress_ + static_cast<unsigned>(scienist_count * scienist_force_);
 	if (progress_ > progress_limit_) 
 	{
-		++scienceLvl_;
+		++science_lvl_;
 		progress_ = progress_ - progress_limit_;
 		progress_limit_ += progress_limit_ / 20; // add 20 % to limit
 	}

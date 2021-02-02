@@ -68,6 +68,7 @@ unsigned Kingdoom_defense::GetCountSpecialists()
 float Kingdoom_defense::GetSolderForce()
 {
 	// TODO: this
+	unsigned lvl = master.GetScience_from_Kingdom(my_n_).war_craft.science_lvl; // TODO: test this
 	return 1.0f ;
 }
 
@@ -76,6 +77,10 @@ void Kingdoom_defense::NextTurn()
 	for (General& gen : vGeneral_list) {
 		gen.NextTurn();
 	}
+}
+
+Kingdoom_defense::Kingdoom_defense(unsigned my_number, Defense& master)
+{
 }
 
 void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)

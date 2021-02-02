@@ -40,7 +40,7 @@ public:
 	virtual void LoadState();
 	virtual void CreateState(unsigned num_players, unsigned map_size);
 	virtual unsigned GetCountSpecialists(); // получить количество занятых специалистов
-	virtual unsigned GetScienceLvl_from_Kingdom(unsigned N, unsigned kingdom_n = 0);  // получить уровень науки 
+	virtual KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_n);;  // получить уровень науки 
 	virtual std::string GetSummariesString(); // сводки за предыдущий ход
 };
 
