@@ -4,26 +4,36 @@
 void General::Workout()
 {
 	action_ = 2;
-	p_my_master->AddSolder(count_solders_);
+	my_master_.AddSolder(count_solders_);
 	count_solders_ = 0;
+	target_ = MAXUINT;
 }
 
 void General::Study()
 {
 	
 	action_ = 1;
-	p_my_master->AddSolder(count_solders_);
+	my_master_.AddSolder(count_solders_);
 	count_solders_ = 0;
+	target_ = MAXUINT;
 }
 
 void General::Defense(unsigned count_defenders)
 {
 	action_ = 3;
 	count_solders_ = count_defenders;
+	target_ = MAXUINT;
 }
 
 void General::NextTurn()
 {
+	++age_;
+	if (age > 50) {
+		if (rand() % 10 < 1) {
+			this.Dead();
+			return;
+		}
+	}
 	switch (action_)
 	{
 	case 0:
@@ -40,7 +50,15 @@ void General::NextTurn()
 	}
 }
 
-General::General(Kingdoom_defense* my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence, unsigned age):p_my_master(my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name)
+void General::Dead()
+{
+	// add summary
+	my_master_.AddSummaryString("General " + name_ + " is dead died at an advanced age ");
+	// call destroyer object
+	General::~General();
+}
+
+General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence, unsigned age):my_master_(my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ = MAXUINT 
 {
 	skill_float_ = static_cast<float>(skill);	
 }
@@ -48,11 +66,13 @@ General::General(Kingdoom_defense* my_master, std::string name, unsigned skill, 
 void General::AttackTo(unsigned count_attack, unsigned number_kingd)
 {
 	count_solders_ = count_attack;
+	target_ = number_kingd;
 }
 
 void General::Rest()
 {
 	action_ = 0;
+	target_ = MAXUINT;
 }
 
 void Kingdoom_defense::AddSolder(unsigned count)
@@ -67,9 +87,8 @@ unsigned Kingdoom_defense::GetCountSpecialists()
 
 float Kingdoom_defense::GetSolderForce()
 {
-	// TODO: this
 	unsigned lvl = master.GetScience_from_Kingdom(my_n_).war_craft.science_lvl; // TODO: test this
-	return 1.0f ;
+	return 1.0f + (lvl / 10);
 }
 
 void Kingdoom_defense::NextTurn()
@@ -79,8 +98,14 @@ void Kingdoom_defense::NextTurn()
 	}
 }
 
+void Kingdoom_defense::AddSummaryString(string text)
+{
+	master_.summaries_ += test + "\n";
+}
+
 Kingdoom_defense::Kingdoom_defense(unsigned my_number, Defense& master)
 {
+	landaun_(*this, "landaun", 10, 1, 70, 1, 0); // TODO: this to &, landaun_ initialization, maby call operator() ?
 }
 
 void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
@@ -89,12 +114,29 @@ void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned int
 	this->vGeneral_list.push_back(new_general);
 }
 
+void Defense::SaveState()
+{
+}
+
+void Defense::LoadState()
+{
+}
+
 void Defense::CreateState(unsigned num_players, unsigned map_size)
 {
 	for (unsigned i = 0; i < num_players; ++i) {
 		Kingdoom_defense kingd(i);
 		vkingdoom_def.push_back(kingd);
 	}
+}
+
+void Defense::NextTurn()
+{
+}
+
+unsigned Defense::GetCountSpecialists()
+{
+	return 0;
 }
 
 //TODO: balance game Battle
@@ -126,6 +168,11 @@ int Defense::Battle(General& attacker, float attacker_force, General& defender, 
 		}
 	}
 	return res;
+}
+
+Defense::Defense()
+{
+
 }
 
 Kingdoom_defense::Kingdoom_defense(unsigned my_number)
