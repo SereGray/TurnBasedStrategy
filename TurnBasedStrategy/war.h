@@ -43,6 +43,7 @@ class General
 
 class Defense;
 
+
 // TODO: set attack
 class Kingdoom_defense {
 	Defense& master_;
@@ -51,7 +52,7 @@ class Kingdoom_defense {
 public:
 	const unsigned my_n_;
 	Kingdoom_defense(unsigned my_number, Defense& master):solders_(10), solder_force_(1.0), my_n_(my_number), master_(master);
-	std::vector<General> vGeneral_list;
+	std::vector<General> vgeneral_list;
 	General landaun_; // default bad general TODO: inicialization
 	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age);
 	void AddSolder(unsigned count);
@@ -64,7 +65,7 @@ public:
 class Defense: public EngineGameObjInterface 
 {
 	string summaries_;
-	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков
+	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N)
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);

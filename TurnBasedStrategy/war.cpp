@@ -1,5 +1,6 @@
 #include "war.h"
 #include <cmath>
+#include <memory>
 
 void General::Workout()
 {
@@ -93,7 +94,7 @@ float Kingdoom_defense::GetSolderForce()
 
 void Kingdoom_defense::NextTurn()
 {
-	for (General& gen : vGeneral_list) {
+	for (General& gen : vgeneral_list) {
 		gen.NextTurn();
 	}
 }
@@ -111,7 +112,7 @@ Kingdoom_defense::Kingdoom_defense(unsigned my_number, Defense& master)
 void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
 {
 	General new_general(this,name, skill, 100, intelegence, speed, age);
-	this->vGeneral_list.push_back(new_general);
+	this->vgeneral_list.push_back(new_general);
 }
 
 void Defense::SaveState()
@@ -132,6 +133,25 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 
 void Defense::NextTurn()
 {
+	// список воюющих
+	vector <std::pair<General& first_gen, General& second_gen>>
+	// смотрим генералов
+	for (Kingdoom_defense kingd : vkingdoom_def) {
+		for (General gen : vgeneral_list) {
+			if (gen.action_ == 4) {
+				// получаю защищающихся с противоположной стороны
+				// проверяю есть ли встречная атака
+				if([](vkingdoom_def[gen.target_])
+					// проверяю есть ли в списках воюющих если нет то добавляю
+
+			}
+		}
+	}
+	// составляем список движений атакующих
+	//				--  возможны встречные атаки
+	// составляем список защищающихся по списку атакующих
+	// проводим бои 
+	//				-- в зависимости от результата вызываем метод перераспределиения территории
 }
 
 unsigned Defense::GetCountSpecialists()
@@ -168,6 +188,11 @@ int Defense::Battle(General& attacker, float attacker_force, General& defender, 
 		}
 	}
 	return res;
+}
+
+std::string Defense::GetSummariesString()
+{
+	return std::string();
 }
 
 Defense::Defense()
