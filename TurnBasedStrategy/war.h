@@ -7,7 +7,7 @@
 #include"engine.h"
 #include<vector>
 #include"science.h"
-
+#include<memory>
 
 // правила войны
 // расчет сражений
@@ -66,6 +66,8 @@ class Defense: public EngineGameObjInterface
 {
 	string summaries_;
 	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N)
+	std::queue<General*> q_fight_generals_; // список указателей на сражающихся генералов
+	std::queue<General*> GetFightGenerals();
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);

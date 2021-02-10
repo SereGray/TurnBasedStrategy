@@ -115,6 +115,20 @@ void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned int
 	this->vgeneral_list.push_back(new_general);
 }
 
+std::queue<General*> GetFightGenerals()
+{
+ std::queue<General*> q_fight_generals;
+ // получаю список атакующих генералов
+ for(Kingdoom_defense & kd : vkingdoom_def){
+ 	for(General & gen: kd.vgeneral_list){
+		if(gen.action_==4){
+			q_fight_generals.push_back(&gen); // если генерал атакует то добавл
+		}
+	}
+ } 
+ return q_fight_generals;
+}
+
 void Defense::SaveState()
 {
 }
