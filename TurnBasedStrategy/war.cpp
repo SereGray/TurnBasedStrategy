@@ -150,17 +150,8 @@ void Defense::NextTurn()
 	// список воюющих
 	vector <std::pair<General& first_gen, General& second_gen>>
 	// смотрим генералов
-	for (Kingdoom_defense kingd : vkingdoom_def) {
-		for (General gen : vgeneral_list) {
-			if (gen.action_ == 4) {
-				// получаю защищающихся с противоположной стороны
-				// проверяю есть ли встречная атака
-				if([](vkingdoom_def[gen.target_])
-					// проверяю есть ли в списках воюющих если нет то добавляю
-
-			}
-		}
-	}
+	// сортируем генералов по скорости
+	std::sort(q_fight_generals_.begin(),q_fight_generals_.end(),[](General* genl, General* genr){ return genl->speed_ < genr->speed_;});
 	// составляем список движений атакующих
 	//				--  возможны встречные атаки
 	// составляем список защищающихся по списку атакующих
