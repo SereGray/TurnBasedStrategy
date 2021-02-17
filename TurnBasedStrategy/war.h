@@ -63,10 +63,10 @@ public:
 };
 // struct войны между гос-ми
 // структура сама определяет кто из генералов бьется между собой при войне
-struct LoacalWar
+struct LocalWar
 {
 	static vector<General&> attacers_;
-	std::pair<Kingdoom_defense&,Kingdoom_defense&> ref_to_kingd_defense_; 
+	std::pair<Kingdoom_defense&,Kingdoom_defense&> ref_to_kingd_defense_;//TODO: not used 
 	static bool AttackersEmpty(); // нужно для цикла в nextturn
 	void Sort();
 	std::pair<General&, General&> GetPairBattleGeneral();
@@ -78,7 +78,7 @@ class Defense: public EngineGameObjInterface
 {
 	string summaries_;
 	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N)
-	std::queue<LocalWar> q_local_wars_; // список указателей на сражающихся генералов
+	std::queue<LocalWar> q_local_wars_; // список указателей
 	std::queue<LocalWar> GetLocalWars();
 	void SaveState();
 	void LoadState();
