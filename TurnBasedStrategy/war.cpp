@@ -129,6 +129,8 @@ std::queue<General*> GetFightGenerals()
  return q_fight_generals;
 }
 
+// Defense class
+
 void Defense::SaveState()
 {
 }
@@ -145,18 +147,24 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 	}
 }
 
+std::queue<General*> GetAttackGenerals()
+{
+//TODO: this
+}
+
 void Defense::NextTurn()
 {
-	// список воюющих
-	vector <std::pair<General& first_gen, General& second_gen>>
-	// смотрим генералов
-	// сортируем генералов по скорости
-	std::sort(q_fight_generals_.begin(),q_fight_generals_.end(),[](General* genl, General* genr){ return genl->speed_ < genr->speed_;});
-	// составляем список движений атакующих
-	//				--  возможны встречные атаки
-	// составляем список защищающихся по списку атакующих
+	// создаем список локальных войн
+	q_local_wars_ = GetLocalWars();
+	// цикл пока есть атакующие генералы
+	while(q_local_wars_.AttackersEmpty())
+	{	
 	// проводим бои 
+	std::pair<General&,General&>  battle_gen = q_local_wars_.GetPairBattleGeneral();
+	int res = Battle(battle_gen.first,battle_gen.first.my_master_.solder_force_, battle_gen.second, battle_gen.second.my_master_.solder_force_);
 	//				-- в зависимости от результата вызываем метод перераспределиения территории
+//TODO: Exchange area
+	}
 }
 
 unsigned Defense::GetCountSpecialists()
