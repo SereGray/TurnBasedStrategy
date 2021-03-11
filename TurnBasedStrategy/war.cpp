@@ -115,21 +115,18 @@ void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned int
 	this->vgeneral_list.push_back(new_general);
 }
 
-std::queue<General*> GetFightGenerals()
-{
- std::queue<General*> q_fight_generals;
- // получаю список атакующих генералов
- for(Kingdoom_defense & kd : vkingdoom_def){
- 	for(General & gen: kd.vgeneral_list){
-		if(gen.action_==4){
-			q_fight_generals.push_back(&gen); // если генерал атакует то добавл
-		}
-	}
- } 
- return q_fight_generals;
-}
+
+// Local_war struct
+
+
 
 // Defense class
+
+// TODO: this 
+int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) 
+{
+
+}
 
 void Defense::SaveState()
 {
@@ -147,9 +144,30 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 	}
 }
 
-std::queue<General*> GetAttackGenerals()
-{
-//TODO: this
+queue<LocalWar> Defense::GetLocalWars(){
+// TODO: test
+ // получаю список атакующих генералов
+ for(Kingdoom_defense & kd : vkingdoom_def){
+ 	for(General & gen: kd.vgeneral_list){
+		if(gen.action_==4){
+			// если генерал атакует проверяю есть ли локальная война если есть то пропускаю
+			// если нет то создаю
+		int found =SearchLocalWar(kd.my_n_,gen.target_);
+		if(found > 0){	
+			// add to exist
+			// if kd is first in pair add to first gen atacers
+			if(kd.my_n_ == q_local_wars_[found].ref_to_kingd_defense_.first.my_n_){
+				q_local_wars_[found].first_kd_attacers_.push_back(gen);
+			}else q_local_wars_[found].second_kd_attacers_.push_back(gen);
+		}else{
+			// new localwar
+			LocalWar new_local_war(kd, vkingdoom_def[gen.target_]); 
+			q_local_wars_.push_back(new_local_war);
+		}
+		}
+	}
+ } 
+
 }
 
 void Defense::NextTurn()
@@ -157,11 +175,11 @@ void Defense::NextTurn()
 	// создаем список локальных войн
 	q_local_wars_ = GetLocalWars();
 	// цикл пока есть атакующие генералы
-	while(q_local_wars_.AttackersEmpty())
+	while(q_local_wars_.empty())
 	{	
-	// проводим бои 
-	std::pair<General&,General&>  battle_gen = q_local_wars_.GetPairBattleGeneral();
-	int res = Battle(battle_gen.first,battle_gen.first.my_master_.solder_force_, battle_gen.second, battle_gen.second.my_master_.solder_force_);
+	// проводим бои take first local war ( sorted by speed of general) 
+	std::pair<General&,General&>  battle_gen = q_local_wars_.first().GetPairBattleGeneral();
+	int res = Battle(battle_gen.first,battle_gen.first.my_master_.solder_force_, battle_gen.second, battle_gen.second.my_master_.solder_force_); //TODO: hide solder_force_
 	//				-- в зависимости от результата вызываем метод перераспределиения территории
 //TODO: Exchange area
 	}
