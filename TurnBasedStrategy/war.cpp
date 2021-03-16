@@ -122,10 +122,13 @@ void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned int
 
 // Defense class
 
-// TODO: this 
+// TODO: this for GetLocalWars() 
 int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) 
 {
-
+	unsigned count = 0;
+	for(LocalWar lw: q_local_wars_){
+	if((lw.first_kd_attacers_==kingd1_number && lw.second_kd_attacers_ == kingd2_number) || (lw.first_kd_attacers_ == kingd2_number && lw.second_kd_attacers_ ==kingd1_number)) return count;
+	return -1;	
 }
 
 void Defense::SaveState()
@@ -144,6 +147,7 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 	}
 }
 
+//TODO: rename to GetLocalWarsQueue
 queue<LocalWar> Defense::GetLocalWars(){
 // TODO: test
  // получаю список атакующих генералов
