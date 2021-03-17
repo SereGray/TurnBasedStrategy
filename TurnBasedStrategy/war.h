@@ -22,6 +22,7 @@ class General
 	Kingdoom_defense & my_master_;
 	General(Kingdoom_defense& my_master, std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
 	public:
+	General(); // def constructor for landaun general  TODO:this
 	unsigned skill_; // max 100
 	unsigned intelegence_; // max 100
 	unsigned spirit_; // max 100
@@ -70,7 +71,7 @@ struct LocalWar
 	vector<General&> second_kd_attacers_;
 	std::pair<Kingdoom_defense&,Kingdoom_defense&> ref_to_kingd_defense_;// 
 	static bool AttackersEmpty(); // нужно для цикла в nextturn
-	unsigned GetMaxSpeedGeneral();
+	General& GetMaxSpeedGeneral();
 	LocalWar(Kingdoom_defense& first, Kingdoom_defense& second): ref_to_kingd_defense_(std::make_pair(first, second){}; 
 	std::pair<General&, General&> GetPairBattleGeneral();
 	General& GetDefener(); // or lose area or landaun if solders > 0
