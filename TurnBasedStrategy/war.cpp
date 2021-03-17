@@ -117,8 +117,29 @@ void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned int
 
 
 // Local_war struct
+//TODO: this
+std::pair<General&, General&> LocalWar::GetPairBattleGeneral();  // выдача первой пары проверка условия наличия солдат(если нет солдат выкинуть из атакующих) 
+{
+return std::make_pair(0,0);
+}
+//TODO: this 2
+General& LocalWar::GetMaxSpeedGeneral() // сортировка по скорости и нахождение самого быстрого генерала
+// поиск быстрых генералов среди атакующих так и среди защищающихся
+{
+	General landaun;
+	General& speedy_General=landaun;
+	for(LocalWar lw: q_local_wars_){
+		for(General ataker_general: lw.first_kd_attacers_){
+			if(ataker_general.speed_ > speedy_General.speed_){
+				speedy_General = ataker_general;
+			}
+		for(General ataker_genera: lw.second_kd_attacers_){
+			if(ataker_genera > speedy_General.speed_){
+				speedy_General = ataker_general;
+			}
 
-
+return 0;
+}
 
 // Defense class
 
@@ -184,6 +205,7 @@ void Defense::NextTurn()
 	// проводим бои take first local war ( sorted by speed of general) 
 	std::pair<General&,General&>  battle_gen = q_local_wars_.first().GetPairBattleGeneral();
 	int res = Battle(battle_gen.first,battle_gen.first.my_master_.solder_force_, battle_gen.second, battle_gen.second.my_master_.solder_force_); //TODO: hide solder_force_
+
 	//				-- в зависимости от результата вызываем метод перераспределиения территории
 //TODO: Exchange area
 	}
