@@ -68,7 +68,7 @@ struct LocalWar
 {
 	vector<General&> first_kd_attacers_;
 	vector<General&> second_kd_attacers_;
-	std::pair<Kingdoom_defense&,Kingdoom_defense&> ref_to_kingd_defense_;//TODO: not used 
+	std::pair<Kingdoom_defense&,Kingdoom_defense&> ref_to_kingd_defense_;// 
 	static bool AttackersEmpty(); // нужно для цикла в nextturn
 	unsigned GetMaxSpeedGeneral();
 	LocalWar(Kingdoom_defense& first, Kingdoom_defense& second): ref_to_kingd_defense_(std::make_pair(first, second){}; 

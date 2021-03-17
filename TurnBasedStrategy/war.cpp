@@ -122,7 +122,7 @@ void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned int
 
 // Defense class
 
-// TODO: this for GetLocalWars() 
+// this function for GetLocalWars() 
 int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) 
 {
 	unsigned count = 0;
@@ -159,7 +159,7 @@ queue<LocalWar> Defense::GetLocalWars(){
 		int found =SearchLocalWar(kd.my_n_,gen.target_);
 		if(found > 0){	
 			// add to exist
-			// if kd is first in pair add to first gen atacers
+			// if kd is first in pair add to first gen atacers else to second
 			if(kd.my_n_ == q_local_wars_[found].ref_to_kingd_defense_.first.my_n_){
 				q_local_wars_[found].first_kd_attacers_.push_back(gen);
 			}else q_local_wars_[found].second_kd_attacers_.push_back(gen);
