@@ -135,25 +135,16 @@ void Defense::NextTurn()
 {
 	// список воюющих
 	vector <std::pair<General& first_gen, General& second_gen>>
-
-		// смотрим генералов
-	unsigned num = 0;
+	// смотрим генералов
 	for (Kingdoom_defense kingd : vkingdoom_def) {
-		for (General gen : kingd.vgeneral_list) {
+		for (General gen : vgeneral_list) {
 			if (gen.action_ == 4) {
 				// получаю защищающихся с противоположной стороны
 				// проверяю есть ли встречная атака
-				//if ([vkingdoom_def, gen, num]()->bool { Kingdoom_defense kingd_acros = vkingdoom_def[gen.target_]; for (General gen_acros : kingd_across.vgeneral_list) { if (gen_acros.target_ == num)return true; }return false; })
-				Kingdoom_defense kingd_across = vkingdoom_def[gen.target_];
-				for (General gen_across : kingd_across.vgeneral_list) {
-					if (gen_across.target_ == num) {
-						// значит есть встречная атака
-					}
-				}
-				// проверяю есть ли в списках воюющих если нет то добавляю
+				if([](vkingdoom_def[gen.target_])
+					// проверяю есть ли в списках воюющих если нет то добавляю
 
 			}
-			++num;
 		}
 	}
 	// составляем список движений атакующих
