@@ -22,7 +22,7 @@ class General
 	Kingdoom_defense & my_master_;
 	General(Kingdoom_defense& my_master, std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
 	public:
-	General(); // def constructor for landaun general  TODO:this
+	General(Kingdoom_defense& my_master); // constructor for landaun general  TODO:this
 	unsigned skill_; // max 100
 	unsigned intelegence_; // max 100
 	unsigned spirit_; // max 100
@@ -54,7 +54,7 @@ public:
 	const unsigned my_n_;
 	Kingdoom_defense(unsigned my_number, Defense& master):solders_(10), solder_force_(1.0), my_n_(my_number), master_(master);
 	std::vector<General> vgeneral_list;
-	General landaun_; // default bad general TODO: inicialization
+	General landaun_; // default bad general
 	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age);
 	void AddSolder(unsigned count);
 	unsigned GetCountSpecialists();

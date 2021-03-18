@@ -59,9 +59,20 @@ void General::Dead()
 	General::~General();
 }
 
-General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence, unsigned age):my_master_(my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ = MAXUINT 
+General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence, unsigned age):my_master_(my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ = MAXUINT // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
+}
+
+General::General(Kingdoom_defense& my_master):my_master_(my_master)
+{
+skill_=0;
+intelegence_=0;
+spirit_=0;
+speed_=0;
+age_=0;
+name_="landaun";
+target_=MAXUINT;
 }
 
 void General::AttackTo(unsigned count_attack, unsigned number_kingd)
