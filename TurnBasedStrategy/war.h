@@ -22,7 +22,7 @@ class General
 	Kingdoom_defense & my_master_;
 	General(Kingdoom_defense& my_master, std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
 	public:
-	General(Kingdoom_defense& my_master); // constructor for landaun general  TODO:this
+	General(Kingdoom_defense& my_master); // constructor for landaun general 
 	unsigned skill_; // max 100
 	unsigned intelegence_; // max 100
 	unsigned spirit_; // max 100
@@ -80,7 +80,6 @@ struct LocalWar
 
 class Defense: public EngineGameObjInterface 
 {
-	string summaries_;
 	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) TODO: rename to vkingdom_def_
 	std::queue<LocalWar> q_local_wars_; // список указателей?
 	std::queue<LocalWar> GetLocalWars();
@@ -93,6 +92,7 @@ class Defense: public EngineGameObjInterface
 	int Battle(General & attacker, float attacker_force, General & defender, float defender_force);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
 	std::string GetSummariesString();
 public:
+	string summaries_;
 	Defense():summaries_(""); // TODO: initialization args? 
 	unsigned DefenseBattle(); // return territory area
 	unsigned AttackBattle();  // return territory area
