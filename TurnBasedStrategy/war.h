@@ -67,7 +67,7 @@ public:
 // localWar exists if exists one attacker
 struct LocalWar
 {
-	vector<General&> first_kd_attacers_;
+	vector<General&> first_kd_attacers_; // TODO: соединить в один статический список в классе генерал (все генералы
 	vector<General&> second_kd_attacers_;
 	std::pair<Kingdoom_defense&,Kingdoom_defense&> ref_to_kingd_defense_;// 
 	static bool AttackersEmpty(); // нужно для цикла в nextturn
