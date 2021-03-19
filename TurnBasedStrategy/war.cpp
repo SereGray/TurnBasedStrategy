@@ -59,7 +59,7 @@ void General::Dead()
 	General::~General();
 }
 
-General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence, unsigned age):my_master_(my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ = MAXUINT // TODO: check err 
+General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence, unsigned age,unsigned id):my_master_(my_master), ID_(id), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ = MAXUINT // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
 }
@@ -73,6 +73,8 @@ speed_=0;
 age_=0;
 name_="landaun";
 target_=MAXUINT;
+ID_=MAXUINT;
+//TODO:ID?
 }
 
 void General::AttackTo(unsigned count_attack, unsigned number_kingd)
@@ -123,7 +125,9 @@ Kingdoom_defense::Kingdoom_defense(unsigned my_number, Defense& master): master_
 void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
 {
 	General new_general(*this,name, skill, intelegence,100, speed, age);
-	this->vgeneral_list.push_back(new_general);
+	unsigned id=master_.map_general.AddGeneral(new_general);
+	this->vgeneral_id.push_back(new_general);
+
 }
 
 
@@ -203,16 +207,17 @@ int ListLocalWar::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number)
 	//TODO: this
 }
 
-// Defense class
 
 // this function for GetLocalWars() 
-int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) 
+int ListLocalWar::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) 
 {
 	unsigned count = 0;
 	for(LocalWar lw: q_local_wars_){
 	if((lw.first_kd_attacers_==kingd1_number && lw.second_kd_attacers_ == kingd2_number) || (lw.first_kd_attacers_ == kingd2_number && lw.second_kd_attacers_ ==kingd1_number)) return count;
 	return -1;	
 }
+
+// Defense class
 
 void Defense::SaveState()
 {
@@ -233,9 +238,11 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 void Defense::NextTurn()
 {
 	// создаем список локальных войн
+	list_local_wars_.clear();
 	list_local_wars_.GetLocalWars();
 	// цикл пока есть атакующие генералы
-	while(q_local_wars_.empty()) // TODO: where q_local_wars_.empty() ?
+	while(list_local_wars_.v_local_wars_.empty()) // TODO: where q_local_wars_.empty() ?
+
 	{	
 	// проводим бои take first local war ( sorted by speed of general) 
 	std::pair<General&,General&>  battle_gen = q_local_wars_.first().GetPairBattleGeneral();

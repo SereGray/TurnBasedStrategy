@@ -13,6 +13,7 @@
 // расчет сражений
 
 class Kingdoom_defense;// forward declaration
+class Defense;
 
 class General //TODO: добавить id ?
 {
@@ -20,9 +21,10 @@ class General //TODO: добавить id ?
 	float skill_float_;
 	General();
 	Kingdoom_defense & my_master_;
-	General(Kingdoom_defense& my_master, std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
+	General(Kingdoom_defense& my_master, std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age, unsigned id);
 	public:
 	General(Kingdoom_defense& my_master); // constructor for landaun general 
+	unsigned ID_;
 	unsigned skill_; // max 100
 	unsigned intelegence_; // max 100
 	unsigned spirit_; // max 100
@@ -45,10 +47,14 @@ class General //TODO: добавить id ?
 // Класс для хранения и обработки списка генералов(всех)
 class ListGeneral // TODO: this
 {
-	static vector<General> vgeneral_list;
+	unsigned current_key; // последний занятый ключ
+	map<unsigned,General> v_general_list_;// unsigned (key(ID)) is general indificator (unique)
+	public:
+	General& GetGeneral(unsigned id); // return General ref from key
+	unsigned AddGeneral(General in); // return key in map(ID) and give to general it ID
+
 };
 
-class Defense;
 // TODO: set attack
 class Kingdoom_defense {
 	Defense& master_;
@@ -93,6 +99,7 @@ class ListLocalWar
 
 class Defense: public EngineGameObjInterface 
 {
+	friend class Kingdoom_defense;
 	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
 	ListLocalWar list_local_war_;
 	void SaveState();
