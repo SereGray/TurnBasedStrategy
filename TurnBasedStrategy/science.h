@@ -39,7 +39,7 @@ class SubjectScience: public TheScience{
 
 class KingdoomScience{
 	public:
-		const unsigned my_n_;
+		const unsigned my_id_;
 		KingdoomScience();
 		std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
 		TheScience science;
@@ -56,7 +56,7 @@ public:
 	ScienceGameObj();
 	KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_n);
 private:
-	vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_n_
+	vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_id_
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);

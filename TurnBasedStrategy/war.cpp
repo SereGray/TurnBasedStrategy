@@ -59,7 +59,8 @@ void General::Dead()
 	General::~General();
 }
 
-General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence, unsigned age,unsigned id):my_master_(my_master), ID_(id), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ = MAXUINT // TODO: check err 
+General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
+	, unsigned age,unsigned id):my_master_(my_master), ID_(id), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ = MAXUINT // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
 }
@@ -89,6 +90,19 @@ void General::Rest()
 	target_ = MAXUINT;
 }
 
+// ListGeneral
+
+General& ListGeneral::GetGeneral(unsigned id)
+{
+	return map[id];
+}
+
+unsigned ListGeneral::AddGeneral(General in)
+{
+	m_general_list[current_key] = in;
+	return ++current_key;
+}
+
 void Kingdoom_defense::AddSolder(unsigned count)
 {
 	solders_+=count;	
@@ -101,13 +115,13 @@ unsigned Kingdoom_defense::GetCountSpecialists()
 
 float Kingdoom_defense::GetSolderForce()
 {
-	unsigned lvl = master.GetScience_from_Kingdom(my_n_).war_craft.science_lvl; // TODO: test this
+	unsigned lvl = master.GetScience_from_Kingdom(my_id_).war_craft.science_lvl; // TODO: test this
 	return 1.0f + (lvl / 10);
 }
 
 void Kingdoom_defense::NextTurn()
 {
-	for (General& gen : vgeneral_list) {
+	for (General& gen : v_general_id_) {
 		gen.NextTurn();
 	}
 }
@@ -117,7 +131,7 @@ void Kingdoom_defense::AddSummaryString(string text)
 	master_.summaries_ += text + "\n";
 }
 
-Kingdoom_defense::Kingdoom_defense(unsigned my_number, Defense& master): master_(master), solders_(0), solder_force_(1.0), my_n_(my_number), landaun_(*this, "landaun", 10, 1, 70, 1, 0)
+Kingdoom_defense::Kingdoom_defense(unsigned my_number, Defense& master): master_(master), solders_(0), solder_force_(1.0), my_id_(my_number), landaun_(*this, "landaun", 10, 1, 70, 1, 0)
 {
 	// TODO: check
 }
@@ -179,15 +193,15 @@ vector<LocalWar> ListLocalWar::GetLocalWars() {
 	// TODO: test
 	 // получаю список атакующих генералов
 	for (Kingdoom_defense& kd : vkingdoom_def) {
-		for (General& gen : kd.vgeneral_list) {
+		for (General& gen : kd.v_general_id_) {
 			if (gen.action_ == 4) {
 				// если генерал атакует проверяю есть ли локальная война если есть то пропускаю
 				// если нет то создаю
-				int found = SearchLocalWar(kd.my_n_, gen.target_);
+				int found = SearchLocalWar(kd.my_id_, gen.target_);
 				if (found > 0) {
 					// add to exist
 					// if kd is first in pair add to first gen atacers else to second
-					if (kd.my_n_ == q_local_wars_[found].ref_to_kingd_defense_.first.my_n_) {
+					if (kd.my_id_ == q_local_wars_[found].ref_to_kingd_defense_.first.my_id_) {
 						v_local_wars_[found].first_kd_attacers_.push_back(gen);
 					}
 					else v_local_wars_[found].second_kd_attacers_.push_back(gen);
@@ -300,6 +314,6 @@ Defense::Defense()
 }
 
 Kingdoom_defense::Kingdoom_defense(unsigned my_number)
-	:solders_(10), solder_force_(1.0), my_n_ = (my_number)
+	:solders_(10), solder_force_(1.0), my_id_ = (my_number)
 {
 }

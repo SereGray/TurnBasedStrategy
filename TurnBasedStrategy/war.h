@@ -15,7 +15,7 @@
 class Kingdoom_defense;// forward declaration
 class Defense;
 
-class General //TODO: добавить id ?
+class General
 {
 	friend class Kingdoom_defense; // only kingdom may create own generals
 	float skill_float_;
@@ -48,7 +48,7 @@ class General //TODO: добавить id ?
 class ListGeneral // TODO: this
 {
 	unsigned current_key; // последний занятый ключ
-	map<unsigned,General> v_general_list_;// unsigned (key(ID)) is general indificator (unique)
+	map<unsigned,General> m_general_list_;// unsigned (key(ID)) is general indificator (unique)
 	public:
 	General& GetGeneral(unsigned id); // return General ref from key
 	unsigned AddGeneral(General in); // return key in map(ID) and give to general it ID
@@ -61,9 +61,9 @@ class Kingdoom_defense {
 	unsigned solders_;
 	float solder_force_; // 1.0 at def , always > 1.0
 public:
-	const unsigned my_n_;
-	Kingdoom_defense(unsigned my_number, Defense& master):solders_(10), solder_force_(1.0), my_n_(my_number), master_(master);
-	std::vector<General> vgeneral_list;
+	const unsigned my_id_;
+	Kingdoom_defense(unsigned my_number, Defense& master):solders_(10), solder_force_(1.0), my_id_(my_number), master_(master);
+	std::vector<General> v_general_id_; // id kingdom generals
 	General landaun_; // default bad general
 	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age);
 	void AddSolder(unsigned count);
