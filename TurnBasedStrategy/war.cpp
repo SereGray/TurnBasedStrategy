@@ -142,23 +142,65 @@ std::pair<General&, General&> LocalWar::GetPairBattleGeneral()  // выдача первой
 
 }
 
+
+// ListLocalWar class
+
 // TODO: sort ?
-General& LocalWar::GetMaxSpeedGeneral() // сортировка по скорости и нахождение самого быстрого генерала
+General& ListLocalWar::GetMaxSpeedGeneral() // сортировка по скорости и нахождение самого быстрого генерала
 // поиск быстрых генералов среди атакующих так и среди защищающихся
 {
 	General landaun;
 	General& speedy_General=landaun;
-	for(LocalWar lw: q_local_wars_){ // TODO: сделать статическим членом
-		for(General ataker_general: lw.first_kd_attacers_){
-			if(ataker_general.speed_ > speedy_General.speed_){
+	for (LocalWar lw : v_local_wars_) { 
+		for (General ataker_general : lw.first_kd_attacers_) {
+			if (ataker_general.speed_ > speedy_General.speed_) {
 				speedy_General = ataker_general;
 			}
-		for(General ataker_genera: lw.second_kd_attacers_){
-			if(ataker_genera > speedy_General.speed_){
+		}
+		for (General ataker_genera : lw.second_kd_attacers_) {
+			if (ataker_genera > speedy_General.speed_) {
 				speedy_General = ataker_general;
 			}
-
+		}
+	}
 return landoun;
+}
+
+bool ListLocalWar::AttackersEmpty()
+{
+	//TODO:this
+};
+
+vector<LocalWar> ListLocalWar::GetLocalWars() {
+	// TODO: test
+	 // получаю список атакующих генералов
+	for (Kingdoom_defense& kd : vkingdoom_def) {
+		for (General& gen : kd.vgeneral_list) {
+			if (gen.action_ == 4) {
+				// если генерал атакует проверяю есть ли локальная война если есть то пропускаю
+				// если нет то создаю
+				int found = SearchLocalWar(kd.my_n_, gen.target_);
+				if (found > 0) {
+					// add to exist
+					// if kd is first in pair add to first gen atacers else to second
+					if (kd.my_n_ == q_local_wars_[found].ref_to_kingd_defense_.first.my_n_) {
+						v_local_wars_[found].first_kd_attacers_.push_back(gen);
+					}
+					else v_local_wars_[found].second_kd_attacers_.push_back(gen);
+				}
+				else {
+					// new localwar
+					LocalWar new_local_war(kd, vkingdoom_def[gen.target_]);
+					v_local_wars_.push_back(new_local_war);
+				}
+			}
+		}
+	}
+
+}
+
+int ListLocalWar::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) {
+	//TODO: this
 }
 
 // Defense class
@@ -188,37 +230,10 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 	}
 }
 
-//TODO: rename to GetLocalWarsQueue
-queue<LocalWar> Defense::GetLocalWars(){
-// TODO: test
- // получаю список атакующих генералов
- for(Kingdoom_defense & kd : vkingdoom_def){
- 	for(General & gen: kd.vgeneral_list){
-		if(gen.action_==4){
-			// если генерал атакует проверяю есть ли локальная война если есть то пропускаю
-			// если нет то создаю
-		int found =SearchLocalWar(kd.my_n_,gen.target_);
-		if(found > 0){	
-			// add to exist
-			// if kd is first in pair add to first gen atacers else to second
-			if(kd.my_n_ == q_local_wars_[found].ref_to_kingd_defense_.first.my_n_){
-				q_local_wars_[found].first_kd_attacers_.push_back(gen);
-			}else q_local_wars_[found].second_kd_attacers_.push_back(gen);
-		}else{
-			// new localwar
-			LocalWar new_local_war(kd, vkingdoom_def[gen.target_]); 
-			q_local_wars_.push_back(new_local_war);
-		}
-		}
-	}
- } 
-
-}
-
 void Defense::NextTurn()
 {
 	// создаем список локальных войн
-	q_local_wars_ = GetLocalWars();
+	list_local_wars_.GetLocalWars();
 	// цикл пока есть атакующие генералы
 	while(q_local_wars_.empty()) // TODO: where q_local_wars_.empty() ?
 	{	

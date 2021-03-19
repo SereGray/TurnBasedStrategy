@@ -14,7 +14,7 @@
 
 class Kingdoom_defense;// forward declaration
 
-class General
+class General //TODO: добавить id ?
 {
 	friend class Kingdoom_defense; // only kingdom may create own generals
 	float skill_float_;
@@ -42,9 +42,13 @@ class General
 
 };
 
+// Класс для хранения и обработки списка генералов(всех)
+class ListGeneral // TODO: this
+{
+	static vector<General> vgeneral_list;
+};
+
 class Defense;
-
-
 // TODO: set attack
 class Kingdoom_defense {
 	Defense& master_;
@@ -70,20 +74,27 @@ struct LocalWar
 	vector<General&> first_kd_attacers_; // TODO: соединить в один статический список в классе генерал (все генералы
 	vector<General&> second_kd_attacers_;
 	std::pair<Kingdoom_defense&,Kingdoom_defense&> ref_to_kingd_defense_;// 
-	static bool AttackersEmpty(); // нужно для цикла в nextturn
-	General& GetMaxSpeedGeneral();
 	LocalWar(Kingdoom_defense& first, Kingdoom_defense& second): ref_to_kingd_defense_(std::make_pair(first, second){}; 
 	std::pair<General&, General&> GetPairBattleGeneral();
 	General& GetDefener(); // or lose area or landaun if solders > 0
 	General& GetAttacer(); // sort attacers_ and get first by speed if no attacker return defender  TODO: если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, один генерал бьется не более 2ух раз за ход
 };
 
+//клас для представления списка локальных войн
+class ListLocalWar
+{
+	std::vector<LocalWar> v_local_wars_;
+	General& GetMaxSpeedGeneral();
+	bool AttackersEmpty(); // нужно для цикла в nextturn
+	std::vector<LocalWar> GetLocalWars();
+	// TODO: нужно ли ниже следующая фун-я
+	int SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number);  // return number index, else -1
+};
+
 class Defense: public EngineGameObjInterface 
 {
-	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) TODO: rename to vkingdom_def_
-	std::queue<LocalWar> q_local_wars_; // список указателей?
-	std::queue<LocalWar> GetLocalWars();
-	int SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number);  // return number in queue, else -1
+	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
+	ListLocalWar list_local_war_;
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);
