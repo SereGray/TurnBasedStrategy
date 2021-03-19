@@ -41,12 +41,14 @@ class General
 	void Defense(unsigned count_defenders);
 	void NextTurn(); // change general condition 
 	void Dead();
+	Kingdoom_defense& GetMaster();
 
 };
 
 // Класс для хранения и обработки списка генералов(всех)
-class ListGeneral // TODO: this
+class ListGeneral
 {
+	//TODO : landaun - default general
 	unsigned current_key; // последний занятый ключ
 	map<unsigned,General> m_general_list_;// unsigned (key(ID)) is general indificator (unique)
 	public:
@@ -77,13 +79,13 @@ public:
 // localWar exists if exists one attacker
 struct LocalWar
 {
-	vector<General&> first_kd_attacers_; // TODO: соединить в один статический список в классе генерал (все генералы
-	vector<General&> second_kd_attacers_;
 	std::pair<Kingdoom_defense&,Kingdoom_defense&> ref_to_kingd_defense_;// 
 	LocalWar(Kingdoom_defense& first, Kingdoom_defense& second): ref_to_kingd_defense_(std::make_pair(first, second){}; 
 	std::pair<General&, General&> GetPairBattleGeneral();
-	General& GetDefener(); // or lose area or landaun if solders > 0
-	General& GetAttacer(); // sort attacers_ and get first by speed if no attacker return defender  TODO: если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, один генерал бьется не более 2ух раз за ход
+	// sort attacers_ and get first by speed if no attacker return defender  
+	//TODO: this
+	//если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, 
+	//один генерал бьется не более 2ух раз за ход
 };
 
 //клас для представления списка локальных войн
@@ -94,14 +96,15 @@ class ListLocalWar
 	bool AttackersEmpty(); // нужно для цикла в nextturn
 	std::vector<LocalWar> GetLocalWars();
 	// TODO: нужно ли ниже следующая фун-я
-	int SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number);  // return number index, else -1
+	LocalWar& SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number);  // return number index, else -1
 };
 
 class Defense: public EngineGameObjInterface 
 {
 	friend class Kingdoom_defense;
 	std::vector<Kingdoom_defense> vkingdoom_def;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
-	ListLocalWar list_local_war_;
+	ListLocalWar list_local_war_; // list all wars betwen gamers
+	ListGeneral list_general; // list all generals
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);
@@ -112,8 +115,6 @@ class Defense: public EngineGameObjInterface
 public:
 	string summaries_;
 	Defense():summaries_(""); // TODO: initialization args? 
-	unsigned DefenseBattle(); // return territory area
-	unsigned AttackBattle();  // return territory area
 };
 
 #endif
