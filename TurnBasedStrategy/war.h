@@ -8,6 +8,7 @@
 #include<vector>
 #include"science.h"
 #include<memory>
+#include<map>
 
 // правила войны
 // расчет сражений
@@ -50,10 +51,12 @@ class ListGeneral
 {
 	//TODO : landaun - default general
 	unsigned current_key; // последний занятый ключ
-	map<unsigned,General> m_general_list_;// unsigned (key(ID)) is general indificator (unique)
+	std::map<unsigned,General> m_general_list_;// unsigned (key(ID)) is general indificator (unique)
 	public:
-	General& GetGeneral(unsigned id); // return General ref from key
-	unsigned AddGeneral(General in); // return key in map(ID) and give to general it ID
+	General& GetMaxSpeedGeneral();
+	General& GetGeneral(unsigned& id); // return General ref from key
+	// TODO: refractor there
+	unsigned AddGeneral(General& in); // return key in map(ID) and give to general it ID
 
 };
 
@@ -67,7 +70,7 @@ public:
 	Kingdoom_defense(unsigned my_number, Defense& master):solders_(10), solder_force_(1.0), my_id_(my_number), master_(master);
 	std::vector<General> v_general_id_; // id kingdom generals
 	General landaun_; // default bad general
-	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age);
+	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age); // TODO: refractor there
 	void AddSolder(unsigned count);
 	unsigned GetCountSpecialists();
 	float GetSolderForce();
@@ -81,7 +84,6 @@ struct LocalWar
 {
 	std::pair<Kingdoom_defense&,Kingdoom_defense&> ref_to_kingd_defense_;// 
 	LocalWar(Kingdoom_defense& first, Kingdoom_defense& second): ref_to_kingd_defense_(std::make_pair(first, second){}; 
-	std::pair<General&, General&> GetPairBattleGeneral();
 	// sort attacers_ and get first by speed if no attacker return defender  
 	//TODO: this
 	//если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, 
@@ -92,11 +94,15 @@ struct LocalWar
 class ListLocalWar
 {
 	std::vector<LocalWar> v_local_wars_;
-	General& GetMaxSpeedGeneral();
-	bool AttackersEmpty(); // нужно для цикла в nextturn
+public:
+	std::pair<General&, General&> GetPairBattleGeneral();
+	bool AttackersEmpty(); // нужно для проверки перед уничтожением объекта
 	std::vector<LocalWar> GetLocalWars();
 	// TODO: нужно ли ниже следующая фун-я
 	LocalWar& SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number);  // return number index, else -1
+	LocalWar& SearchLocalWarByGeneral(General& gen);
+	void Clear(); 
+	bool Empty();
 };
 
 class Defense: public EngineGameObjInterface 

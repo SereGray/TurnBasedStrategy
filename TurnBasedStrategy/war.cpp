@@ -97,14 +97,38 @@ void General::Rest()
 
 
 // ListGeneral
+// TODO: sort ?
+General& ListGeneral::GetMaxSpeedGeneral() // сортировка по скорости и нахождение самого быстрого генерала
+// поиск быстрых генералов среди атакующих так и среди защищающихся
+//(если нет солдат не брать в расчет)
+{
+	vector<unsigned> generals_id;
 
-General& ListGeneral::GetGeneral(unsigned id)
+	General landaun;
+	General& speedy_General = landaun;
+	for (LocalWar lw : v_local_wars_) {
+		for (General ataker_general : lw.first_kd_attacers_) {
+			if (ataker_general.speed_ > speedy_General.speed_) {
+				speedy_General = ataker_general;
+			}
+		}
+		for (General ataker_genera : lw.second_kd_attacers_) {
+			if (ataker_genera > speedy_General.speed_) {
+				speedy_General = ataker_general;
+			}
+		}
+	}
+	return landoun;
+}
+
+General& ListGeneral::GetGeneral(unsigned& id)
 {
 	return map[id];
 }
 
-unsigned ListGeneral::AddGeneral(General in)
+unsigned ListGeneral::AddGeneral(General& in)
 {
+	
 	m_general_list[current_key] = in;
 	return ++current_key;
 }
@@ -148,46 +172,25 @@ Kingdoom_defense::Kingdoom_defense(unsigned my_number, Defense& master): master_
 void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
 {
 	General new_general(*this,name, skill, intelegence,100, speed, age);
-	unsigned id=master_.list_general.AddGeneral(new_general);
+	unsigned id=master_.list_general.AddGeneral(new_general); // fail (need take id to General constructor)
 	this->v_general_id_.push_back(new_general);
 }
 
 
 
 // Local_war struct
-// выдача первой пары проверка условия наличия солдат(если нет солдат не брать в расчет) 
+// выдача первой пары проверка условия наличия солдат
 // для NextTurn()
-std::pair<General&, General&> LocalWar::GetPairBattleGeneral()  
-{
-	General& speed_general = GetMaxSpeedGeneral(); 
-	return SearchLocalWar(speed_general.target,speed_general.GetMaster()).ref_to_kind_defense_;
-}
-
-
 // ListLocalWar class
 
-// TODO: sort ?
-General& ListLocalWar::GetMaxSpeedGeneral() // сортировка по скорости и нахождение самого быстрого генерала
-// поиск быстрых генералов среди атакующих так и среди защищающихся
+std::pair<General&, General&> ListLocalWar::GetPairBattleGeneral()
 {
-	General landaun;
-	General& speedy_General=landaun;
-	for (LocalWar lw : v_local_wars_) { 
-		for (General ataker_general : lw.first_kd_attacers_) {
-			if (ataker_general.speed_ > speedy_General.speed_) {
-				speedy_General = ataker_general;
-			}
-		}
-		for (General ataker_genera : lw.second_kd_attacers_) {
-			if (ataker_genera > speedy_General.speed_) {
-				speedy_General = ataker_general;
-			}
-		}
-	}
-return landoun;
+	General& speed_general = GetMaxSpeedGeneral();
+	return SearchLocalWar(speed_general.target, speed_general.GetMaster()).ref_to_kind_defense_;
 }
 
-LocalWar& ListLocalWar::SearchLoacalWarByGeneral(General& gen)
+
+LocalWar& ListLocalWar::SearchLocalWarByGeneral(General& gen)
 {
 	unsigned target = gen.target_;
 	for (LocalWar lw : v_local_wars) {
@@ -201,7 +204,7 @@ bool ListLocalWar::AttackersEmpty()
 };
 
 vector<LocalWar> ListLocalWar::GetLocalWars() {
-	// TODO: test
+	// TODO: refactor this 
 	 // получаю список атакующих генералов
 	for (Kingdoom_defense& kd : vkingdoom_def) {
 		for (General& gen : kd.v_general_id_) {
@@ -239,6 +242,17 @@ LocalWar& ListLocalWar::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_n
 }
 
 
+void ListLocalWar::Clear()
+{
+	v_local_wars_.clear();
+}
+
+bool ListLocalWar::Empty()
+{
+	return v_local_wars_.empty();
+}
+
+
 // Defense class
 
 void Defense::SaveState()
@@ -260,16 +274,15 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 void Defense::NextTurn()
 {
 	// создаем список локальных войн
-	list_local_wars_.clear();
-	list_local_wars_.GetLocalWars();
+	list_local_war_.Clear();
+	list_local_war_.GetLocalWars();
 	// цикл пока есть атакующие генералы
-	while(!list_local_war_.empty()) // TODO: where q_local_wars_.empty() ?
-
+	while(!list_local_war_.Empty()) // TODO: where q_local_wars_.empty() ?
 	{	
-	// проводим бои take first local war ( sorted by speed of general) 
-	std::pair<General&,General&>  battle_gen = ListLocalWar.first().GetPairBattleGeneral();
+	// take first figth generals( sorted by speed of general) 
+	std::pair<General&,General&>  battle_gen = ListLocalWar.GetPairBattleGeneral();
 	int res = Battle(battle_gen.first,battle_gen.first.my_master_.solder_force_, battle_gen.second, battle_gen.second.my_master_.solder_force_); //TODO: hide solder_force_
-
+	// TODO: найти ту самую LocalWar if AttackersEmpty() then ~LocalWar()
 	//				-- в зависимости от результата вызываем метод перераспределиения территории
 //TODO: Exchange area
 	}
