@@ -22,7 +22,7 @@ class General
 	float skill_float_;
 	General();
 	Kingdoom_defense & my_master_;
-	General(Kingdoom_defense& my_master, std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age, unsigned id);
+	General(Kingdoom_defense& my_master, std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
 	public:
 	General(Kingdoom_defense& my_master); // constructor for landaun general 
 	unsigned skill_; // max 100
@@ -55,6 +55,7 @@ public:
 	Kingdoom_defense(unsigned my_number, Defense& master):solders_(10), solder_force_(1.0), my_id_(my_number), master_(master);
 	std::vector<General> v_general_; //  kingdom generals
 	General landaun_; // default bad general
+	Geneal& GetSpeedestGeneral(unsigned target);
 	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age); // TODO: refractor there
 	void SortGeneralBySpeed();
 	void AddSolder(unsigned count);
@@ -87,6 +88,7 @@ class Defense: public EngineGameObjInterface
 	std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_;
 	SortLocalWarsByGeneralSpeed();
 	LocalWarNoAttackers(vector<pair<Kingdoom_defense&,Kingdoom_defense&>::iterator it);
+	pair<General&,General&> GetPairBattleGeneral(vector<pair<Kingdoom_defense&,Kingdoom_defense&>>::iterator it);
 	void GetLocalWars()
 	void SaveState();
 	void LoadState();
