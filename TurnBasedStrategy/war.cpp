@@ -220,10 +220,23 @@ int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) //re
 	}
 	return MAXUINT; // error
 }
-
+pair<unsigned,unsigned> MaxSpeedGeneral(pair<Kingdoom_defense&,Kingdoom_defense&> kd) {
+	pair<unsigned, unsigned> max_speed = 0;
+	for (General g : kd.first.v_general_) {
+		if (g.speed_ > max_speed) max_speed.first = g.speed_;
+	};
+	for (General g : kd.second.v_general_) {
+		if (g.speed_ > max_speed) max_speed.second = g.speed_;
+	};
+	return max_speed;
+}
 Defense::SortLocalWarsByGeneralSpeed()
 {
-	//TODO: search loc wars
+	sort(vlocal_wars_.begin(), vlocal_wars_.end(), [](pair<Kingdoom_defense&, Kingdoom_defense&> left, pair<Kingdoom_defense&, Kingdoom_defense&> right{
+	pair<unsigned,unsigned> left_max_speed = MaxSpeedGeneral(left);
+	pair<unsigned, unsigned> right_max_speed = MaxSpeedGeneral(right);
+	if (left_max_speed.first < right_max_speed.first || left_max_speed.second < right_max_speed.first || left_max_speed.first < right_max_speed.second || left_max_speed.second < right_max_speed.second) return true;
+	return false; });
 }
 
 bool Defense::LocalWarNoAttackers(vector<pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it)
