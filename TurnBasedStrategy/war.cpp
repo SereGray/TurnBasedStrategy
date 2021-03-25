@@ -164,30 +164,6 @@ void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned int
 }
 
 
-
-
-// LocalWar class
-
-LocalWar& LocalWar::SearchLocalWarByGeneral(General& gen)
-{
-	unsigned target = gen.target_;
-	for (LocalWar lw : v_local_wars) {
-		if((lw.ref_to_king_defense.first == target && lw.ref_to_king_defense.second == gen.)
-	}
-}
-
-bool LocalWar::AttackersEmpty()
-{
-	//TODO:this
-};
-
-
-bool LocalWar::Empty()
-{
-	return v_local_wars_.empty();
-}
-
-
 // Defense class
 
 // this function for GetLocalWars() 

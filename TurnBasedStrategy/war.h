@@ -68,17 +68,6 @@ public:
 
 	//если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, 
 	//один генерал бьется не более 2ух раз за ход
-//клас для представления списка локальных войн
-class LocalWar
-{
-
-public:
-	std::pair<General&, General&> GetPairBattleGeneral();
-	bool AttackersEmpty(); // нужно для проверки перед уничтожением объекта
-	// TODO: нужно ли ниже следующая фун-я
-	LocalWar& SearchLocalWarByGeneral(General& gen);
-	bool Empty();
-};
 
 class Defense: public EngineGameObjInterface 
 {
