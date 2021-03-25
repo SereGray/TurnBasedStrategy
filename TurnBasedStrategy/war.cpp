@@ -186,7 +186,7 @@ pair<unsigned,unsigned> MaxSpeedGeneral(pair<Kingdoom_defense&,Kingdoom_defense&
 	};
 	return max_speed;
 }
-Defense::SortLocalWarsByGeneralSpeed()
+void Defense::SortLocalWarsByGeneralSpeed()
 {
 	sort(vlocal_wars_.begin(), vlocal_wars_.end(), [](pair<Kingdoom_defense&, Kingdoom_defense&> left, pair<Kingdoom_defense&, Kingdoom_defense&> right{
 	pair<unsigned,unsigned> left_max_speed = MaxSpeedGeneral(left);

@@ -75,7 +75,7 @@ class Defense: public EngineGameObjInterface
 	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
 	int SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number);  // return number index, else -1
 	std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_;
-	SortLocalWarsByGeneralSpeed();
+	void SortLocalWarsByGeneralSpeed();
 	LocalWarNoAttackers(vector<pair<Kingdoom_defense&,Kingdoom_defense&>::iterator it);
 	pair<General&,General&> GetPairBattleGeneral(vector<pair<Kingdoom_defense&,Kingdoom_defense&>>::iterator it);
 	void GetLocalWars()
