@@ -64,6 +64,7 @@ public:
 	void NextTurn();
 	void AddSummaryString(string text);
 	string GetSummaryString();
+	void SetAttack(General& gen,unsigned target);
 };
 
 	//если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, 
@@ -84,7 +85,7 @@ class Defense: public EngineGameObjInterface
 	void CreateState(unsigned num_players, unsigned map_size);
 	void NextTurn();
 	unsigned GetCountSpecialists();
-	int Battle(General & attacker, float attacker_force, General & defender, float defender_force);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
+	int Battle(General & attacker, General & defender);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
 	std::string GetSummariesString();
 public:
 	string summaries_;

@@ -163,6 +163,9 @@ void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned int
 	v_general_.push_back(new_general);
 }
 
+void Kingdoom_defense::SetAttack(General& gen, unsigned target){
+	gen.target_.target;
+}
 
 // Defense class
 
