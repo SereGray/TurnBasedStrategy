@@ -56,7 +56,8 @@ class Map: public EngineGameObjInterface{
 		void LoadState();
 		void CreateState();
 		// переход территории от одного владельца к другому
-		void ExchangeArea(); 
+		// return summaries
+		std::string ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders); 
 		// получить писок соседей 
 		vector<uint32_t> GetNeighborsList(uint32_t my_N);
 		// получить цвет территории

@@ -259,6 +259,9 @@ void Defense::NextTurn()
 {
 	// создаем список локальных войн
 	vlocal_wars_.clear();
+	for(Kingdoom_defense& kd: vkingdoom_def_){
+		kd.NextTurn();
+	};
 	GetLocalWars();
 	// цикл пока есть атакующие генералы
 	while(!vlocal_wars_.empty()) // TODO: where q_local_wars_.empty() ?
@@ -273,7 +276,8 @@ void Defense::NextTurn()
 			// if local war has no attacers destroy then vector.clean()
 			if (!LocalWarNoAttackers(it)) vlocal_wars_.clear(it);
 			//				-- в зависимости от результата вызываем метод перераспределиения территории
-//TODO: Exchange area
+			std::string summaries_battle  = map_obj_.ExchangeArea(res,battle_gen.first.GetMaster().my_id_,battle_gen.first.count_solders_ , battle_gen.second.GetMaster().my_id_ , battle_gen.second.count_solders_);
+			//TODO add summaries
 	}
 }
 

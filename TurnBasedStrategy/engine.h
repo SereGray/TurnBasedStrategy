@@ -13,13 +13,13 @@
 //		экономика-выращено зерна в рез засеивания территории
 #ifndef ENGINE
 #define ENGINE
+
 #include"tbs_interface.h"
 #include<string>
 #include"science.h"
 #include"war.h"
 #include"map.h"
 #include"economics.h"
-
 // список игоровых объектов
 
 // метод NextTurn : обход игровых объектов по списку и вызов метода NextTurnObj
@@ -31,24 +31,20 @@
 // класс взаимодействия игровых объектов движка между собой
 class EngineGameObjInterface {
 public:
-	
-private:
-
-public:
 	virtual void NextTurn();
 	virtual void SaveState();
 	virtual void LoadState();
 	virtual void CreateState(unsigned num_players, unsigned map_size);
 	virtual unsigned GetCountSpecialists(); // получить количество занятых специалистов
-	virtual KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_n);;  // получить уровень науки 
+	virtual KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_n);  // получить уровень науки 
 	virtual std::string GetSummariesString(); // сводки за предыдущий ход
+	virtual Map& GetMap();
 };
 
 class Engine: public TbsInterface{
 public:
 	ScienceGameObj science_game_obj_;
-
 	void NextTurn(); // запускает цепочку расчетов следующего 
 };
+#endif
 
-#endif 
