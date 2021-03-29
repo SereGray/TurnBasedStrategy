@@ -45,18 +45,16 @@ class General
 };
 
 
-// TODO: set attack
 class Kingdoom_defense {
 	unsigned solders_;
 	float solder_force_; // 1.0 at def , always > 1.0
 public:
 	const unsigned my_id_;
-	Kingdoom_defense(unsigned my_number, Defense& master):solders_(10), solder_force_(1.0), my_id_(my_number), master_(master);
+	Kingdoom_defense(unsigned my_number, Defense& master):solders_(10), solder_force_(1.0), my_id_(my_number), master_(master), landaun_(*this);
 	std::vector<General> v_general_; //  kingdom generals
 	General landaun_; // default bad general
 	Geneal& GetSpeedestGeneral(unsigned target);
 	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age); // TODO: refractor there
-	void SortGeneralBySpeed();
 	void AddSolder(unsigned count);
 	unsigned GetCountSpecialists();
 	float GetSolderForce();
