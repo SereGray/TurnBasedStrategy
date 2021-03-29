@@ -266,7 +266,7 @@ void Defense::NextTurn()
 			auto it = vlocal_wars_.begin();
 			// take first figth generals( sorted by speed of general) 
 			std::pair<General&,General&>  battle_gen = GetPairBattleGeneral(it);// take generals by iterator
-			int res = Battle(battle_gen.first,battle_gen.first.my_master_.solder_force_, battle_gen.second, battle_gen.second.my_master_.solder_force_); //TODO: hide solder_force_
+			int res = Battle(battle_gen.first, battle_gen.second);//TODO:res?
 			// if local war has no attacers destroy then vector.clean()
 			if (!LocalWarNoAttackers(it)) vlocal_wars_.clear(it);
 			//				-- в зависимости от результата вызываем метод перераспределиения территории
@@ -280,8 +280,11 @@ unsigned Defense::GetCountSpecialists()
 }
 
 //TODO: balance game Battle
-int Defense::Battle(General& attacker, float attacker_force, General& defender, float defender_force)
+// return 100 if first gen win, else -100. if no clear victory or drav return num betwen -100 and 100;
+int Defense::Battle(General& attacker, General& defender)
 {
+	float attacker_force = attacker.my_master_.GetSolderForce();
+	float defender_force = defender.ma_master_.GetSolderForce();
 	int res = 0;
 	for (int i = 0; i < 3; ++i) {
 		float attacker_k = (attacker.skill_ / 100) * (attacker.intelegence_ / 100) * (attacker.spirit_ / 100) * (attacker.speed_ / 100);
