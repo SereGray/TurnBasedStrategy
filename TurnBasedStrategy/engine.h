@@ -1,6 +1,7 @@
 // Вызов методов к.и. чер ез вирт функц
 // Создает игру - запускает к.и. и
 // Определяет какой из игроков ходит
+// создать объекты и передать ссылки друг на друга
 
 //TODO: сортировку в порядке значимости при расчете хода ( например сначала война-армия, потом
 //	территория, потом население, потом посев-экономика, потом наука
@@ -38,7 +39,9 @@ public:
 	virtual unsigned GetCountSpecialists(); // получить количество занятых специалистов
 	virtual KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_n);  // получить уровень науки 
 	virtual std::string GetSummariesString(); // сводки за предыдущий ход
-	virtual Map& GetMap();
+	virtual Map& GetMap(); // TODO: dynamic resolution
+	virtual ScienceGameObj GetScienceGameObj();
+	virtual Defense getDefense();
 };
 
 class Engine: public TbsInterface{

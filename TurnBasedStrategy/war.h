@@ -70,7 +70,7 @@ public:
 class Defense: public EngineGameObjInterface 
 {
 	friend class Kingdoom_defense;
-	Map& map_obj_;
+	Map& map_obj_; // TODO: initial
 	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
 	int SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number);  // return number index, else -1
 	std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_;
@@ -86,7 +86,7 @@ class Defense: public EngineGameObjInterface
 	int Battle(General & attacker, General & defender);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
 	std::string GetSummariesString();
 public:
-	Defense(unsigned num_players, unsigned map_size, Map& map_obj); //TODO: consructor
+	Defense(unsigned num_players, unsigned map_size,) // Map& map_obj); //TODO: consructor
 	string summaries_;
 	Defense():summaries_(""); // TODO: initialization args? 
 };
