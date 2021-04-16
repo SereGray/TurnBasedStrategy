@@ -43,6 +43,7 @@ class MapTerrain{ //  клас предсавляющий изображение
 			borders.push_back(num);
 		}
 		uint32_t my_N();
+		uint32_t my_area();
 };
 
 class Map: public EngineGameObjInterface{
@@ -52,6 +53,7 @@ class Map: public EngineGameObjInterface{
 	private:
 		uint32_t width,height;
 	public:
+		uint32_t area_of(uint32_t n);
 		void SaveState();
 		void LoadState();
 		void CreateState();

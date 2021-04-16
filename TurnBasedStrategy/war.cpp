@@ -200,8 +200,9 @@ void Defense::SortLocalWarsByGeneralSpeed()
 
 bool Defense::LocalWarNoAttackers(vector<pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it)
 {
+	if(map_obj_.area_of(it->first.my_id_())==0 || map_obj_.area_of(it->second.my_id_())==0) return true; //проверка существования гос - ва
 	for (General g : it->first.v_general_) {
-		if (g.action_ == 4 && g.count_solders_ > 0) return false;        //TODO: проверка существования гос - ва
+		if (g.action_ == 4 && g.count_solders_ > 0) return false;   
 	}
 	for (General g : it->second.v_general_) {
 		if (g.action_ == 4 && g.count_solders_ > 0) return false;
