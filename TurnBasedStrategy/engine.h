@@ -45,6 +45,6 @@ class Engine: public TbsInterface{
 public:
 	ScienceGameObj science_game_obj_;
 	void NextTurn(); // запускает цепочку расчетов следующего 
-};
 #endif
+};
 

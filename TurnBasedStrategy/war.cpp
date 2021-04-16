@@ -112,7 +112,8 @@ unsigned AddGeneral(General& in)
 
 Genral& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
 {
-	unsigned speed=0,count=0;
+	long long speed = -1;
+	unsigned count=0;
 	long long index=-1; // if has no General - err
 	for(General g: v_general_){
 		if(g.speed_>speed && g.target_ == target && g.solders_ > 0){  // TODO: check exceptions if solders==0 
@@ -121,6 +122,7 @@ Genral& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
 		}
 		++count;
 	}
+	if (speed = -1) return landaun_; // TODO: check
 	return v_general_[index];
 }
 
