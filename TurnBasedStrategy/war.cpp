@@ -1,7 +1,9 @@
 #include "war.h"
 #include <cmath>
 #include <memory>
+#include<algorithm>
 
+unsigned General::next_general_id =0;
 void General::Workout()
 {
 	action_ = 2;
@@ -28,10 +30,11 @@ void General::Defense(unsigned count_defenders)
 
 void General::NextTurn()
 {
+	if(action_ == 5) return;
 	++age_;
-	if (age > 50) {
+	if (age_ > 50) {
 		if (rand() % 10 < 1) {
-			this.Dead();
+			this->Dead();
 			return;
 		}
 	}
@@ -51,10 +54,12 @@ void General::NextTurn()
 	}
 }
 
+//TODO: if dead vector<generals> ...
 void General::Dead()
 {
 	// add summary
 	my_master_.AddSummaryString("General " + name_ + " is dead died at an advanced age ");
+	my_master_.DeleteGeneral(my_id_);
 	// call destroyer object
 	General::~General();
 }
@@ -68,6 +73,7 @@ General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, 
 	, unsigned age):my_master_(my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ (MAXUINT) // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
+	my_id_=next_general_id++;
 }
 
 General::General(Kingdoom_defense& my_master):my_master_(my_master) // TODO:landaun general ?
@@ -94,23 +100,17 @@ void General::Rest()
 }
 
 
-General& GetGeneral(unsigned& id)
-{
-	return map[id];
-}
-
-unsigned AddGeneral(General& in)
-{
-	
-	m_general_list[current_key] = in;
-	return ++current_key;
-}
-
-
 // Kingdoom defense
 
+void Kingdoom_defense::DeleteGeneral(unsigned my_id){
+	auto it = std::find_if(v_general_.begin(),v_general_.end(),[my_id](General& gen){if(gen.my_id_==my_id)return true;});
+	if(it != v_general_.end()){
+		v_general_.erase(it);
+	}else{//TODO:err
+	}
+}
 
-Genral& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
+General& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
 {
 	long long speed = -1;
 	unsigned count=0;
@@ -217,6 +217,13 @@ std::pair<General&, General&> Defense::GetPairBattleGeneral(vecto<pair<Kingdoom_
 	return make_pair(it->first.GetSpeedestGeneral(it->second.my_id_),it->second.GetSpeedestGeneral(it->first.my_id_));
 }
 
+//TODO: test
+virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in){  // получаю игровые объекты исп RTTI
+	for(EngineGameObjInterface* infc: list_in){
+	if(typeid(*infc) == typeid(map_obj_))map_obj_ = dynamic_cast<Map>(*infc);	
+	}
+}
+	
 void Defense::GetLocalWars() {
 	// TODO: refactor this 
 	 // получаю список атакующих генералов
