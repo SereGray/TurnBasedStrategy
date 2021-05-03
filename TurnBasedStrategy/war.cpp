@@ -76,7 +76,7 @@ General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, 
 	my_id_=next_general_id++;
 }
 
-General::General(Kingdoom_defense& my_master):my_master_(my_master) 
+General::General(Kingdoom_defense& my_master):my_master_(my_master) // TODO:landaun general ?
 {
 skill_=0;
 intelegence_=0;
@@ -193,14 +193,14 @@ pair<unsigned,unsigned> MaxSpeedGeneral(pair<Kingdoom_defense&,Kingdoom_defense&
 }
 void Defense::SortLocalWarsByGeneralSpeed()
 {
-	std::sort(vlocal_wars_.begin(), vlocal_wars_.end(), [](std::pair<Kingdoom_defense&, Kingdoom_defense&> left, std::pair<Kingdoom_defense&, Kingdoom_defense&> right{
+	sort(vlocal_wars_.begin(), vlocal_wars_.end(), [](pair<Kingdoom_defense&, Kingdoom_defense&> left, pair<Kingdoom_defense&, Kingdoom_defense&> right{
 	pair<unsigned,unsigned> left_max_speed = MaxSpeedGeneral(left);
 	pair<unsigned, unsigned> right_max_speed = MaxSpeedGeneral(right);
 	if (left_max_speed.first < right_max_speed.first || left_max_speed.second < right_max_speed.first || left_max_speed.first < right_max_speed.second || left_max_speed.second < right_max_speed.second) return true;
 	return false; });
 }
 
-bool Defense::LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it)
+bool Defense::LocalWarNoAttackers(vector<pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it)
 {
 	if(map_obj_.area_of(it->first.my_id_())==0 || map_obj_.area_of(it->second.my_id_())==0) return true; //проверка существования гос - ва
 	for (General g : it->first.v_general_) {
@@ -212,15 +212,15 @@ bool Defense::LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&, Kingd
 	return true;
 }
 
-std::pair<General&, General&> Defense::GetPairBattleGeneral(std::vector<std::pair<Kingdoom_defense&,Kingdoom_defense&>>::iterator it)
+std::pair<General&, General&> Defense::GetPairBattleGeneral(vecto<pair<Kingdoom_defense&,Kingdoom_defense&>>::iterator it)
 {
 	return make_pair(it->first.GetSpeedestGeneral(it->second.my_id_),it->second.GetSpeedestGeneral(it->first.my_id_));
 }
 
 //TODO: test
-virtual void Defense::SetInterface(std::vector<EngineGameObjInterface*> list_in){  // получаю игровые объекты исп RTTI
+virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in){  // получаю игровые объекты исп RTTI
 	for(EngineGameObjInterface* infc: list_in){
-	if(typeid(*infc) == typeid(map_obj_))map_obj_ = dynamic_cast<Game_Map>(*infc);	
+	if(typeid(*infc) == typeid(map_obj_))map_obj_ = dynamic_cast<Map>(*infc);	
 	}
 }
 	
@@ -291,6 +291,10 @@ void Defense::NextTurn()
 	}
 }
 
+unsigned Defense::GetCountSpecialists()
+{
+	return 0;
+}
 
 //TODO: balance game Battle
 // return 100 if first gen win, else -100. if no clear victory or drav return num betwen -100 and 100;

@@ -31923,7 +31923,7 @@ namespace cimg_library_suffixed {
       return res;
     }
 
-    //! Game_Map predefined colormap on the scalar (indexed) image instance.
+    //! Map predefined colormap on the scalar (indexed) image instance.
     /**
        \param colormap Multi-valued colormap used for mapping the indexes.
        \param boundary_conditions Boundary conditions. Can be { 0=dirichlet | 1=neumann | 2=periodic | 3=mirror }.
@@ -31942,7 +31942,7 @@ namespace cimg_library_suffixed {
       return get_map(colormap,boundary_conditions).move_to(*this);
     }
 
-    //! Game_Map predefined colormap on the scalar (indexed) image instance \newinstance.
+    //! Map predefined colormap on the scalar (indexed) image instance \newinstance.
     template<typename t>
     CImg<t> get_map(const CImg<t>& colormap, const unsigned int boundary_conditions=0) const {
       const ulongT

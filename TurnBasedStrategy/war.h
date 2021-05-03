@@ -1,5 +1,5 @@
-/* Хранит состояние генералов солдат
-* Реализует механику битвы,
+/* Хранит состояние генералов солдат 
+* Реализует механику битвы,  
 */
 #ifndef WAR 
 #define WAR
@@ -15,19 +15,19 @@
 class Kingdoom_defense;// forward declaration
 class Defense;
 
-class Game_Map;
+class Map;
 
 class General
 {
-	friend class Kingdoom_defense; // only kingdom may create own generals
 	static unsigned next_general_id; // inline ?
 	unsigned my_id_;
+	friend class Kingdoom_defense; // only kingdom may create own generals
 	float skill_float_;
 	General();
-	Kingdoom_defense& my_master_;
-	General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
-
-public:
+	Kingdoom_defense & my_master_;
+	General(Kingdoom_defense& my_master, std::string name,unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
+	public:
+	General(Kingdoom_defense& my_master); // constructor for landaun general 
 	unsigned skill_; // max 100
 	unsigned intelegence_; // max 100
 	unsigned spirit_; // max 100
@@ -37,8 +37,6 @@ public:
 	unsigned target_;  // number of kingdom to attack TODO: set targer
 	unsigned count_solders_;
 	std::string name_;
-
-	General(Kingdoom_defense& my_master); // constructor for landaun general 
 	void AttackTo(unsigned count_attack, unsigned number_kingd);
 	void Rest();
 	void Workout();
@@ -56,55 +54,52 @@ class Kingdoom_defense {
 	unsigned solders_;
 	float solder_force_; // 1.0 at def , always > 1.0
 public:
-	const unsigned my_id_;
+	const unsigned my_id_;	
+	void DeleteGeneral(unsigned my_id);
 	Defense& master_;
+	Kingdoom_defense(unsigned my_number, Defense& master):solders_(10), solder_force_(1.0), my_id_(my_number), master_(master){};
 	std::vector<General> v_general_; //  kingdom generals
 	General landaun_; // default bad general
-
-	void DeleteGeneral(unsigned my_id);
-	Kingdoom_defense(unsigned my_number, Defense& master) :solders_(10), solder_force_(1.0), my_id_(my_number), master_(master) {};
 	General& GetSpeedestGeneral(unsigned target);
-	void AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned speed, unsigned age); // TODO: refractor there
+	void AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age); // TODO: refractor there
+	void SortGeneralBySpeed();
 	void AddSolder(unsigned count);
 	unsigned GetCountSpecialists();
 	float GetSolderForce();
 	void NextTurn();
 	void AddSummaryString(std::string text);
 	std::string GetSummaryString();
-	void SetAttack(General& gen, unsigned target);
+	void SetAttack(General& gen,unsigned target);
 };
 
-//если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, 
-//один генерал бьется не более 2ух раз за ход
+	//если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, 
+	//один генерал бьется не более 2ух раз за ход
 
-class Defense : public EngineGameObjInterface
+class Defense: public EngineGameObjInterface 
 {
 	friend class Kingdoom_defense;
-	Game_Map* map_obj_;
+	Map* map_obj_;
 	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
-	std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_;
-
-	void SortLocalWarsByGeneralSpeed();
-	bool LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it);
-	std::pair<General&, General&> GetPairBattleGeneral(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it);
 	int SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number);  // return number index, else -1
-
+	std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_;
+	void SortLocalWarsByGeneralSpeed();
+	bool LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&,Kingdoom_defense&>>::iterator it);
+	std::pair<General&,General&> GetPairBattleGeneral(std::vector<std::pair<Kingdoom_defense&,Kingdoom_defense&>>::iterator it);
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);  // получаю игровые объекты исп RTTI
 	virtual void GetLocalWars();
 	virtual void SaveState();
 	virtual void LoadState();
-	virtual void CreateState(unsigned num_players, unsigned map_size); //, Game_Map& map_obj);
+	virtual void CreateState(unsigned num_players, unsigned map_size); //, Map& map_obj);
 	virtual void NextTurn();
 
-	int Battle(General& attacker, General& defender);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
-
+	unsigned GetCountSpecialists();
+	int Battle(General & attacker, General & defender);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
 	std::string GetSummariesString();
-
 public:
 	~Defense();
-	Defense(unsigned num_players); //TODO: consructor
+	Defense(unsigned num_players, unsigned map_size, Map& map_obj); //TODO: consructor
 	std::string summaries_;
-	Defense() :summaries_("") {}; // TODO: initialization args? 
+	Defense():summaries_(""){}; // TODO: initialization args? 
 };
 
 #endif

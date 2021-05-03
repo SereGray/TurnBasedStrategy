@@ -46,7 +46,7 @@ class MapTerrain{ //  клас предсавляющий изображение
 		uint32_t my_area();
 };
 
-class Game_Map: public EngineGameObjInterface{
+class Map: public EngineGameObjInterface{
 	public:
 		vector<MapPoint> adjacentList; // таблица смежности представляет из себя список всех вершин
 		vector<MapTerrain> list_terrains;
@@ -65,7 +65,7 @@ class Game_Map: public EngineGameObjInterface{
 		// получить цвет территории
 		uint32_t GetColor(); // color is  +8empty bits +RGB 24b ( 8-8-8 bit)
 		std::string GetSummariesString();
-		Game_Map(uint32_t w, uint32_t h, uint32_t p);
+		Map(uint32_t w, uint32_t h, uint32_t p);
 		void PrintTabSmej();
 		void ToFile(uint8_t);
 		void MapToScreen();

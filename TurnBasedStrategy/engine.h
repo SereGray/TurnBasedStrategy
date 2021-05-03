@@ -31,14 +31,14 @@
 
 // класс взаимодействия игровых объектов движка между собой
 class EngineGameObjInterface {
-	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in)=0;  // получаю игровые объекты исп RTTI
-	virtual void NextTurn()=0;
-	virtual void SaveState()=0;
-	virtual void LoadState()=0;
-	virtual void CreateState(unsigned num_players, unsigned map_size)=0;
-	virtual std::string GetSummariesString()=0; // сводки за предыдущий ход
+	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);  // получаю игровые объекты исп RTTI
+	virtual void NextTurn();
+	virtual void SaveState();
+	virtual void LoadState();
+	virtual void CreateState(unsigned num_players, unsigned map_size);
+	virtual std::string GetSummariesString(); // сводки за предыдущий ход
 	public:
-	virtual ~EngineGameObjInterface()=0;
+	virtual ~EngineGameObjInterface();
 };
 
 EngineGameObjInterface::~EngineGameObjInterface(){}; 
