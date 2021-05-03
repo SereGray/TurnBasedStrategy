@@ -14,6 +14,7 @@
 #ifndef ENGINE
 #define ENGINE
 
+#include<vector>
 #include"tbs_interface.h"
 #include<string>
 #include"science.h"
@@ -30,16 +31,17 @@
 
 // класс взаимодействия игровых объектов движка между собой
 class EngineGameObjInterface {
-public:
+	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);  // получаю игровые объекты исп RTTI
 	virtual void NextTurn();
 	virtual void SaveState();
 	virtual void LoadState();
 	virtual void CreateState(unsigned num_players, unsigned map_size);
-	virtual unsigned GetCountSpecialists(); // получить количество занятых специалистов
-	virtual KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_n);  // получить уровень науки 
 	virtual std::string GetSummariesString(); // сводки за предыдущий ход
-	virtual Map& GetMap();
+	public:
+	virtual ~EngineGameObjInterface();
 };
+
+EngineGameObjInterface::~EngineGameObjInterface(){}; 
 
 class Engine: public TbsInterface{
 public:
