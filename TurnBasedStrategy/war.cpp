@@ -154,6 +154,11 @@ void Kingdoom_defense::AddSummaryString(string text)
 	master_.summaries_ += text + "\n";
 }
 
+std::string Kingdoom_defense::GetSummaryString()
+{
+	return std::string();
+}
+
 Kingdoom_defense::Kingdoom_defense(unsigned my_number, Defense& master): master_(master), solders_(0), solder_force_(1.0), my_id_(my_number), landaun_(*this, "landaun", 10, 1, 70, 1, 0)
 {
 	// TODO: check

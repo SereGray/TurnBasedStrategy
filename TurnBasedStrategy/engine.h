@@ -29,6 +29,12 @@
 // метод GameLoop : бесконечного игрового цикла
 
 
+// фабрика создающая объекты и связывающая между собой
+class GameObjFactory {
+
+};
+
+
 // класс взаимодействия игровых объектов движка между собой
 class EngineGameObjInterface {
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in)=0;  // получаю игровые объекты исп RTTI

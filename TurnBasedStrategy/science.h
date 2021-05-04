@@ -31,8 +31,8 @@ class TheScience{
 // предметная наука - скорость(сила) прироста параметра в конкретной области
 class SubjectScience: public TheScience{
 	public:
-		TheScience* pbase_science_;
-		SubjectScience(TheScience* base_science, string name) : pbase_science_(base_science), name_(name);
+		TheScience& pbase_science_;
+		SubjectScience(TheScience& base_science, string name) : pbase_science_(base_science), name_(name) {};
 		void Increase(unsigned scienist_count); // увеличение науки 
 };
 
@@ -44,7 +44,8 @@ class KingdoomScience{
 		std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
 		TheScience science;
 		SubjectScience densety_people(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
-	private:
+		unsigned GetCountSpecialists();
+private:
 		void NextTurn(); // расчет сл хода
 		std::string GetSummariesString();
 		
@@ -54,14 +55,13 @@ class KingdoomScience{
 class ScienceGameObj :public TbsInterface, public EngineGameObjInterface {
 public:
 	ScienceGameObj();
-	KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_n);
+	KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_id);
 private:
 	vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_id_
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);
 	void NextTurn();
-	unsigned GetCountSpecialists();
 };
 
 #endif
