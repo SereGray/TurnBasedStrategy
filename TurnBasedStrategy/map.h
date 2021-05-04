@@ -43,29 +43,26 @@ class MapTerrain{ //  клас предсавляющий изображение
 			borders.push_back(num);
 		}
 		uint32_t my_N();
-		uint32_t my_area();
+		uint32_t my_area(); // TODO:this
 };
 
-class Game_Map: public EngineGameObjInterface{
+class Game_map_obj: public EngineGameObjInterface{
 	public:
 		vector<MapPoint> adjacentList; // таблица смежности представляет из себя список всех вершин
 		vector<MapTerrain> list_terrains;
 	private:
 		uint32_t width,height;
 	public:
-		uint32_t area_of(uint32_t n);
-		void SaveState();
-		void LoadState();
-		void CreateState();
+		uint32_t area_of(uint32_t n); //TODO: ?
 		// переход территории от одного владельца к другому
 		// return summaries
-		std::string ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders); 
+		std::string ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders); //TODO:this
 		// получить писок соседей 
 		vector<uint32_t> GetNeighborsList(uint32_t my_N);
 		// получить цвет территории
 		uint32_t GetColor(); // color is  +8empty bits +RGB 24b ( 8-8-8 bit)
 		std::string GetSummariesString();
-		Game_Map(uint32_t w, uint32_t h, uint32_t p);
+		Game_map_obj(uint32_t w, uint32_t h, uint32_t p);
 		void PrintTabSmej();
 		void ToFile(uint8_t);
 		void MapToScreen();
@@ -73,9 +70,9 @@ class Game_Map: public EngineGameObjInterface{
 		void SaveState();
 		void LoadState();
 		void CreateState();
-		void NextTurn(); // TODO:this
+		void NextTurn(); // TODO:this, maybe empty?
 		unsigned GetCountSpecialists(); // must return 0
-		std::string GetSummariesString(); // сводки за предыдущий ход
+		std::string GetSummariesString(); // сводки за предыдущий ход // TODO:this
 
 		void FillMap();
 		MapTerrain GetMinTerrain();

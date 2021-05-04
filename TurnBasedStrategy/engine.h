@@ -1,6 +1,9 @@
+// Базовый интерфейс от которого наследуются "конкретные интерфейсы"(ки) игровых
+// объектов(иб) таких как наука, армия, экономика...
 // Вызов методов к.и. чер ез вирт функц
 // Создает игру - запускает к.и. и
 // Определяет какой из игроков ходит
+
 
 //TODO: сортировку в порядке значимости при расчете хода ( например сначала война-армия, потом
 //	территория, потом население, потом посев-экономика, потом наука
@@ -29,13 +32,13 @@
 // метод GameLoop : бесконечного игрового цикла
 
 
-// фабрика создающая объекты и связывающая между собой
+// фабрика создающая объекты и связывающая между собой через SetInterface
 class GameObjFactory {
 
 };
 
 
-// класс взаимодействия игровых объектов движка между собой
+// класс интерфейс игровых объектов движка 
 class EngineGameObjInterface {
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in)=0;  // получаю игровые объекты исп RTTI
 	virtual void NextTurn()=0;
@@ -51,8 +54,9 @@ EngineGameObjInterface::~EngineGameObjInterface(){};
 
 class Engine: public TbsInterface{
 public:
-	ScienceGameObj science_game_obj_;
+	Science_game_obj science_game_obj_;
 	void NextTurn(); // запускает цепочку расчетов следующего 
+	virtual void CreateObjects(); 
 #endif
 };
 

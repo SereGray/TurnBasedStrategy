@@ -223,9 +223,10 @@ std::pair<General&, General&> Defense::GetPairBattleGeneral(std::vector<std::pai
 }
 
 //TODO: test
-virtual void Defense::SetInterface(std::vector<EngineGameObjInterface*> list_in){  // получаю игровые объекты исп RTTI
+virtual void Defense::SetInterface(std::vector<EngineGameObjInterface*> list_in){  // TODO:this получаю игровые объекты исп RTTI
 	for(EngineGameObjInterface* infc: list_in){
-	if(typeid(*infc) == typeid(map_obj_))map_obj_ = dynamic_cast<Game_Map>(*infc);	
+	if(typeid(*infc) == typeid(*map_obj_))map_obj_ = dynamic_cast<Game_map_obj*>(infc);	
+	if (typeid(*infc) == typeid(*science_obj))science_obj = dynamic_cast<Science_game_obj*>(infc);
 	}
 }
 	

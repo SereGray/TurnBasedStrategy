@@ -52,9 +52,9 @@ private:
 };
 
 // игровой объект наука
-class ScienceGameObj :public TbsInterface, public EngineGameObjInterface {
+class Science_game_obj :public TbsInterface, public EngineGameObjInterface {
 public:
-	ScienceGameObj();
+	Science_game_obj();
 	KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_id);
 private:
 	vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_id_

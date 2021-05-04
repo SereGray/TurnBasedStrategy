@@ -62,18 +62,18 @@ void SubjectScience::Increase(unsigned scienist_count)
 {
 }
 
-void ScienceGameObj::SaveState()
+void Science_game_obj::SaveState()
 {
 }
 
-void ScienceGameObj::LoadState()
+void Science_game_obj::LoadState()
 {
 }
 
-void ScienceGameObj::CreateState(unsigned num_players, unsigned map_size)
+void Science_game_obj::CreateState(unsigned num_players, unsigned map_size)
 {
 }
 
-void ScienceGameObj::NextTurn()
+void Science_game_obj::NextTurn()
 {
 }
