@@ -57,6 +57,7 @@ public:
 	Science_game_obj science_game_obj_;
 	void NextTurn(); // запускает цепочку расчетов следующего 
 	virtual void CreateObjects(); 
-#endif
+
 };
+#endif
 

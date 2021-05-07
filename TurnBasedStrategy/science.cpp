@@ -62,6 +62,11 @@ void SubjectScience::Increase(unsigned scienist_count)
 {
 }
 
+KingdoomScience& Science_game_obj::GetScience_from_Kingdom(unsigned kingdom_id)
+{
+	// TODO: вставьте здесь оператор return
+}
+
 void Science_game_obj::SaveState()
 {
 }

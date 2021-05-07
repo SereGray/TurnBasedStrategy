@@ -13,7 +13,7 @@
 class TheScience{
 	// класс наука
 	public:
-		TheScience(std::string nameScience);
+		TheScience() :name_("science") {};
 		// TODO: проверить что прирост идет у предметной области науки а не у всей
 	unsigned science_lvl_;		//общий научный уровень   TODO: test static ?
 	std::string name_;					// name 
@@ -30,20 +30,24 @@ class TheScience{
 
 // предметная наука - скорость(сила) прироста параметра в конкретной области
 class SubjectScience: public TheScience{
+	SubjectScience();
 	public:
+		std::string name_;
 		TheScience& pbase_science_;
-		SubjectScience(TheScience& base_science, string name) : pbase_science_(base_science), name_(name) {};
+		SubjectScience(TheScience& base_science, std::string name) : pbase_science_(base_science), name_(name) {};
 		void Increase(unsigned scienist_count); // увеличение науки 
 };
 
 
 class KingdoomScience{
+	TheScience science;
+	SubjectScience densety_people_, increase_people_, harvesting_, selling_res_, war_craft_;
 	public:
 		const unsigned my_id_;
-		KingdoomScience();
+		KingdoomScience(unsigned my_id) :densety_people_(SubjectScience(science, "densety people")), increase_people_(SubjectScience(science, "increase people")), harvesting_(SubjectScience(science,"harvesting")),selling_res_(SubjectScience(science,"Selling resourse")), war_craft_(SubjectScience(science,"war craft")), my_id_(my_id) {};
 		std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
-		TheScience science;
-		SubjectScience densety_people(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
+	
+		//SubjectScience densety_people_(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
 		unsigned GetCountSpecialists();
 private:
 		void NextTurn(); // расчет сл хода
@@ -52,12 +56,12 @@ private:
 };
 
 // игровой объект наука
-class Science_game_obj :public TbsInterface, public EngineGameObjInterface {
-public:
-	Science_game_obj();
+class Science_game_obj :/*public TbsInterface, public EngineGameObjInterface */{
+public:									  
+	Science_game_obj() {};
 	KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_id);
 private:
-	vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_id_
+	std::vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_id_
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);
