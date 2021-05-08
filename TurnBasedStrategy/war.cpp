@@ -116,9 +116,9 @@ General& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
 	unsigned count=0;
 	long long index=-1; // if has no General - err
 	for(General g: v_general_){
-		if(g.speed_>speed && g.target_ == target && g.solders_ > 0){  // TODO: check exceptions if solders==0 
+		if(g.speed_>speed && g.target_ == target && g.count_solders_ > 0){  // TODO: check exceptions if solders==0 
 			index = count;
-			speed = speed_;
+			speed = g.speed_;
 		}
 		++count;
 	}
@@ -138,14 +138,15 @@ unsigned Kingdoom_defense::GetCountSpecialists()
 
 float Kingdoom_defense::GetSolderForce()
 {
-	unsigned lvl = master.GetScience_from_Kingdom(my_id_).war_craft.science_lvl; // TODO: test this
+	unsigned lvl = master_.GetWarCraftLevel(my_id_); // TODO: test this
 	return 1.0f + (lvl / 10);
 }
 
+//TODO: this
 void Kingdoom_defense::NextTurn()
 {
-	for (General& gen : v_general_id_) {
-		gen.NextTurn();
+	for (General& gen : v_general_) {
+		gen.NextTurn(); // start next turn general
 	}
 }
 
@@ -159,10 +160,6 @@ std::string Kingdoom_defense::GetSummaryString()
 	return std::string();
 }
 
-Kingdoom_defense::Kingdoom_defense(unsigned my_number, Defense& master): master_(master), solders_(0), solder_force_(1.0), my_id_(my_number), landaun_(*this, "landaun", 10, 1, 70, 1, 0)
-{
-	// TODO: check
-}
 
 void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
 {
@@ -189,16 +186,16 @@ int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) //re
 pair<unsigned,unsigned> MaxSpeedGeneral(pair<Kingdoom_defense&,Kingdoom_defense&> kd) {
 	pair<unsigned, unsigned> max_speed = 0;
 	for (General g : kd.first.v_general_) {
-		if (g.speed_ > max_speed) max_speed.first = g.speed_;
+		if (g.speed_ > max_speed.first) max_speed.first = g.speed_;
 	};
 	for (General g : kd.second.v_general_) {
-		if (g.speed_ > max_speed) max_speed.second = g.speed_;
+		if (g.speed_ > max_speed.second) max_speed.second = g.speed_;
 	};
 	return max_speed;
 }
 void Defense::SortLocalWarsByGeneralSpeed()
 {
-	std::sort(vlocal_wars_.begin(), vlocal_wars_.end(), [](std::pair<Kingdoom_defense&, Kingdoom_defense&> left, std::pair<Kingdoom_defense&, Kingdoom_defense&> right{
+	std::sort(vlocal_wars_.begin(), vlocal_wars_.end(), [](std::pair<Kingdoom_defense&, Kingdoom_defense&> left, std::pair<Kingdoom_defense&, Kingdoom_defense&> right){
 	pair<unsigned,unsigned> left_max_speed = MaxSpeedGeneral(left);
 	pair<unsigned, unsigned> right_max_speed = MaxSpeedGeneral(right);
 	if (left_max_speed.first < right_max_speed.first || left_max_speed.second < right_max_speed.first || left_max_speed.first < right_max_speed.second || left_max_speed.second < right_max_speed.second) return true;
@@ -207,7 +204,7 @@ void Defense::SortLocalWarsByGeneralSpeed()
 
 bool Defense::LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it)
 {
-	if(map_obj_.area_of(it->first.my_id_())==0 || map_obj_.area_of(it->second.my_id_())==0) return true; //проверка существования гос - ва
+	if(map_obj_->area_of(it->first.my_id_())==0 || map_obj_->area_of(it->second.my_id_())==0) return true; //проверка существования гос - ва
 	for (General g : it->first.v_general_) {
 		if (g.action_ == 4 && g.count_solders_ > 0) return false;   
 	}
@@ -219,11 +216,11 @@ bool Defense::LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&, Kingd
 
 std::pair<General&, General&> Defense::GetPairBattleGeneral(std::vector<std::pair<Kingdoom_defense&,Kingdoom_defense&>>::iterator it)
 {
-	return make_pair(it->first.GetSpeedestGeneral(it->second.my_id_),it->second.GetSpeedestGeneral(it->first.my_id_));
+	return make_pair(std::ref(it->first.GetSpeedestGeneral(it->second.my_id_)),std::ref(it->second.GetSpeedestGeneral(it->first.my_id_)));
 }
 
 //TODO: test
-virtual void Defense::SetInterface(std::vector<EngineGameObjInterface*> list_in){  // TODO:this получаю игровые объекты исп RTTI
+void Defense::SetInterface(std::vector<EngineGameObjInterface*> list_in){  // TODO:this получаю игровые объекты исп RTTI
 	for(EngineGameObjInterface* infc: list_in){
 	if(typeid(*infc) == typeid(*map_obj_))map_obj_ = dynamic_cast<Game_map_obj*>(infc);	
 	if (typeid(*infc) == typeid(*science_obj))science_obj = dynamic_cast<Science_game_obj*>(infc);
@@ -330,6 +327,11 @@ int Defense::Battle(General& attacker, General& defender)
 		}
 	}
 	return res;
+}
+
+unsigned Defense::GetWarCraftLevel(unsigned my_id_)
+{
+	return science_obj->GetScience_from_Kingdom(my_id_).GetWarcraftLvl();
 }
 
 std::string Defense::GetSummariesString()

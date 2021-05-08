@@ -62,7 +62,7 @@ public:
 	General landaun_; // default bad general
 
 	void DeleteGeneral(unsigned my_id);
-	Kingdoom_defense(unsigned my_number, Defense& master) :solders_(10), solder_force_(1.0), my_id_(my_number), master_(master) {};
+	Kingdoom_defense(unsigned my_number, Defense& master) :solders_(10), solder_force_(1.0), my_id_(my_number), master_(master),landaun_(*this) {};
 	General& GetSpeedestGeneral(unsigned target);
 	void AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned speed, unsigned age); // TODO: refractor there
 	void AddSolder(unsigned count);
@@ -98,7 +98,7 @@ class Defense : public EngineGameObjInterface
 	virtual void NextTurn();
 
 	int Battle(General& attacker, General& defender);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
-
+	unsigned GetWarCraftLevel(unsigned my_id_);
 	std::string GetSummariesString();
 
 public:

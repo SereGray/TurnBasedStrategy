@@ -43,6 +43,7 @@ public:
 	void CostToCropsResourse();
 	void BuyThing();  // solder, scienist, General ...
 private:
+	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	void NextTurn(); //  вычет расходов из бюджета
 	std::string GetSummariesString();
 	void ResourseConsumption();   // 1 man eat 1 resourse (corn)

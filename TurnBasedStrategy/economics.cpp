@@ -24,6 +24,10 @@ void Economics::BuyThing()
 {
 }
 
+void Economics::SetInterface(std::vector<EngineGameObjInterface*> list_in)
+{
+}
+
 void Economics::NextTurn()
 {
 }

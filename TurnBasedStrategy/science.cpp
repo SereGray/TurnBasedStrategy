@@ -3,11 +3,12 @@
 
 TheScience::TheScience(std::string nameScience) 
 {
-	name = nameScience;
-	progress = 0;
-	progressLimit = 100;
-	scienistForce = 1.0;
-	scienceLvl = 0;
+	name_ = nameScience;
+	progress_ = 0;
+	progress_limit_ = 100;
+	scienist_force_ = 1.0;
+	count_scienist_ = 0;
+	science_lvl_ = 0;
 }
 
 
@@ -36,14 +37,15 @@ void TheScience::AddScienist()
 {
 }
 
-KingdoomScience::KingdoomScience()
-{
-	
-}
 
 unsigned KingdoomScience::GetCountSpecialists()
 {
 	return 0;
+}
+
+unsigned KingdoomScience::GetWarcraftLvl()
+{
+	return war_craft_.science_lvl_;
 }
 
 void KingdoomScience::NextTurn()
@@ -65,6 +67,10 @@ void SubjectScience::Increase(unsigned scienist_count)
 KingdoomScience& Science_game_obj::GetScience_from_Kingdom(unsigned kingdom_id)
 {
 	// TODO: вставьте здесь оператор return
+}
+
+void Science_game_obj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
+{
 }
 
 void Science_game_obj::SaveState()

@@ -15,14 +15,15 @@
 
 
 // класс взаимодействия игровых объектов в том числе вывод информации на экран в файл в сеть и т. д.
-class TbsInterface {
+class TbsInterface {/*
 	virtual void CreateObjects()=0; // реализовывает движок
 	virtual void GetGameObjList(); // получить список игровых объектов
 	virtual void View(); // отображение ( реализ к.и)
 	virtual void SendMess(); // созд сообщение для сети полную копию
 	virtual void GetDifference(); // создание разницы состояния объекта для отправки по сети
 	virtual void SendMessDiff(); //(движ)созд сообщение для сети с изменениями для текущего хода
-	virtual ~TbsInterface();
+	*/virtual ~TbsInterface();
+	
    // TODO: for AI methods
 	// получать показывать методы конкр интерфейсов
 	// получить список конкретных инф
