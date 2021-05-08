@@ -20,10 +20,6 @@
 #include<vector>
 #include"tbs_interface.h"
 #include<string>
-#include"science.h"
-#include"war.h"
-#include"map.h"
-#include"economics.h"
 // список игоровых объектов
 
 // метод NextTurn : обход игровых объектов по списку и вызов метода NextTurnObj

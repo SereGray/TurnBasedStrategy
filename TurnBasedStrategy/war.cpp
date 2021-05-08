@@ -2,6 +2,7 @@
 #include <cmath>
 #include <memory>
 #include<algorithm>
+#include<limits>
 
 unsigned General::next_general_id =0;
 void General::Workout()
@@ -67,6 +68,11 @@ void General::Dead()
 Kingdoom_defense& General::GetMaster()
 {
 	return my_master_;
+}
+
+float General::GetSolderForce()
+{
+	return GetMaster().GetSolderForce();
 }
 
 General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
@@ -150,7 +156,7 @@ void Kingdoom_defense::NextTurn()
 	}
 }
 
-void Kingdoom_defense::AddSummaryString(string text)
+void Kingdoom_defense::AddSummaryString(std::string text)
 {
 	master_.summaries_ += text + "\n";
 }
@@ -168,7 +174,7 @@ void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned int
 }
 
 void Kingdoom_defense::SetAttack(General& gen, unsigned target){
-	gen.target_.target;
+	gen.target_=target;
 }
 
 // Defense class
@@ -177,14 +183,14 @@ void Kingdoom_defense::SetAttack(General& gen, unsigned target){
 int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) //return index in vector
 {
 	unsigned count = 0;
-	for (pair<Kingdoom_defense&, Kingdoom_defense&> lw : vlocal_wars_) {
+	for (std::pair<Kingdoom_defense&, Kingdoom_defense&> lw : vlocal_wars_) {
 		if ((lw.first.my_id_ == kingd1_number && lw.second.my_id_ == kingd2_number) || (lw.first.my_id_ == kingd2_number && lw.second.my_id_ == kingd1_number)) return count;
 		++count;
 	}
 	return MAXUINT; // error
 }
-pair<unsigned,unsigned> MaxSpeedGeneral(pair<Kingdoom_defense&,Kingdoom_defense&> kd) {
-	pair<unsigned, unsigned> max_speed = 0;
+std::pair<unsigned,unsigned> MaxSpeedGeneral(std::pair<Kingdoom_defense&,Kingdoom_defense&> kd) {
+	std::pair<unsigned, unsigned> max_speed = std::make_pair(0,0);
 	for (General g : kd.first.v_general_) {
 		if (g.speed_ > max_speed.first) max_speed.first = g.speed_;
 	};
@@ -196,15 +202,15 @@ pair<unsigned,unsigned> MaxSpeedGeneral(pair<Kingdoom_defense&,Kingdoom_defense&
 void Defense::SortLocalWarsByGeneralSpeed()
 {
 	std::sort(vlocal_wars_.begin(), vlocal_wars_.end(), [](std::pair<Kingdoom_defense&, Kingdoom_defense&> left, std::pair<Kingdoom_defense&, Kingdoom_defense&> right){
-	pair<unsigned,unsigned> left_max_speed = MaxSpeedGeneral(left);
-	pair<unsigned, unsigned> right_max_speed = MaxSpeedGeneral(right);
+	std::pair<unsigned,unsigned> left_max_speed = MaxSpeedGeneral(left);
+	std::pair<unsigned, unsigned> right_max_speed = MaxSpeedGeneral(right);
 	if (left_max_speed.first < right_max_speed.first || left_max_speed.second < right_max_speed.first || left_max_speed.first < right_max_speed.second || left_max_speed.second < right_max_speed.second) return true;
 	return false; });
 }
 
 bool Defense::LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it)
 {
-	if(map_obj_->area_of(it->first.my_id_())==0 || map_obj_->area_of(it->second.my_id_())==0) return true; //проверка существования гос - ва
+	if(map_obj_->area_of(it->first.my_id_)==0 || map_obj_->area_of(it->second.my_id_)==0) return true; //проверка существования гос - ва
 	for (General g : it->first.v_general_) {
 		if (g.action_ == 4 && g.count_solders_ > 0) return false;   
 	}
@@ -238,7 +244,8 @@ void Defense::GetLocalWars() {
 				int found = SearchLocalWar(kd.my_id_, gen.target_);
 				if (found < 0) {
 					// new localwar
-					vlocal_wars_.push_back(make_pair(kd, vkingdoom_def_[gen.target_]));
+					//vlocal_wars_.push_back(make_pair(std::ref(kd), std::ref(vkingdoom_def_[gen.target_]))); TODO: not work
+					vlocal_wars_.push_back(std::make_pair(kd.my_id_, gen.target_));
 
 				}
 			}
@@ -249,7 +256,7 @@ void Defense::GetLocalWars() {
 
 void Defense::ClearLocalWars()
 {
-	v_local_wars_.clear();
+	vlocal_wars_.clear();
 }
 
 void Defense::SaveState()
@@ -263,7 +270,7 @@ void Defense::LoadState()
 void Defense::CreateState(unsigned num_players, unsigned map_size)
 {
 	for (unsigned i = 0; i < num_players; ++i) {
-		Kingdoom_defense kingd(i);
+		Kingdoom_defense kingd(i,*this);
 		vkingdoom_def_.push_back(kingd);
 	}
 }
@@ -287,9 +294,9 @@ void Defense::NextTurn()
 			std::pair<General&,General&>  battle_gen = GetPairBattleGeneral(it);// take generals by iterator
 			int res = Battle(battle_gen.first, battle_gen.second);//TODO:res?
 			// if local war has no attacers destroy then vector.clean()
-			if (!LocalWarNoAttackers(it)) vlocal_wars_.clear(it);
+			if (!LocalWarNoAttackers(it)) vlocal_wars_.erase(it); // clear ?
 			//				-- в зависимости от результата вызываем метод перераспределиения территории
-			std::string summaries_battle  = map_obj_.ExchangeArea(res,battle_gen.first.GetMaster().my_id_,battle_gen.first.count_solders_ , battle_gen.second.GetMaster().my_id_ , battle_gen.second.count_solders_);
+			std::string summaries_battle  = map_obj_->ExchangeArea(res,battle_gen.first.GetMaster().my_id_,battle_gen.first.count_solders_ , battle_gen.second.GetMaster().my_id_ , battle_gen.second.count_solders_);
 			//TODO add summaries
 	}
 }
@@ -299,12 +306,12 @@ void Defense::NextTurn()
 // return 100 if first gen win, else -100. if no clear victory or drav return num betwen -100 and 100;
 int Defense::Battle(General& attacker, General& defender)
 {
-	float attacker_force = attacker.my_master_.GetSolderForce();
-	float defender_force = defender.ma_master_.GetSolderForce();
+	float attacker_force = attacker.GetSolderForce();
+	float defender_force = defender.GetSolderForce();
 	int res = 0;
 	for (int i = 0; i < 3; ++i) {
 		float attacker_k = (attacker.skill_ / 100) * (attacker.intelegence_ / 100) * (attacker.spirit_ / 100) * (attacker.speed_ / 100);
-		float defener_k = (defender.skill_ / 100) * (defender.intelegence_ / 100) * (defender.spirit_ / 100) * (defender.speed_ / 100);
+		float defender_k = (defender.skill_ / 100) * (defender.intelegence_ / 100) * (defender.spirit_ / 100) * (defender.speed_ / 100);
 		float total_count_relation = (defender.count_solders_ * defender_k * defender_force) / (attacker.count_solders_ * attacker_k * attacker_force);
 		if (total_count_relation < 0.1) { // полное превосходство атакующего
 			res = 100;
@@ -331,7 +338,7 @@ int Defense::Battle(General& attacker, General& defender)
 
 unsigned Defense::GetWarCraftLevel(unsigned my_id_)
 {
-	return science_obj->GetScience_from_Kingdom(my_id_).GetWarcraftLvl();
+	return science_obj->GetKingdoomScience(my_id_).GetWarcraftLvl();
 }
 
 std::string Defense::GetSummariesString()
@@ -339,12 +346,3 @@ std::string Defense::GetSummariesString()
 	return std::string();
 }
 
-Defense::Defense()
-{
-
-}
-
-Kingdoom_defense::Kingdoom_defense(unsigned my_number)
-	:solders_(10), solder_force_(1.0), my_id_ = (my_number)
-{
-}

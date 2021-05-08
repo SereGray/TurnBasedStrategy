@@ -8,6 +8,7 @@
 #include<vector>
 #include"science.h"
 #include<memory>
+#include"map.h"
 
 // правила войны
 // расчет сражений
@@ -15,7 +16,7 @@
 class Kingdoom_defense;// forward declaration
 class Defense;
 
-class Game_map_obj;
+//class Game_map_obj;
 
 class General
 {
@@ -47,6 +48,7 @@ public:
 	void NextTurn(); // change general condition 
 	void Dead();
 	Kingdoom_defense& GetMaster();
+	float GetSolderForce();
 
 };
 
@@ -83,8 +85,10 @@ class Defense : public EngineGameObjInterface
 	Game_map_obj* map_obj_;
 	Science_game_obj* science_obj;
 	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
-	std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_;
+	//std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_; TODO: not work
+	std::vector<std::pair<unsigned, unsigned>> vlocal_wars_;
 
+	void ClearLocalWars();
 	void SortLocalWarsByGeneralSpeed();
 	bool LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it);
 	std::pair<General&, General&> GetPairBattleGeneral(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it);

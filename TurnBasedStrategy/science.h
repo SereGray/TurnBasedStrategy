@@ -61,7 +61,8 @@ private:
 class Science_game_obj :public TbsInterface, public EngineGameObjInterface {
 public:									  
 	Science_game_obj() {};
-	KingdoomScience& GetScience_from_Kingdom(unsigned kingdom_id);
+	KingdoomScience& GetKingdoomScience(unsigned kingdom_id);
+	~Science_game_obj();
 private:
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	std::vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_id_

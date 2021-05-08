@@ -61,7 +61,7 @@ class Game_map_obj: public EngineGameObjInterface{
 		vector<uint32_t> GetNeighborsList(uint32_t my_N);
 		// получить цвет территории
 		uint32_t GetColor(); // color is  +8empty bits +RGB 24b ( 8-8-8 bit)
-		std::string GetSummariesString();
+	
 		Game_map_obj(uint32_t w, uint32_t h, uint32_t p);
 		void PrintTabSmej();
 		void ToFile(uint8_t);
@@ -71,8 +71,8 @@ class Game_map_obj: public EngineGameObjInterface{
 		void LoadState();
 		void CreateState();
 		void NextTurn(); // TODO:this, maybe empty?
-		unsigned GetCountSpecialists(); // must return 0
 		std::string GetSummariesString(); // сводки за предыдущий ход // TODO:this
+		unsigned GetCountSpecialists(); // must return 0
 
 		void FillMap();
 		MapTerrain GetMinTerrain();

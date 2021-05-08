@@ -64,9 +64,9 @@ void SubjectScience::Increase(unsigned scienist_count)
 {
 }
 
-KingdoomScience& Science_game_obj::GetScience_from_Kingdom(unsigned kingdom_id)
+KingdoomScience& Science_game_obj::GetKingdoomScience(unsigned kingdom_id)
 {
-	// TODO: вставьте здесь оператор return
+	return v_kingdom_science[kingdom_id];
 }
 
 void Science_game_obj::SetInterface(std::vector<EngineGameObjInterface*> list_in)

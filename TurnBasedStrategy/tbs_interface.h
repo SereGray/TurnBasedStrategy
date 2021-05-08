@@ -22,7 +22,9 @@ class TbsInterface {/*
 	virtual void SendMess(); // созд сообщение для сети полную копию
 	virtual void GetDifference(); // создание разницы состояния объекта для отправки по сети
 	virtual void SendMessDiff(); //(движ)созд сообщение для сети с изменениями для текущего хода
-	*/virtual ~TbsInterface();
+	*/
+public:
+	virtual ~TbsInterface()=0;
 	
    // TODO: for AI methods
 	// получать показывать методы конкр интерфейсов
@@ -31,5 +33,6 @@ class TbsInterface {/*
 	// вир получить конкр инф
 };
 
+TbsInterface::~TbsInterface() {};
 
 #endif
