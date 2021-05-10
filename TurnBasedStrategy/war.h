@@ -25,7 +25,7 @@ class General
 	unsigned my_id_;
 	float skill_float_;
 	General();
-	Kingdoom_defense& my_master_;
+	Kingdoom_defense* my_master_;
 	General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
 
 public:
@@ -47,7 +47,7 @@ public:
 	void Defense(unsigned count_defenders);
 	void NextTurn(); // change general condition 
 	void Dead();
-	Kingdoom_defense& GetMaster();
+	Kingdoom_defense* GetMaster();
 	float GetSolderForce();
 
 };
@@ -86,13 +86,15 @@ class Defense : public EngineGameObjInterface
 	Science_game_obj* science_obj;
 	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
 	//std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_; TODO: not work
-	std::vector<std::pair<unsigned, unsigned>> vlocal_wars_;
+	std::vector<std::pair<unsigned, unsigned>> vlocal_wars_; // содержит id
 
 	void ClearLocalWars();
 	void SortLocalWarsByGeneralSpeed();
-	bool LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it);
-	std::pair<General&, General&> GetPairBattleGeneral(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it);
+	bool LocalWarNoAttackers(std::vector<std::pair<unsigned, unsigned>>::iterator it);
+	std::pair<General&, General&> GetPairBattleGeneral(std::vector<std::pair<unsigned, unsigned>>::iterator it);
 	int SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number);  // return number index, else -1
+
+	std::pair<unsigned, unsigned> MaxSpeedGeneral(std::pair<unsigned, unsigned> kd);
 
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);  // получаю игровые объекты исп RTTI
 	virtual void GetLocalWars();

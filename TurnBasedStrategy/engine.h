@@ -47,7 +47,7 @@ class EngineGameObjInterface {
 	virtual ~EngineGameObjInterface()=0;
 };
 
-EngineGameObjInterface::~EngineGameObjInterface(){}; 
+
 
 class Engine: public TbsInterface{
 public:

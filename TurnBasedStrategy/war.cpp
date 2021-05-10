@@ -8,7 +8,7 @@ unsigned General::next_general_id =0;
 void General::Workout()
 {
 	action_ = 2;
-	my_master_.AddSolder(count_solders_);
+	my_master_->AddSolder(count_solders_);
 	count_solders_ = 0;
 	target_ = MAXUINT;
 }
@@ -17,7 +17,7 @@ void General::Study()
 {
 	
 	action_ = 1;
-	my_master_.AddSolder(count_solders_);
+	my_master_->AddSolder(count_solders_);
 	count_solders_ = 0;
 	target_ = MAXUINT;
 }
@@ -59,30 +59,30 @@ void General::NextTurn()
 void General::Dead()
 {
 	// add summary
-	my_master_.AddSummaryString("General " + name_ + " is dead died at an advanced age ");
-	my_master_.DeleteGeneral(my_id_);
+	my_master_->AddSummaryString("General " + name_ + " is dead died at an advanced age ");
+	my_master_->DeleteGeneral(my_id_);
 	// call destroyer object
 	General::~General();
 }
 
-Kingdoom_defense& General::GetMaster()
+Kingdoom_defense* General::GetMaster()
 {
 	return my_master_;
 }
 
 float General::GetSolderForce()
 {
-	return GetMaster().GetSolderForce();
+	return GetMaster()->GetSolderForce();
 }
 
 General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
-	, unsigned age):my_master_(my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ (MAXUINT) // TODO: check err 
+	, unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ (MAXUINT) // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
 	my_id_=next_general_id++;
 }
 
-General::General(Kingdoom_defense& my_master):my_master_(my_master) 
+General::General(Kingdoom_defense& my_master):my_master_(&my_master) 
 {
 skill_=0;
 intelegence_=0;
@@ -92,6 +92,7 @@ age_=0;
 name_="landaun";
 target_=MAXUINT;
 }
+
 
 void General::AttackTo(unsigned count_attack, unsigned number_kingd)
 {
@@ -109,7 +110,7 @@ void General::Rest()
 // Kingdoom defense
 
 void Kingdoom_defense::DeleteGeneral(unsigned my_id){
-	auto it = std::find_if(v_general_.begin(),v_general_.end(),[my_id](General& gen){if(gen.my_id_==my_id)return true;});
+	auto it = std::find_if(v_general_.begin(), v_general_.end(), [my_id](General& gen) {if (gen.my_id_ == my_id)return true; return false; });
 	if(it != v_general_.end()){
 		v_general_.erase(it);
 	}else{//TODO:err
@@ -183,46 +184,46 @@ void Kingdoom_defense::SetAttack(General& gen, unsigned target){
 int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) //return index in vector
 {
 	unsigned count = 0;
-	for (std::pair<Kingdoom_defense&, Kingdoom_defense&> lw : vlocal_wars_) {
-		if ((lw.first.my_id_ == kingd1_number && lw.second.my_id_ == kingd2_number) || (lw.first.my_id_ == kingd2_number && lw.second.my_id_ == kingd1_number)) return count;
+	for (std::pair<unsigned,unsigned> lw : vlocal_wars_) {
+		if ((lw.first == kingd1_number && lw.second == kingd2_number) || (lw.first == kingd2_number && lw.second == kingd1_number)) return count;
 		++count;
 	}
 	return MAXUINT; // error
 }
-std::pair<unsigned,unsigned> MaxSpeedGeneral(std::pair<Kingdoom_defense&,Kingdoom_defense&> kd) {
+std::pair<unsigned,unsigned> Defense::MaxSpeedGeneral(std::pair<unsigned,unsigned> kd) {
 	std::pair<unsigned, unsigned> max_speed = std::make_pair(0,0);
-	for (General g : kd.first.v_general_) {
+	for (General g : vkingdoom_def_[kd.first].v_general_) {
 		if (g.speed_ > max_speed.first) max_speed.first = g.speed_;
 	};
-	for (General g : kd.second.v_general_) {
+	for (General g : vkingdoom_def_[kd.second].v_general_) {
 		if (g.speed_ > max_speed.second) max_speed.second = g.speed_;
 	};
 	return max_speed;
 }
 void Defense::SortLocalWarsByGeneralSpeed()
 {
-	std::sort(vlocal_wars_.begin(), vlocal_wars_.end(), [](std::pair<Kingdoom_defense&, Kingdoom_defense&> left, std::pair<Kingdoom_defense&, Kingdoom_defense&> right){
+	std::sort(vlocal_wars_.begin(), vlocal_wars_.end(), [this](std::pair<unsigned, unsigned> left, std::pair<unsigned, unsigned> right){
 	std::pair<unsigned,unsigned> left_max_speed = MaxSpeedGeneral(left);
 	std::pair<unsigned, unsigned> right_max_speed = MaxSpeedGeneral(right);
 	if (left_max_speed.first < right_max_speed.first || left_max_speed.second < right_max_speed.first || left_max_speed.first < right_max_speed.second || left_max_speed.second < right_max_speed.second) return true;
 	return false; });
 }
 
-bool Defense::LocalWarNoAttackers(std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense&>>::iterator it)
+bool Defense::LocalWarNoAttackers(std::vector<std::pair<unsigned, unsigned>>::iterator it)
 {
-	if(map_obj_->area_of(it->first.my_id_)==0 || map_obj_->area_of(it->second.my_id_)==0) return true; //проверка существования гос - ва
-	for (General g : it->first.v_general_) {
+	if(map_obj_->area_of(it->first)==0 || map_obj_->area_of(it->second)==0) return true; //проверка существования гос - ва
+	for (General g : vkingdoom_def_[it->first].v_general_) {
 		if (g.action_ == 4 && g.count_solders_ > 0) return false;   
 	}
-	for (General g : it->second.v_general_) {
+	for (General g : vkingdoom_def_[it->second].v_general_) {
 		if (g.action_ == 4 && g.count_solders_ > 0) return false;
 	}
 	return true;
 }
 
-std::pair<General&, General&> Defense::GetPairBattleGeneral(std::vector<std::pair<Kingdoom_defense&,Kingdoom_defense&>>::iterator it)
+std::pair<General&, General&> Defense::GetPairBattleGeneral(std::vector<std::pair<unsigned,unsigned>>::iterator it)
 {
-	return make_pair(std::ref(it->first.GetSpeedestGeneral(it->second.my_id_)),std::ref(it->second.GetSpeedestGeneral(it->first.my_id_)));
+	return make_pair(std::ref(vkingdoom_def_[it->first].GetSpeedestGeneral(it->second)),std::ref(vkingdoom_def_[it->second].GetSpeedestGeneral(it->first)));
 }
 
 //TODO: test
@@ -296,7 +297,7 @@ void Defense::NextTurn()
 			// if local war has no attacers destroy then vector.clean()
 			if (!LocalWarNoAttackers(it)) vlocal_wars_.erase(it); // clear ?
 			//				-- в зависимости от результата вызываем метод перераспределиения территории
-			std::string summaries_battle  = map_obj_->ExchangeArea(res,battle_gen.first.GetMaster().my_id_,battle_gen.first.count_solders_ , battle_gen.second.GetMaster().my_id_ , battle_gen.second.count_solders_);
+			std::string summaries_battle  = map_obj_->ExchangeArea(res,battle_gen.first.GetMaster()->my_id_,battle_gen.first.count_solders_ , battle_gen.second.GetMaster()->my_id_ , battle_gen.second.count_solders_);
 			//TODO add summaries
 	}
 }

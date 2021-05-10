@@ -33,6 +33,6 @@ public:
 	// вир получить конкр инф
 };
 
-TbsInterface::~TbsInterface() {};
+
 
 #endif

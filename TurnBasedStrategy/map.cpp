@@ -362,9 +362,24 @@ unsigned Game_map_obj::GetCountSpecialists()
 	return 0;
 }
 
+uint32_t Game_map_obj::area_of(uint32_t n)
+{
+	return uint32_t();
+}
+
 std::string Game_map_obj::ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders)
 {
 	return std::string();
+}
+
+vector<uint32_t> Game_map_obj::GetNeighborsList(uint32_t my_N)
+{
+	return vector<uint32_t>();
+}
+
+uint32_t Game_map_obj::GetColor()
+{
+	return uint32_t();
 }
 
 std::string Game_map_obj::GetSummariesString()

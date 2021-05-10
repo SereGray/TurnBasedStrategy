@@ -1,5 +1,6 @@
-
 #include"engine.h"
+
+EngineGameObjInterface::~EngineGameObjInterface() {};
 
 void Engine::NextTurn()
 {

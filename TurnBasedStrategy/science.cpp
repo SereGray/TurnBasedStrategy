@@ -1,6 +1,8 @@
 #include "science.h"
 //#include <memory>
 
+float TheScience::scienist_force_ = 1.5;
+
 TheScience::TheScience(std::string nameScience) 
 {
 	name_ = nameScience;

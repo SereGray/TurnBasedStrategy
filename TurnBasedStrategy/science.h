@@ -30,6 +30,8 @@ public:
 	TheScience(std::string nameScience);
 };
 
+
+
 // предметная наука - скорость(сила) прироста параметра в конкретной области
 class SubjectScience: public TheScience{
 	SubjectScience();
