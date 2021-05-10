@@ -72,5 +72,6 @@
   <ItemGroup>
     <None Include="backup\.ycm_extra_conf.py" />
     <None Include=".ycm_extra_conf.py" />
+    <None Include="..\EngineTest\EngineTest.vcxproj" />
   </ItemGroup>
 </Project>
