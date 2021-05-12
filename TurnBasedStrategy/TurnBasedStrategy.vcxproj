@@ -162,7 +162,6 @@
     <ClInclude Include="war.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\EngineTest\EngineTest.vcxproj" />
     <None Include=".ycm_extra_conf.py" />
     <None Include="backup\.ycm_extra_conf.py" />
   </ItemGroup>

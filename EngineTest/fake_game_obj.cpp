@@ -1,6 +1,6 @@
 #include"fake_game_obj.h"
 
-fake_game_obj::fake_game_obj(){
+fake_game_obj::fake_game_obj():another(this){
 	++counter;
 }
 
