@@ -5,8 +5,6 @@ VisualStudioVersion = 16.0.30517.126
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TurnBasedStrategy", "TurnBasedStrategy\TurnBasedStrategy.vcxproj", "{8187776A-B6A1-46BF-A4C8-C82F7F15015F}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Sample-Test1", "Sample-Test1\Sample-Test1.vcxproj", "{C1D9D844-C567-4397-BF52-54CF78EFC66C}"
-EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EngineTest", "EngineTest\EngineTest.vcxproj", "{C10B35BC-535F-457B-ABCE-3063A6A3E7E4}"
 EndProject
 Global
@@ -25,14 +23,6 @@ Global
 		{8187776A-B6A1-46BF-A4C8-C82F7F15015F}.Release|x64.Build.0 = Release|x64
 		{8187776A-B6A1-46BF-A4C8-C82F7F15015F}.Release|x86.ActiveCfg = Release|Win32
 		{8187776A-B6A1-46BF-A4C8-C82F7F15015F}.Release|x86.Build.0 = Release|Win32
-		{C1D9D844-C567-4397-BF52-54CF78EFC66C}.Debug|x64.ActiveCfg = Debug|x64
-		{C1D9D844-C567-4397-BF52-54CF78EFC66C}.Debug|x64.Build.0 = Debug|x64
-		{C1D9D844-C567-4397-BF52-54CF78EFC66C}.Debug|x86.ActiveCfg = Debug|Win32
-		{C1D9D844-C567-4397-BF52-54CF78EFC66C}.Debug|x86.Build.0 = Debug|Win32
-		{C1D9D844-C567-4397-BF52-54CF78EFC66C}.Release|x64.ActiveCfg = Release|x64
-		{C1D9D844-C567-4397-BF52-54CF78EFC66C}.Release|x64.Build.0 = Release|x64
-		{C1D9D844-C567-4397-BF52-54CF78EFC66C}.Release|x86.ActiveCfg = Release|Win32
-		{C1D9D844-C567-4397-BF52-54CF78EFC66C}.Release|x86.Build.0 = Release|Win32
 		{C10B35BC-535F-457B-ABCE-3063A6A3E7E4}.Debug|x64.ActiveCfg = Debug|x64
 		{C10B35BC-535F-457B-ABCE-3063A6A3E7E4}.Debug|x64.Build.0 = Debug|x64
 		{C10B35BC-535F-457B-ABCE-3063A6A3E7E4}.Debug|x86.ActiveCfg = Debug|Win32
