@@ -15,7 +15,7 @@ class TheScience{
         private:	
 	unsigned		progress_;			// количество работы ученых над текущим уровнем
 	unsigned		progress_limit_;	// макс прогресс для этого уровняя (если больше то повыш ур.)
-	static float	scienist_force_;	// сколько прогресса добавляет один ученый
+	float	scienist_force_;	// сколько прогресса добавляет один ученый
 	unsigned		count_scienist_; 
 	unsigned		scienist_lvl_;
 	float Scienist_force();				// подсчет силы ученого запускать в NextTurn() т.к.результат static
@@ -26,7 +26,7 @@ public:
 	// TODO: проверить что прирост идет у предметной области науки а не у всей
 	unsigned science_lvl_;		//общий научный уровень   TODO: test static ?
 	std::string name_;					// name 
-	TheScience() :name_("science") {};
+	TheScience() :progress_(0),progress_limit_(100), scienist_force_(1.0), count_scienist_(0),science_lvl_(0),  name_("science") {};
 	TheScience(std::string nameScience);
 };
 

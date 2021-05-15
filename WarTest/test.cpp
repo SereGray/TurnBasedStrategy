@@ -8,9 +8,10 @@ TEST(TestCaseName, TestName) {
 
 namespace GeneralNameSpace {
 
-	TEST(GeneralClassTest, GeneralConstructor_Floating_to_Int) {
+	TEST(GeneralClassTest, GeneralConstructor_addGeneral) {
 		Defense d;
 		Kingdoom_defense kd(0,d);
 		kd.AddGeneral("landaun", 10, 10, 10, 10);
+		EXPECT_EQ(kd.v_general_.size(), 1);
 	}
 }

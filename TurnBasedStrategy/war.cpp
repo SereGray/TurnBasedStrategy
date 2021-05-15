@@ -347,3 +347,6 @@ std::string Defense::GetSummariesString()
 	return std::string();
 }
 
+Defense::~Defense() {
+
+}
