@@ -26,7 +26,7 @@ public:
 	// TODO: проверить что прирост идет у предметной области науки а не у всей
 	unsigned science_lvl_;		//общий научный уровень   TODO: test static ?
 	std::string name_;					// name 
-	TheScience() :progress_(0),progress_limit_(100), scienist_force_(1.0), count_scienist_(0),science_lvl_(0),  name_("science") {};
+	TheScience() :progress_(0),progress_limit_(100), scienist_force_(1.0), count_scienist_(0),scienist_lvl_(0), science_lvl_(0),  name_("science") {};
 	TheScience(std::string nameScience);
 };
 
