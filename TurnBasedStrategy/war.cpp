@@ -75,6 +75,11 @@ float General::GetSolderForce()
 	return GetMaster()->GetSolderForce();
 }
 
+unsigned General::GetMyId()
+{
+	return my_id_;
+}
+
 General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
 	, unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ (MAXUINT) // TODO: check err 
 {
@@ -82,7 +87,13 @@ General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, 
 	my_id_=next_general_id++;
 }
 
-General::General(Kingdoom_defense& my_master):my_master_(&my_master) 
+General General::CreateGeneral(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age)
+{
+	General gen =General(my_master, name,  skill,  intelegence,  spirit,  speed,  age);
+	return gen;
+}
+
+General::General(Kingdoom_defense& my_master):my_master_(&my_master)
 {
 skill_=0;
 intelegence_=0;
@@ -110,7 +121,7 @@ void General::Rest()
 // Kingdoom defense
 
 void Kingdoom_defense::DeleteGeneral(unsigned my_id){
-	auto it = std::find_if(v_general_.begin(), v_general_.end(), [my_id](General& gen) {if (gen.my_id_ == my_id)return true; return false; });
+	auto it = std::find_if(v_general_.begin(), v_general_.end(), [my_id](General& gen) {if (gen.GetMyId() == my_id)return true; return false; });
 	if(it != v_general_.end()){
 		v_general_.erase(it);
 	}else{//TODO:err
@@ -170,8 +181,8 @@ std::string Kingdoom_defense::GetSummaryString()
 
 void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
 {
-	General new_general(*this,name, skill, intelegence,100, speed, age);
-	v_general_.push_back(new_general);
+	
+	v_general_.push_back(General::CreateGeneral(*this, name, skill, intelegence, 100, speed, age));
 }
 
 void Kingdoom_defense::SetAttack(General& gen, unsigned target){

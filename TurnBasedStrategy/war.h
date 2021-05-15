@@ -20,7 +20,6 @@ class Defense;
 
 class General
 {
-	friend class Kingdoom_defense; // only kingdom may create own generals
 	static unsigned next_general_id; // inline ?
 	unsigned my_id_;
 	float skill_float_;
@@ -39,6 +38,7 @@ public:
 	unsigned count_solders_;
 	std::string name_;
 
+	static General CreateGeneral(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
 	General(Kingdoom_defense& my_master); // constructor for landaun general 
 	void AttackTo(unsigned count_attack, unsigned number_kingd);
 	void Rest();
@@ -49,6 +49,7 @@ public:
 	void Dead();
 	Kingdoom_defense* GetMaster();
 	float GetSolderForce();
+	unsigned GetMyId();
 
 };
 
