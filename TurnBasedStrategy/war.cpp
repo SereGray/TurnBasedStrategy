@@ -81,7 +81,7 @@ unsigned General::GetMyId()
 }
 
 General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
-	, unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ (MAXUINT) // TODO: check err 
+	, unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), action_(0), name_(name), target_ (MAXUINT), count_solders_(0) // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
 	my_id_=next_general_id++;
@@ -140,7 +140,7 @@ General& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
 		}
 		++count;
 	}
-	if (speed = -1) return landaun_; // TODO: check
+	if (speed == -1) return landaun_; // TODO: check
 	return v_general_[index];
 }
 
