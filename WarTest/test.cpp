@@ -6,7 +6,7 @@ TEST(TestCaseName, TestName) {
   EXPECT_TRUE(true);
 }
 
-namespace DefenseTestNameSpace {
+namespace GeneralNameSpace {
 
 	TEST(GeneralClassTest, GeneralConstructor_addGeneral) {
 		Defense d;
@@ -14,17 +14,4 @@ namespace DefenseTestNameSpace {
 		kd.AddGeneral("landaun", 10, 10, 10, 10);
 		EXPECT_EQ(kd.v_general_.size(), 1);
 	}
-
-	
-}
-
-namespace GeneralTestNameSpace {
-	class Fake_Kingdoom_defense {
-	public:
-		Fake_Kingdoom_defense()=default;
-	};
-	// have a static member 
-	class GeneralFixation : public ::testing::Test {
-		Fake_Kingdoom_defense kd;
-	};
 }

@@ -4,11 +4,8 @@
 #include<algorithm>
 #include<limits>
 
-template<typename Kingdoom_def_T>
-unsigned General<Kingdoom_def_T>::next_general_id_ =0;
-
-template<typename Kingdoom_def_T>
-void General<Kingdoom_def_T>::Workout()
+unsigned General::next_general_id =0;
+void General::Workout()
 {
 	action_ = 2;
 	my_master_->AddSolder(count_solders_);
@@ -16,8 +13,7 @@ void General<Kingdoom_def_T>::Workout()
 	target_ = MAXUINT;
 }
 
-template<typename Kingdoom_def_T>
-void General<Kingdoom_def_T>::Study()
+void General::Study()
 {
 	
 	action_ = 1;
@@ -26,16 +22,14 @@ void General<Kingdoom_def_T>::Study()
 	target_ = MAXUINT;
 }
 
-template<typename Kingdoom_def_T>
-void General<Kingdoom_def_T>::Defense(unsigned count_defenders)
+void General::Defense(unsigned count_defenders)
 {
 	action_ = 3;
 	count_solders_ = count_defenders;
 	target_ = MAXUINT;
 }
 
-template<typename Kingdoom_def_T>
-void General<Kingdoom_def_T>::NextTurn()
+void General::NextTurn()
 {
 	if(action_ == 5) return;
 	++age_;
@@ -62,8 +56,7 @@ void General<Kingdoom_def_T>::NextTurn()
 }
 
 //TODO: if dead vector<generals> ...
-template<typename Kingdoom_def_T>
-void General<Kingdoom_def_T>::Dead()
+void General::Dead()
 {
 	// add summary
 	my_master_->AddSummaryString("General " + name_ + " is dead died at an advanced age ");
@@ -72,28 +65,24 @@ void General<Kingdoom_def_T>::Dead()
 	General::~General();
 }
 
-template<typename Kingdoom_def_T>
-Kingdoom_def_T* General<Kingdoom_def_T>::GetMaster()
+Kingdoom_defense* General::GetMaster()
 {
 	return my_master_;
 }
 
-template<typename Kingdoom_def_T>
-float General<Kingdoom_def_T>::GetSolderForce()
+float General::GetSolderForce()
 {
 	return GetMaster()->GetSolderForce();
 }
 
-template<typename Kingdoom_def_T>
-General<Kingdoom_def_T>::General(Kingdoom_def_T& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
+General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
 	, unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), name_(name), target_ (MAXUINT) // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
-	my_id_=next_general_id_++;
+	my_id_=next_general_id++;
 }
 
-template<typename Kingdoom_def_T>
-General<Kingdoom_def_T>::General(Kingdoom_def_T& my_master):my_master_(&my_master)
+General::General(Kingdoom_defense& my_master):my_master_(&my_master) 
 {
 skill_=0;
 intelegence_=0;
@@ -104,15 +93,14 @@ name_="landaun";
 target_=MAXUINT;
 }
 
-template<typename Kingdoom_def_T>
-void General<Kingdoom_def_T>::AttackTo(unsigned count_attack, unsigned number_kingd)
+
+void General::AttackTo(unsigned count_attack, unsigned number_kingd)
 {
 	count_solders_ = count_attack;
 	target_ = number_kingd;
 }
 
-template<typename Kingdoom_def_T>
-void General<Kingdoom_def_T>::Rest()
+void General::Rest()
 {
 	action_ = 0;
 	target_ = MAXUINT;
@@ -122,19 +110,19 @@ void General<Kingdoom_def_T>::Rest()
 // Kingdoom defense
 
 void Kingdoom_defense::DeleteGeneral(unsigned my_id){
-	auto it = std::find_if(v_general_.begin(), v_general_.end(), [my_id](General<Kingdoom_defense>& gen) {if (gen.my_id_ == my_id)return true; return false; });
+	auto it = std::find_if(v_general_.begin(), v_general_.end(), [my_id](General& gen) {if (gen.my_id_ == my_id)return true; return false; });
 	if(it != v_general_.end()){
 		v_general_.erase(it);
 	}else{//TODO:err
 	}
 }
 
-General<Kingdoom_defense>& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
+General& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
 {
 	long long speed = -1;
 	unsigned count=0;
 	long long index=-1; // if has no General - err
-	for(General<Kingdoom_defense> g: v_general_){
+	for(General g: v_general_){
 		if(g.speed_>speed && g.target_ == target && g.count_solders_ > 0){  // TODO: check exceptions if solders==0 
 			index = count;
 			speed = g.speed_;
@@ -164,7 +152,7 @@ float Kingdoom_defense::GetSolderForce()
 //TODO: this
 void Kingdoom_defense::NextTurn()
 {
-	for (General<Kingdoom_defense>& gen : v_general_) {
+	for (General& gen : v_general_) {
 		gen.NextTurn(); // start next turn general
 	}
 }
@@ -182,11 +170,11 @@ std::string Kingdoom_defense::GetSummaryString()
 
 void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
 {
-	General<Kingdoom_defense> new_general(*this,name, skill, intelegence,100, speed, age);
+	General new_general(*this,name, skill, intelegence,100, speed, age);
 	v_general_.push_back(new_general);
 }
 
-void Kingdoom_defense::SetAttack(General<Kingdoom_defense>& gen, unsigned target){
+void Kingdoom_defense::SetAttack(General& gen, unsigned target){
 	gen.target_=target;
 }
 
@@ -204,10 +192,10 @@ int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) //re
 }
 std::pair<unsigned,unsigned> Defense::MaxSpeedGeneral(std::pair<unsigned,unsigned> kd) {
 	std::pair<unsigned, unsigned> max_speed = std::make_pair(0,0);
-	for (General<Kingdoom_defense> g : vkingdoom_def_[kd.first].v_general_) {
+	for (General g : vkingdoom_def_[kd.first].v_general_) {
 		if (g.speed_ > max_speed.first) max_speed.first = g.speed_;
 	};
-	for (General<Kingdoom_defense> g : vkingdoom_def_[kd.second].v_general_) {
+	for (General g : vkingdoom_def_[kd.second].v_general_) {
 		if (g.speed_ > max_speed.second) max_speed.second = g.speed_;
 	};
 	return max_speed;
@@ -224,16 +212,16 @@ void Defense::SortLocalWarsByGeneralSpeed()
 bool Defense::LocalWarNoAttackers(std::vector<std::pair<unsigned, unsigned>>::iterator it)
 {
 	if(map_obj_->area_of(it->first)==0 || map_obj_->area_of(it->second)==0) return true; //проверка существования гос - ва
-	for (General<Kingdoom_defense> g : vkingdoom_def_[it->first].v_general_) {
+	for (General g : vkingdoom_def_[it->first].v_general_) {
 		if (g.action_ == 4 && g.count_solders_ > 0) return false;   
 	}
-	for (General<Kingdoom_defense> g : vkingdoom_def_[it->second].v_general_) {
+	for (General g : vkingdoom_def_[it->second].v_general_) {
 		if (g.action_ == 4 && g.count_solders_ > 0) return false;
 	}
 	return true;
 }
 
-std::pair<General<Kingdoom_defense>&, General<Kingdoom_defense>&> Defense::GetPairBattleGeneral(std::vector<std::pair<unsigned,unsigned>>::iterator it)
+std::pair<General&, General&> Defense::GetPairBattleGeneral(std::vector<std::pair<unsigned,unsigned>>::iterator it)
 {
 	return make_pair(std::ref(vkingdoom_def_[it->first].GetSpeedestGeneral(it->second)),std::ref(vkingdoom_def_[it->second].GetSpeedestGeneral(it->first)));
 }
@@ -250,7 +238,7 @@ void Defense::GetLocalWars() {
 	// TODO: refactor this 
 	 // получаю список атакующих генералов
 	for (Kingdoom_defense& kd : vkingdoom_def_) {
-		for (General<Kingdoom_defense>& gen : kd.v_general_) {
+		for (General& gen : kd.v_general_) {
 			if (gen.action_ == 4) {
 				// если генерал атакует проверяю есть ли локальная война если есть то пропускаю
 				// если нет то создаю
@@ -304,7 +292,7 @@ void Defense::NextTurn()
 			// get iterator to first local war
 			auto it = vlocal_wars_.begin();
 			// take first figth generals( sorted by speed of general) 
-			std::pair<General<Kingdoom_defense>&,General<Kingdoom_defense>&>  battle_gen = GetPairBattleGeneral(it);// take generals by iterator
+			std::pair<General&,General&>  battle_gen = GetPairBattleGeneral(it);// take generals by iterator
 			int res = Battle(battle_gen.first, battle_gen.second);//TODO:res?
 			// if local war has no attacers destroy then vector.clean()
 			if (!LocalWarNoAttackers(it)) vlocal_wars_.erase(it); // clear ?
@@ -317,7 +305,7 @@ void Defense::NextTurn()
 
 //TODO: balance game Battle
 // return 100 if first gen win, else -100. if no clear victory or drav return num betwen -100 and 100;
-int Defense::Battle(General<Kingdoom_defense>& attacker, General<Kingdoom_defense>& defender)
+int Defense::Battle(General& attacker, General& defender)
 {
 	float attacker_force = attacker.GetSolderForce();
 	float defender_force = defender.GetSolderForce();
