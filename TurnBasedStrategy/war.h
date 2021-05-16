@@ -20,12 +20,13 @@ class Defense;
 
 class General
 {
+	static unsigned next_general_id;
 	unsigned my_id_;
 	float skill_float_;
 	General();
 	Kingdoom_defense* my_master_;
 	General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
-
+	
 public:
 	unsigned skill_; // max 100
 	unsigned intelegence_; // max 100
@@ -50,7 +51,7 @@ public:
 	float GetSolderForce();
 	unsigned GetMyId();
 	static unsigned GetNextId();
-	static void SetNextId(unsigned next_id);
+	static void SetNullId();
 
 };
 
@@ -65,7 +66,9 @@ public:
 	std::vector<General> v_general_; //  kingdom generals
 	General landaun_; // default bad general
 
-	void DeleteGeneral(unsigned my_id);
+	void DeleteGeneral(unsigned by_id);
+	General& GetGeneral(unsigned by_id);
+	unsigned GetIndexOfGeneral(unsigned by_id);
 	Kingdoom_defense(unsigned my_number, Defense& master) :solders_(10), solder_force_(1.0), my_id_(my_number), master_(master),landaun_(*this) {};
 	General& GetSpeedestGeneral(unsigned target);
 	unsigned AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned speed, unsigned age); // TODO: refractor there

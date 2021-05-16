@@ -4,6 +4,7 @@
 #include<algorithm>
 #include<limits>
 
+unsigned General::next_general_id = 0;
 void General::Workout()
 {
 	action_ = 2;
@@ -79,12 +80,24 @@ unsigned General::GetMyId()
 	return my_id_;
 }
 
+unsigned General::GetNextId()
+{
+	return next_general_id;
+}
+
+
+
 
 General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
 	, unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), action_(0), name_(name), target_ (MAXUINT), count_solders_(0) // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
-	my_id_ = my_master_->v_general_.size();
+	my_id_ = next_general_id++;
+}
+
+void General::SetNullId()
+{
+	next_general_id = 0;
 }
 
 General General::CreateGeneral(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age)
@@ -121,12 +134,35 @@ void General::Rest()
 
 // Kingdoom defense
 
-void Kingdoom_defense::DeleteGeneral(unsigned my_id){
-	auto it = std::find_if(v_general_.begin(), v_general_.end(), [my_id](General& gen) {if (gen.GetMyId() == my_id)return true; return false; });
+void Kingdoom_defense::DeleteGeneral(unsigned by_id){
+	auto it = std::find_if(v_general_.begin(), v_general_.end(), [by_id](General& gen) {if (gen.GetMyId() == by_id)return true; return false; });
 	if(it != v_general_.end()){
 		v_general_.erase(it);
 	}else{//TODO:err
 	}
+}
+
+General& Kingdoom_defense::GetGeneral(unsigned by_id)
+{
+	auto it = std::find_if(v_general_.begin(), v_general_.end(), [by_id](General& gen) {if (gen.GetMyId() == by_id)return true; return false; });
+	if (it != v_general_.end()) {
+		v_general_.erase(it);
+	}
+	else { /*err*/ };
+	return *it;
+}
+
+unsigned Kingdoom_defense::GetIndexOfGeneral(unsigned by_id)
+{
+	auto it = std::find_if(v_general_.begin(), v_general_.end(), [by_id](General& gen) {if (gen.GetMyId() == by_id)return true; return false; });
+	if (it != v_general_.end()) {
+		return std::distance(v_general_.begin(), it);
+	}
+	else { 
+		/*err*/ 
+		return MAXUINT; // crash . . . TODO: this
+	};
+	
 }
 
 General& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
