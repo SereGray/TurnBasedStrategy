@@ -39,4 +39,35 @@ namespace GeneralNameSpace {
 		kd->v_general_[0].Dead();
 		EXPECT_EQ(kd->v_general_.size(), 0);
 	}
+
+	TEST_F(FixationGeneral, GenMyId_Equals_Kingdoom_v_genera_Index) {
+		EXPECT_EQ(kd->v_general_.size(), 0);
+		unsigned id = kd->AddGeneral("landaun", 10, 10, 10, 10);
+		EXPECT_EQ(id, 0);
+		EXPECT_EQ(kd->v_general_.size(), id + 1);
+		EXPECT_TRUE(kd->v_general_[id].GetMyId() == id);
+		id = kd->AddGeneral("landaun", 10, 10, 10, 10);
+		EXPECT_TRUE(kd->v_general_[id].GetMyId() == id);
+	}
+	TEST_F(FixationGeneral, GenMyId_Equals_Kingdoom_v_genera_Index_after_Dead_one) {
+		EXPECT_EQ(kd->v_general_.size(), 0);
+		unsigned id = kd->AddGeneral("landaun", 10, 10, 10, 10);
+		EXPECT_TRUE(kd->v_general_[id].GetMyId() == id);
+		id = kd->AddGeneral("landaun", 10, 10, 10, 10);
+		EXPECT_TRUE(kd->v_general_[id].GetMyId() == id);
+		kd->v_general_[id].Dead();
+		id = kd->AddGeneral("landaun", 10, 10, 10, 10);
+		EXPECT_TRUE(kd->v_general_[id].GetMyId() == id);
+	}
+	TEST_F(FixationGeneral, Twice_addGeneral_and_Twice_Die_byId) {
+		EXPECT_EQ(kd->v_general_.size(), 0);
+		unsigned id = kd->AddGeneral("landaun", 10, 10, 10, 10);
+		EXPECT_EQ(kd->v_general_.size(), 1);
+		kd->v_general_[id].Dead();
+		EXPECT_EQ(kd->v_general_.size(), 0);
+		id = kd->AddGeneral("landaun", 10, 10, 10, 10);
+		EXPECT_EQ(kd->v_general_.size(), 1);
+		kd->v_general_[id].Dead();
+		EXPECT_EQ(kd->v_general_.size(), 0);
+	}
 }

@@ -20,7 +20,6 @@ class Defense;
 
 class General
 {
-	static unsigned next_general_id; // inline ?
 	unsigned my_id_;
 	float skill_float_;
 	General();
@@ -33,7 +32,7 @@ public:
 	unsigned spirit_; // max 100
 	unsigned speed_; // max 100
 	unsigned age_;   // max 100
-	unsigned action_;  // 0 - rest, 1 - study,2- workout, 3- defense, 4 ... attack to kingdom 5 - dead TODO: action Generall
+	unsigned action_;  // 0 - rest, 1 - study,2- workout, 3- defense, 4 ... attack to kingdom 5 - dead TODO: action Generall enum ? union ?
 	unsigned target_;  // number of kingdom to attack TODO: set targer
 	unsigned count_solders_;
 	std::string name_;
@@ -50,6 +49,8 @@ public:
 	Kingdoom_defense* GetMaster();
 	float GetSolderForce();
 	unsigned GetMyId();
+	static unsigned GetNextId();
+	static void SetNextId(unsigned next_id);
 
 };
 
@@ -67,7 +68,7 @@ public:
 	void DeleteGeneral(unsigned my_id);
 	Kingdoom_defense(unsigned my_number, Defense& master) :solders_(10), solder_force_(1.0), my_id_(my_number), master_(master),landaun_(*this) {};
 	General& GetSpeedestGeneral(unsigned target);
-	void AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned speed, unsigned age); // TODO: refractor there
+	unsigned AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned speed, unsigned age); // TODO: refractor there
 	void AddSolder(unsigned count);
 	unsigned GetCountSpecialists();
 	float GetSolderForce();

@@ -4,7 +4,6 @@
 #include<algorithm>
 #include<limits>
 
-unsigned General::next_general_id =0;
 void General::Workout()
 {
 	action_ = 2;
@@ -55,7 +54,7 @@ void General::NextTurn()
 	}
 }
 
-//TODO: if dead vector<generals> ...
+
 void General::Dead()
 {
 	// add summary
@@ -80,11 +79,12 @@ unsigned General::GetMyId()
 	return my_id_;
 }
 
+
 General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
 	, unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), action_(0), name_(name), target_ (MAXUINT), count_solders_(0) // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
-	my_id_=next_general_id++;
+	my_id_ = my_master_->v_general_.size();
 }
 
 General General::CreateGeneral(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age)
@@ -101,7 +101,8 @@ spirit_=0;
 speed_=0;
 age_=0;
 name_="landaun";
-target_=MAXUINT;
+target_= MAXUINT;
+my_id_ = MAXUINT;
 }
 
 
@@ -179,10 +180,11 @@ std::string Kingdoom_defense::GetSummaryString()
 }
 
 
-void Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
+unsigned Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
 {
-	
-	v_general_.push_back(General::CreateGeneral(*this, name, skill, intelegence, 100, speed, age));
+	General gen = General::CreateGeneral(*this, name, skill, intelegence, 100, speed, age);
+	v_general_.push_back(gen);
+	return gen.GetMyId();
 }
 
 void Kingdoom_defense::SetAttack(General& gen, unsigned target){
