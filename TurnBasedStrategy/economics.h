@@ -7,6 +7,8 @@
 #define ECONOMICS
 #include"tbs_interface.h"
 #include"engine.h"
+#include"science.h"
+
 // модель экономики: (+демографии)
 // посев доступного зерна (из остатков или покупного)
 // на доступной территории
@@ -29,8 +31,11 @@ private:
 	void DecreaseFermersPeople(); // функция убыли фермеров (наняли в качестве спец)
 };
 
-class Economics : public TbsInterface, public EngineGameObjInterface {
+//TODO:rename to KingdoomEconomics
+class Economics {
 public:
+
+
 	Demography nation_; // 
 	uint64_t gold_; // накапливаемый ресурс
 	uint64_t profit_gold_; // прибыль на следующий ход ??
@@ -43,7 +48,6 @@ public:
 	void CostToCropsResourse();
 	void BuyThing();  // solder, scienist, General ...
 private:
-	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	void NextTurn(); //  вычет расходов из бюджета
 	std::string GetSummariesString();
 	void ResourseConsumption();   // 1 man eat 1 resourse (corn)
@@ -52,4 +56,19 @@ private:
 	//( чем больше ученых тем дороже их содержать (логарифмическая зависимость?)) по основанию ~3
 	uint32_t CalculationSpecialistHiring(); // стоимость найма зависит от количества уже работающих
 };
+
+class EconomicsGameObj : public EngineGameObjInterface{
+	std::vector<Economics> v_economics_;
+	Science_game_obj* science_obj_=nullptr;
+	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
+	void SaveState();
+	void LoadState();
+	void CreateState(unsigned num_players, unsigned map_size);
+	void NextTurn();
+	public:
+	EconomicsGameObj();
+	~EconomicsGameObj();
+	Economics& GetKingdoomEconomics(unsigned by_id);
+
+};	
 #endif
