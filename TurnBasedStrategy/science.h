@@ -53,6 +53,7 @@ class KingdoomScience{
 		//SubjectScience densety_people_(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
 		unsigned GetCountSpecialists();
 		unsigned GetWarcraftLvl();
+		unsigned GetDensityLvl():
 private:
 		void NextTurn(); // расчет сл хода
 		std::string GetSummariesString();

@@ -8,6 +8,7 @@
 #include"tbs_interface.h"
 #include"engine.h"
 #include"science.h"
+#include"map.h"
 
 // модель экономики: (+демографии)
 // посев доступного зерна (из остатков или покупного)
@@ -16,6 +17,8 @@
 // продажа выращенного зерна
 // покупка ученых солдат генералов ...
 // 
+class Economics;
+class EconomicsGameObj;
 // демография:
 //прирост крестьян
 //доступный максимум
@@ -25,17 +28,20 @@ public:
 	uint32_t increase_people_;  
 	uint64_t maximum_people_; 
 	uint64_t fermers_people_;// общее количество людей занятых в экономике
-	
+	Demography(Economics& master);
+	void NextTurn();
 private:
-	void TncreaseFermersPeople(); // функция прироста населения(новые люди автоматически фермеры)
-	void DecreaseFermersPeople(); // функция убыли фермеров (наняли в качестве спец)
+	Demography()=default;
+	Economics* my_master_ = nullptr;
+	void IncreaseFermersPeople(); // функция прироста населения(новые люди автоматически фермеры)
+	void DecreaseFermersPeople(unsigned decrease_count); // функция убыли фермеров (наняли в качестве спец)
 };
 
 //TODO:rename to KingdoomEconomics
 class Economics {
 public:
-
-
+	Economics(EconomicsGameObj& master, unsigned my_id);
+	unsigned MyArea();
 	Demography nation_; // 
 	uint64_t gold_; // накапливаемый ресурс
 	uint64_t profit_gold_; // прибыль на следующий ход ??
@@ -47,7 +53,10 @@ public:
 	void BuyResourse();
 	void CostToCropsResourse();
 	void BuyThing();  // solder, scienist, General ...
+	unsigned GetDensityLvl();
 private:
+	unsigned my_id_;
+	EconomicsGameObj& my_master_;
 	void NextTurn(); //  вычет расходов из бюджета
 	std::string GetSummariesString();
 	void ResourseConsumption();   // 1 man eat 1 resourse (corn)
@@ -59,7 +68,8 @@ private:
 
 class EconomicsGameObj : public EngineGameObjInterface{
 	std::vector<Economics> v_economics_;
-	Science_game_obj* science_obj_=nullptr;
+	Science_game_obj* science_obj_ = nullptr;
+	Game_map_obj* map_obj_ = nullptr;	
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	void SaveState();
 	void LoadState();
@@ -69,6 +79,8 @@ class EconomicsGameObj : public EngineGameObjInterface{
 	EconomicsGameObj();
 	~EconomicsGameObj();
 	Economics& GetKingdoomEconomics(unsigned by_id);
+	unsigned MyArea(unsigned by_id);
+	unsigned GetDensityLvl(unsigned by_id);
 
 };	
 #endif

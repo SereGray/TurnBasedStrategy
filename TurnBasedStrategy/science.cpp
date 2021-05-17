@@ -50,6 +50,11 @@ unsigned KingdoomScience::GetWarcraftLvl()
 	return war_craft_.science_lvl_;
 }
 
+unsigned KingdoomScience::GetDensityLvl()
+{
+	return densety_people_.science_lvl_;
+}	
+
 void KingdoomScience::NextTurn()
 {
 	// двигаюсь по списку научных объектов
