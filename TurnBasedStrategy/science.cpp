@@ -71,6 +71,13 @@ void SubjectScience::Increase(unsigned scienist_count)
 {
 }
 
+// игровой объект наука
+//class Science_game_obj
+
+Science_game_obj::Science_game_obj() {}
+
+Science_game_obj::~Science_game_obj() {}
+
 KingdoomScience& Science_game_obj::GetKingdoomScience(unsigned kingdom_id)
 {
 	return v_kingdom_science[kingdom_id];
@@ -95,3 +102,5 @@ void Science_game_obj::CreateState(unsigned num_players, unsigned map_size)
 void Science_game_obj::NextTurn()
 {
 }
+
+

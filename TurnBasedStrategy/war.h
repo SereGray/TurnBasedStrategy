@@ -33,7 +33,7 @@ public:
 	unsigned spirit_; // max 100
 	unsigned speed_; // max 100
 	unsigned age_;   // max 100
-	unsigned action_;  // 0 - rest, 1 - study,2- workout, 3- defense, 4 ... attack to kingdom 5 - dead TODO: action Generall enum ? union ?
+	unsigned action_;  // 0 - rest, 1 - study,2- workout, 3- defense, 4  attack , 5 - dead TODO: action Generall enum ? union ?
 	unsigned target_;  // number of kingdom to attack TODO: set targer
 	unsigned count_solders_;
 	std::string name_;
@@ -73,6 +73,7 @@ public:
 	General& GetSpeedestGeneral(unsigned target);
 	unsigned AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned speed, unsigned age); // TODO: refractor there
 	void AddSolder(unsigned count);
+	void DecreaseSolders(unsigned count);
 	unsigned GetCountSpecialists();
 	float GetSolderForce();
 	void NextTurn();

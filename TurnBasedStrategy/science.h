@@ -53,17 +53,17 @@ class KingdoomScience{
 		//SubjectScience densety_people_(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
 		unsigned GetCountSpecialists();
 		unsigned GetWarcraftLvl();
-		unsigned GetDensityLvl():
-private:
+		unsigned GetDensityLvl();
+	private:
 		void NextTurn(); // расчет сл хода
 		std::string GetSummariesString();
 		
 };
 
 // игровой объект наука
-class Science_game_obj :public TbsInterface, public EngineGameObjInterface {
+class Science_game_obj : public EngineGameObjInterface {
 public:									  
-	Science_game_obj() {};
+	Science_game_obj();
 	KingdoomScience& GetKingdoomScience(unsigned kingdom_id);
 	~Science_game_obj();
 private:

@@ -26,6 +26,7 @@ void General::Defense(unsigned count_defenders)
 {
 	action_ = 3;
 	count_solders_ = count_defenders;
+	my_master_->DecreaseSolders(count_defenders);
 	target_ = MAXUINT;
 }
 
@@ -44,12 +45,41 @@ void General::NextTurn()
 	case 0:
 		spirit_ += 5;
 		if (spirit_ > 100)spirit_ = 100;
+		break;
 	case 1:
 		++intelegence_;
+		if (spirit_ > 2)
+		{
+			spirit_ -= 2;
+		}
+		else
+		{
+			spirit_ = 0;
+		}
+		break;
 	case 2:
 		skill_float_ += ((intelegence_ / 10) * (spirit_ / 100));
 		skill_ = static_cast<unsigned>(skill_float_);
 		if (skill_ > 100) skill_ = 100;
+		if (spirit_ > 2) 
+		{
+			spirit_ -= 2;
+		}
+		else
+		{
+			spirit_ = 0;
+		}
+		break;
+	case 3:
+		if (spirit_ > 4)
+		{
+			spirit_ -= 4;
+		}
+		else
+		{
+			spirit_ = 0;
+		}
+		break;
 	default:
 		break;
 	}
@@ -62,6 +92,7 @@ void General::Dead()
 	my_master_->AddSummaryString("General " + name_ + " is dead died at an advanced age ");
 	my_master_->DeleteGeneral(my_id_);
 	// call destroyer object
+	action_ = 5;
 	General::~General();
 }
 
@@ -88,8 +119,9 @@ unsigned General::GetNextId()
 
 
 
-General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned spirit, unsigned speed_, unsigned intelegence \
-	, unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed_), age_(age), action_(0), name_(name), target_ (MAXUINT), count_solders_(0) // TODO: check err 
+General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, \
+	unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed), age_(age), action_(0),\
+	name_(name), target_ (MAXUINT), count_solders_(0) // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
 	my_id_ = next_general_id++;
@@ -121,13 +153,17 @@ my_id_ = MAXUINT;
 
 void General::AttackTo(unsigned count_attack, unsigned number_kingd)
 {
+	action_ = 4;
 	count_solders_ = count_attack;
+	my_master_->DecreaseSolders(count_attack);
 	target_ = number_kingd;
 }
 
 void General::Rest()
 {
 	action_ = 0;
+	my_master_->AddSolder(count_solders_);
+	count_solders_ = 0;
 	target_ = MAXUINT;
 }
 
@@ -186,6 +222,11 @@ void Kingdoom_defense::AddSolder(unsigned count)
 	solders_+=count;	
 }
 
+void Kingdoom_defense::DecreaseSolders(unsigned count)
+{
+	solders_ -= count;
+}
+
 unsigned Kingdoom_defense::GetCountSpecialists()
 {
 	return solders_;
@@ -216,7 +257,7 @@ std::string Kingdoom_defense::GetSummaryString()
 }
 
 
-unsigned Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence,unsigned speed, unsigned age)
+unsigned Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned speed, unsigned age)
 {
 	General gen = General::CreateGeneral(*this, name, skill, intelegence, 100, speed, age);
 	v_general_.push_back(gen);
