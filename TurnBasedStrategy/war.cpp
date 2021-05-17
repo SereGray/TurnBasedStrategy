@@ -146,7 +146,7 @@ General& Kingdoom_defense::GetGeneral(unsigned by_id)
 {
 	auto it = std::find_if(v_general_.begin(), v_general_.end(), [by_id](General& gen) {if (gen.GetMyId() == by_id)return true; return false; });
 	if (it != v_general_.end()) {
-		v_general_.erase(it);
+		return *it;
 	}
 	else { /*err*/ };
 	return *it;

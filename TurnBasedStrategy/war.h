@@ -69,7 +69,7 @@ public:
 	void DeleteGeneral(unsigned by_id);
 	General& GetGeneral(unsigned by_id);
 	unsigned GetIndexOfGeneral(unsigned by_id);
-	Kingdoom_defense(unsigned my_number, Defense& master) :solders_(10), solder_force_(1.0), my_id_(my_number), master_(master),landaun_(*this) {};
+	Kingdoom_defense(unsigned my_number, Defense& master) :solders_(0), solder_force_(1.0), my_id_(my_number), master_(master),landaun_(*this) {};
 	General& GetSpeedestGeneral(unsigned target);
 	unsigned AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned speed, unsigned age); // TODO: refractor there
 	void AddSolder(unsigned count);
