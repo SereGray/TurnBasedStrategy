@@ -8,7 +8,7 @@ unsigned General::next_general_id = 0;
 void General::Workout()
 {
 	action_ = 2;
-	my_master_->AddSolder(count_solders_);
+	GetMaster()->AddSolder(count_solders_);
 	count_solders_ = 0;
 	target_ = MAXUINT;
 }
@@ -17,7 +17,7 @@ void General::Study()
 {
 	
 	action_ = 1;
-	my_master_->AddSolder(count_solders_);
+	GetMaster()->AddSolder(count_solders_);
 	count_solders_ = 0;
 	target_ = MAXUINT;
 }
@@ -26,7 +26,7 @@ void General::Defense(unsigned count_defenders)
 {
 	action_ = 3;
 	count_solders_ = count_defenders;
-	my_master_->DecreaseSolders(count_defenders);
+	GetMaster()->DecreaseSolders(count_defenders);
 	target_ = MAXUINT;
 }
 
@@ -155,14 +155,14 @@ void General::AttackTo(unsigned count_attack, unsigned number_kingd)
 {
 	action_ = 4;
 	count_solders_ = count_attack;
-	my_master_->DecreaseSolders(count_attack);
+	GetMaster()->DecreaseSolders(count_attack);
 	target_ = number_kingd;
 }
 
 void General::Rest()
 {
 	action_ = 0;
-	my_master_->AddSolder(count_solders_);
+	GetMaster()->AddSolder(count_solders_);
 	count_solders_ = 0;
 	target_ = MAXUINT;
 }
@@ -268,10 +268,10 @@ void Kingdoom_defense::SetAttack(General& gen, unsigned target){
 	gen.target_=target;
 }
 
-// Defense class
+// WarGameObj class
 
 // this function for GetLocalWars() 
-int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) //return index in vector
+int WarGameObj::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) //return index in vector
 {
 	unsigned count = 0;
 	for (std::pair<unsigned,unsigned> lw : vlocal_wars_) {
@@ -280,7 +280,7 @@ int Defense::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) //re
 	}
 	return MAXUINT; // error
 }
-std::pair<unsigned,unsigned> Defense::MaxSpeedGeneral(std::pair<unsigned,unsigned> kd) {
+std::pair<unsigned,unsigned> WarGameObj::MaxSpeedGeneral(std::pair<unsigned,unsigned> kd) {
 	std::pair<unsigned, unsigned> max_speed = std::make_pair(0,0);
 	for (General g : vkingdoom_def_[kd.first].v_general_) {
 		if (g.speed_ > max_speed.first) max_speed.first = g.speed_;
@@ -290,7 +290,7 @@ std::pair<unsigned,unsigned> Defense::MaxSpeedGeneral(std::pair<unsigned,unsigne
 	};
 	return max_speed;
 }
-void Defense::SortLocalWarsByGeneralSpeed()
+void WarGameObj::SortLocalWarsByGeneralSpeed()
 {
 	std::sort(vlocal_wars_.begin(), vlocal_wars_.end(), [this](std::pair<unsigned, unsigned> left, std::pair<unsigned, unsigned> right){
 	std::pair<unsigned,unsigned> left_max_speed = MaxSpeedGeneral(left);
@@ -299,7 +299,7 @@ void Defense::SortLocalWarsByGeneralSpeed()
 	return false; });
 }
 
-bool Defense::LocalWarNoAttackers(std::vector<std::pair<unsigned, unsigned>>::iterator it)
+bool WarGameObj::LocalWarNoAttackers(std::vector<std::pair<unsigned, unsigned>>::iterator it)
 {
 	if(map_obj_->area_of(it->first)==0 || map_obj_->area_of(it->second)==0) return true; //проверка существования гос - ва
 	for (General g : vkingdoom_def_[it->first].v_general_) {
@@ -311,20 +311,20 @@ bool Defense::LocalWarNoAttackers(std::vector<std::pair<unsigned, unsigned>>::it
 	return true;
 }
 
-std::pair<General&, General&> Defense::GetPairBattleGeneral(std::vector<std::pair<unsigned,unsigned>>::iterator it)
+std::pair<General&, General&> WarGameObj::GetPairBattleGeneral(std::vector<std::pair<unsigned,unsigned>>::iterator it)
 {
 	return make_pair(std::ref(vkingdoom_def_[it->first].GetSpeedestGeneral(it->second)),std::ref(vkingdoom_def_[it->second].GetSpeedestGeneral(it->first)));
 }
 
 //TODO: test
-void Defense::SetInterface(std::vector<EngineGameObjInterface*> list_in){  // TODO:this получаю игровые объекты исп RTTI
+void WarGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in){  // TODO:this получаю игровые объекты исп RTTI
 	for(EngineGameObjInterface* infc: list_in){
-	if(typeid(*infc) == typeid(*map_obj_))map_obj_ = dynamic_cast<Game_map_obj*>(infc);	
-	if (typeid(*infc) == typeid(*science_obj))science_obj = dynamic_cast<Science_game_obj*>(infc);
+	if(typeid(*infc) == typeid(*map_obj_))map_obj_ = dynamic_cast<MapGameObj*>(infc);	
+	if (typeid(*infc) == typeid(*science_obj))science_obj = dynamic_cast<ScienceGameObj*>(infc);
 	}
 }
 	
-void Defense::GetLocalWars() {
+void WarGameObj::GetLocalWars() {
 	// TODO: refactor this 
 	 // получаю список атакующих генералов
 	for (Kingdoom_defense& kd : vkingdoom_def_) {
@@ -345,20 +345,20 @@ void Defense::GetLocalWars() {
 
 }
 
-void Defense::ClearLocalWars()
+void WarGameObj::ClearLocalWars()
 {
 	vlocal_wars_.clear();
 }
 
-void Defense::SaveState()
+void WarGameObj::SaveState()
 {
 }
 
-void Defense::LoadState()
+void WarGameObj::LoadState()
 {
 }
 
-void Defense::CreateState(unsigned num_players, unsigned map_size)
+void WarGameObj::CreateState(unsigned num_players, unsigned map_size)
 {
 	for (unsigned i = 0; i < num_players; ++i) {
 		Kingdoom_defense kingd(i,*this);
@@ -366,7 +366,7 @@ void Defense::CreateState(unsigned num_players, unsigned map_size)
 	}
 }
 
-void Defense::NextTurn()
+void WarGameObj::NextTurn()
 {
 	// создаем список локальных войн
 	vlocal_wars_.clear();
@@ -395,7 +395,7 @@ void Defense::NextTurn()
 
 //TODO: balance game Battle
 // return 100 if first gen win, else -100. if no clear victory or drav return num betwen -100 and 100;
-int Defense::Battle(General& attacker, General& defender)
+int WarGameObj::Battle(General& attacker, General& defender)
 {
 	float attacker_force = attacker.GetSolderForce();
 	float defender_force = defender.GetSolderForce();
@@ -427,16 +427,16 @@ int Defense::Battle(General& attacker, General& defender)
 	return res;
 }
 
-unsigned Defense::GetWarCraftLevel(unsigned my_id_)
+unsigned WarGameObj::GetWarCraftLevel(unsigned my_id_)
 {
 	return science_obj->GetKingdoomScience(my_id_).GetWarcraftLvl();
 }
 
-std::string Defense::GetSummariesString()
+std::string WarGameObj::GetSummariesString()
 {
 	return std::string();
 }
 
-Defense::~Defense() {
+WarGameObj::~WarGameObj() {
 
 }

@@ -9,23 +9,23 @@ TEST(TestCaseName, TestName) {
 namespace GeneralNameSpace {
 
 	TEST(GeneralClassTest, GeneralConstructor_addGeneral) {
-		Defense d;
-		Kingdoom_defense kd(0,d);
+		WarGameObj d;
+		Kingdoom_defense kd(0, d);
 		kd.AddGeneral("landaun", 10, 10, 10, 10);
 		EXPECT_EQ(kd.v_general_.size(), 1);
 	}
 
-	class FixationGeneral: public ::testing::Test {
+	class FixationGeneral : public ::testing::Test {
 	protected:
 		void SetUp() override {
-			Defense* d = new Defense;
+			WarGameObj* d = new WarGameObj;
 			kd = new Kingdoom_defense(0, *d);
 		}
 		void TearDown() override {
 			delete kd;
 			delete d;
 		}
-		Defense* d = nullptr;
+		WarGameObj* d = nullptr;
 		Kingdoom_defense* kd = nullptr;
 
 	};
@@ -55,7 +55,7 @@ namespace GeneralNameSpace {
 		EXPECT_EQ(kd->v_general_.size(), 0);
 		unsigned id = kd->AddGeneral("landaun", 10, 10, 10, 10);
 		EXPECT_EQ(id, 0);
-		EXPECT_EQ(kd->v_general_.size(), 1)<<" size != 1";
+		EXPECT_EQ(kd->v_general_.size(), 1) << " size != 1";
 		EXPECT_EQ(kd->GetIndexOfGeneral(id), 0) << " index of General !=0";
 		EXPECT_TRUE(kd->v_general_[kd->GetIndexOfGeneral(id)].GetMyId() == id);
 		id = kd->AddGeneral("landaun", 10, 10, 10, 10);
@@ -90,7 +90,7 @@ namespace GeneralNameSpace {
 	TEST_F(FixationGeneral, AddSoldersDecreaseSolders) {
 		unsigned id = kd->AddGeneral("landaun", 10, 10, 10, 10);
 		kd->AddSolder(100);
-		EXPECT_EQ(kd->GetCountSpecialists(),100); // TODO:Сделать 2 функции ( <- эта показывает всех солдат, включая тех что у генералов) и 2ая поазывающая свободных
+		EXPECT_EQ(kd->GetCountSpecialists(), 100); // TODO:Сделать 2 функции ( <- эта показывает всех солдат, включая тех что у генералов) и 2ая поазывающая свободных
 		General& gen = kd->GetGeneral(id);
 		EXPECT_EQ(gen.count_solders_, 0);
 		gen.AttackTo(100, 0); // attack self ?
@@ -211,4 +211,27 @@ namespace GeneralNameSpace {
 		EXPECT_EQ(gen.speed_, 10);
 		EXPECT_EQ(gen.action_, 3);
 	}
+
+}
+
+class FixationGeneralPrivate : public ::testing::Test {
+protected:
+	void SetUp() override {
+		WarGameObj* d = new WarGameObj;
+		kd = new Kingdoom_defense(0, *d);
+	}
+	void TearDown() override {
+		delete kd;
+		delete d;
+	}
+	WarGameObj* d = nullptr;
+	Kingdoom_defense* kd = nullptr;
+
+};
+
+TEST_F(FixationGeneralPrivate, GeneralSkillFloat) {
+	unsigned id = kd->AddGeneral("landaun", 10, 10, 10, 10);
+	kd->AddSolder(100);
+	General& gen = kd->GetGeneral(id);
+	EXPECT_EQ(gen.skill_float_, 10.0);
 }

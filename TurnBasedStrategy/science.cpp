@@ -72,34 +72,34 @@ void SubjectScience::Increase(unsigned scienist_count)
 }
 
 // игровой объект наука
-//class Science_game_obj
+//class ScienceGameObj
 
-Science_game_obj::Science_game_obj() {}
+ScienceGameObj::ScienceGameObj() {}
 
-Science_game_obj::~Science_game_obj() {}
+ScienceGameObj::~ScienceGameObj() {}
 
-KingdoomScience& Science_game_obj::GetKingdoomScience(unsigned kingdom_id)
+KingdoomScience& ScienceGameObj::GetKingdoomScience(unsigned kingdom_id)
 {
 	return v_kingdom_science[kingdom_id];
 }
 
-void Science_game_obj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
+void ScienceGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
 }
 
-void Science_game_obj::SaveState()
+void ScienceGameObj::SaveState()
 {
 }
 
-void Science_game_obj::LoadState()
+void ScienceGameObj::LoadState()
 {
 }
 
-void Science_game_obj::CreateState(unsigned num_players, unsigned map_size)
+void ScienceGameObj::CreateState(unsigned num_players, unsigned map_size)
 {
 }
 
-void Science_game_obj::NextTurn()
+void ScienceGameObj::NextTurn()
 {
 }
 

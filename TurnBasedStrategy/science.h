@@ -61,11 +61,11 @@ class KingdoomScience{
 };
 
 // игровой объект наука
-class Science_game_obj : public EngineGameObjInterface {
+class ScienceGameObj : public EngineGameObjInterface {
 public:									  
-	Science_game_obj();
+	ScienceGameObj();
 	KingdoomScience& GetKingdoomScience(unsigned kingdom_id);
-	~Science_game_obj();
+	~ScienceGameObj();
 private:
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	std::vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_id_

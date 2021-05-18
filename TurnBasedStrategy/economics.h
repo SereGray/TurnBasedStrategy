@@ -17,7 +17,7 @@
 // продажа выращенного зерна
 // покупка ученых солдат генералов ...
 // 
-class Economics;
+class KingdoomEconomics;
 class EconomicsGameObj;
 // демография:
 //прирост крестьян
@@ -28,19 +28,19 @@ public:
 	uint32_t increase_people_;  
 	uint64_t maximum_people_; 
 	uint64_t fermers_people_;// общее количество людей занятых в экономике
-	Demography(Economics& master);
+	Demography(KingdoomEconomics& master);
 	void NextTurn();
 private:
 	Demography()=default;
-	Economics* my_master_ = nullptr;
+	KingdoomEconomics* my_master_ = nullptr;
 	void IncreaseFermersPeople(); // функция прироста населения(новые люди автоматически фермеры)
 	void DecreaseFermersPeople(unsigned decrease_count); // функция убыли фермеров (наняли в качестве спец)
 };
 
 //TODO:rename to KingdoomEconomics
-class Economics {
+class KingdoomEconomics {
 public:
-	Economics(EconomicsGameObj& master, unsigned my_id);
+	KingdoomEconomics(EconomicsGameObj& master, unsigned my_id);
 	unsigned MyArea();
 	Demography nation_; // 
 	uint64_t gold_; // накапливаемый ресурс
@@ -67,9 +67,9 @@ private:
 };
 
 class EconomicsGameObj : public EngineGameObjInterface{
-	std::vector<Economics> v_economics_;
-	Science_game_obj* science_obj_ = nullptr;
-	Game_map_obj* map_obj_ = nullptr;	
+	std::vector<KingdoomEconomics> v_economics_;
+	ScienceGameObj* science_obj_ = nullptr;
+	MapGameObj* map_obj_ = nullptr;	
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	void SaveState();
 	void LoadState();
@@ -78,7 +78,7 @@ class EconomicsGameObj : public EngineGameObjInterface{
 	public:
 	EconomicsGameObj();
 	~EconomicsGameObj();
-	Economics& GetKingdoomEconomics(unsigned by_id);
+	KingdoomEconomics& GetKingdoomEconomics(unsigned by_id);
 	unsigned MyArea(unsigned by_id);
 	unsigned GetDensityLvl(unsigned by_id);
 

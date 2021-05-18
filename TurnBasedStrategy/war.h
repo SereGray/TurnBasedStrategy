@@ -9,23 +9,26 @@
 #include"science.h"
 #include<memory>
 #include"map.h"
-
+#include "gtest/gtest.h"
 // правила войны
 // расчет сражений
 
 class Kingdoom_defense;// forward declaration
-class Defense;
+class WarGameObj;
 
-//class Game_map_obj;
+//class MapGameObj;
 
 class General
 {
+	friend class FixationGeneralPrivate;   // for googletest
+	FRIEND_TEST(FixationGeneralPrivate,GeneralSkillFloat);
 	static unsigned next_general_id;
 	unsigned my_id_;
 	float skill_float_;
 	General();
 	Kingdoom_defense* my_master_;
-	General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
+	General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, \
+		unsigned spirit, unsigned speed, unsigned age);
 	
 public:
 	unsigned skill_; // max 100
@@ -38,7 +41,8 @@ public:
 	unsigned count_solders_;
 	std::string name_;
 
-	static General CreateGeneral(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
+	static General CreateGeneral(Kingdoom_defense& my_master, std::string name, unsigned skill,\
+		unsigned intelegence, unsigned spirit, unsigned speed, unsigned age);
 	General(Kingdoom_defense& my_master); // constructor for landaun general 
 	void AttackTo(unsigned count_attack, unsigned number_kingd);
 	void Rest();
@@ -62,16 +66,18 @@ class Kingdoom_defense {
 	float solder_force_; // 1.0 at def , always > 1.0
 public:
 	const unsigned my_id_;
-	Defense& master_;
+	WarGameObj& master_;
 	std::vector<General> v_general_; //  kingdom generals
 	General landaun_; // default bad general
 
 	void DeleteGeneral(unsigned by_id);
 	General& GetGeneral(unsigned by_id);
 	unsigned GetIndexOfGeneral(unsigned by_id);
-	Kingdoom_defense(unsigned my_number, Defense& master) :solders_(0), solder_force_(1.0), my_id_(my_number), master_(master),landaun_(*this) {};
+	Kingdoom_defense(unsigned my_number, WarGameObj& master) :solders_(0), solder_force_(1.0),\
+		my_id_(my_number), master_(master),landaun_(*this) {};
 	General& GetSpeedestGeneral(unsigned target);
-	unsigned AddGeneral(std::string name, unsigned skill, unsigned intelegence, unsigned speed, unsigned age); // TODO: refractor there
+	unsigned AddGeneral(std::string name, unsigned skill, unsigned intelegence, \
+		unsigned speed, unsigned age); // TODO: refractor there
 	void AddSolder(unsigned count);
 	void DecreaseSolders(unsigned count);
 	unsigned GetCountSpecialists();
@@ -85,11 +91,11 @@ public:
 //если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, 
 //один генерал бьется не более 2ух раз за ход
 
-class Defense : public EngineGameObjInterface
+class WarGameObj : public EngineGameObjInterface
 {
 	friend class Kingdoom_defense;
-	Game_map_obj* map_obj_ = nullptr;
-	Science_game_obj* science_obj = nullptr;
+	MapGameObj* map_obj_ = nullptr;
+	ScienceGameObj* science_obj = nullptr;
 	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
 	//std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_; TODO: not work
 	std::vector<std::pair<unsigned, unsigned>> vlocal_wars_; // содержит id
@@ -106,7 +112,7 @@ class Defense : public EngineGameObjInterface
 	virtual void GetLocalWars();
 	virtual void SaveState();
 	virtual void LoadState();
-	virtual void CreateState(unsigned num_players, unsigned map_size); //, Game_map_obj& map_obj);
+	virtual void CreateState(unsigned num_players, unsigned map_size); //, MapGameObj& map_obj);
 	virtual void NextTurn();
 
 	int Battle(General& attacker, General& defender);  // расчет битвы вызывается в NextTurn() возвращает территориальный коэффициент битвы от -100 до 0 или +100 (исп при обмене территорией) 
@@ -114,10 +120,10 @@ class Defense : public EngineGameObjInterface
 	std::string GetSummariesString();
 
 public:
-	~Defense();
-	Defense(unsigned num_players); //TODO: consructor
+	~WarGameObj();
+	WarGameObj(unsigned num_players); //TODO: consructor
 	std::string summaries_;
-	Defense() :summaries_("") {}; // TODO: initialization args? 
+	WarGameObj() :summaries_("") {}; // TODO: initialization args? 
 };
 
 #endif
