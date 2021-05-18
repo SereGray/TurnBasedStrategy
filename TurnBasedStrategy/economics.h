@@ -22,6 +22,13 @@ class EconomicsGameObj;
 // демографи€:
 //прирост кресть€н
 //доступный максимум
+class Resourse{
+	unsigned cost_conventional_units; // cost in hundredths e.g cost_conventional_units=1 equal 0.01, 100 equal1
+	public:
+	Resourse& operator= (const Resourse&)=default;
+	virtual ~Resourse()=0;
+};
+
 class Demography {
 public:
 	uint64_t all_people_; // общее количество людей TODO: расчитыватс€ ??
@@ -37,7 +44,7 @@ private:
 	void DecreaseFermersPeople(unsigned decrease_count); // функци€ убыли фермеров (нан€ли в качестве спец)
 };
 
-//TODO:rename to KingdoomEconomics
+// 
 class KingdoomEconomics {
 public:
 	KingdoomEconomics(EconomicsGameObj& master, unsigned my_id);
