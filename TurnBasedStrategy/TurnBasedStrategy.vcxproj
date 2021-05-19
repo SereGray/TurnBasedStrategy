@@ -145,7 +145,7 @@
     <ClCompile Include="economics.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="map.cpp" />
-    <ClCompile Include="resourse.cpp" />
+    <ClCompile Include="resource.cpp" />
     <ClCompile Include="science.cpp" />
     <ClCompile Include="tbs_interface.cpp" />
     <ClCompile Include="turn_based_strategy.cpp" />
@@ -157,7 +157,7 @@
     <ClInclude Include="economics.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="map.h" />
-    <ClInclude Include="resourse.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="science.h" />
     <ClInclude Include="tbs_interface.h" />
     <ClInclude Include="turn_based_strategy.h" />
