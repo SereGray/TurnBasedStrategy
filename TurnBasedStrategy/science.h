@@ -15,7 +15,7 @@ class TheScience{
         private:	
 	unsigned		progress_;			// количество работы ученых над текущим уровнем
 	unsigned		progress_limit_;	// макс прогресс для этого уровняя (если больше то повыш ур.)
-	static float	scienist_force_;	// сколько прогресса добавляет один ученый
+	float	scienist_force_;	// сколько прогресса добавляет один ученый
 	unsigned		count_scienist_; 
 	unsigned		scienist_lvl_;
 	float Scienist_force();				// подсчет силы ученого запускать в NextTurn() т.к.результат static
@@ -26,7 +26,7 @@ public:
 	// TODO: проверить что прирост идет у предметной области науки а не у всей
 	unsigned science_lvl_;		//общий научный уровень   TODO: test static ?
 	std::string name_;					// name 
-	TheScience() :name_("science") {};
+	TheScience() :progress_(0),progress_limit_(100), scienist_force_(1.0), count_scienist_(0),scienist_lvl_(0), science_lvl_(0),  name_("science") {};
 	TheScience(std::string nameScience);
 };
 
@@ -53,18 +53,19 @@ class KingdoomScience{
 		//SubjectScience densety_people_(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
 		unsigned GetCountSpecialists();
 		unsigned GetWarcraftLvl();
-private:
+		unsigned GetDensityLvl();
+	private:
 		void NextTurn(); // расчет сл хода
 		std::string GetSummariesString();
 		
 };
 
 // игровой объект наука
-class Science_game_obj :public TbsInterface, public EngineGameObjInterface {
+class ScienceGameObj : public EngineGameObjInterface {
 public:									  
-	Science_game_obj() {};
+	ScienceGameObj();
 	KingdoomScience& GetKingdoomScience(unsigned kingdom_id);
-	~Science_game_obj();
+	~ScienceGameObj();
 private:
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	std::vector<KingdoomScience> v_kingdom_science; // access to kingdom by my_id_

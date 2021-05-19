@@ -1,7 +1,7 @@
 #include "science.h"
 //#include <memory>
 
-float TheScience::scienist_force_ = 1.5;
+
 
 TheScience::TheScience(std::string nameScience) 
 {
@@ -50,6 +50,11 @@ unsigned KingdoomScience::GetWarcraftLvl()
 	return war_craft_.science_lvl_;
 }
 
+unsigned KingdoomScience::GetDensityLvl()
+{
+	return densety_people_.science_lvl_;
+}	
+
 void KingdoomScience::NextTurn()
 {
 	// двигаюсь по списку научных объектов
@@ -66,27 +71,36 @@ void SubjectScience::Increase(unsigned scienist_count)
 {
 }
 
-KingdoomScience& Science_game_obj::GetKingdoomScience(unsigned kingdom_id)
+// игровой объект наука
+//class ScienceGameObj
+
+ScienceGameObj::ScienceGameObj() {}
+
+ScienceGameObj::~ScienceGameObj() {}
+
+KingdoomScience& ScienceGameObj::GetKingdoomScience(unsigned kingdom_id)
 {
 	return v_kingdom_science[kingdom_id];
 }
 
-void Science_game_obj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
+void ScienceGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
 }
 
-void Science_game_obj::SaveState()
+void ScienceGameObj::SaveState()
 {
 }
 
-void Science_game_obj::LoadState()
+void ScienceGameObj::LoadState()
 {
 }
 
-void Science_game_obj::CreateState(unsigned num_players, unsigned map_size)
+void ScienceGameObj::CreateState(unsigned num_players, unsigned map_size)
 {
 }
 
-void Science_game_obj::NextTurn()
+void ScienceGameObj::NextTurn()
 {
 }
+
+

@@ -145,6 +145,7 @@
     <ClCompile Include="economics.cpp" />
     <ClCompile Include="engine.cpp" />
     <ClCompile Include="map.cpp" />
+    <ClCompile Include="resource.cpp" />
     <ClCompile Include="science.cpp" />
     <ClCompile Include="tbs_interface.cpp" />
     <ClCompile Include="turn_based_strategy.cpp" />
@@ -156,17 +157,25 @@
     <ClInclude Include="economics.h" />
     <ClInclude Include="engine.h" />
     <ClInclude Include="map.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="science.h" />
     <ClInclude Include="tbs_interface.h" />
     <ClInclude Include="turn_based_strategy.h" />
     <ClInclude Include="war.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\EngineTest\EngineTest.vcxproj" />
     <None Include=".ycm_extra_conf.py" />
     <None Include="backup\.ycm_extra_conf.py" />
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
+    <Import Project="..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.3\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets" Condition="Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.3\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.3\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.1.8.1.3\build\native\Microsoft.googletest.v140.windesktop.msvcstl.static.rt-dyn.targets'))" />
+  </Target>
 </Project>
