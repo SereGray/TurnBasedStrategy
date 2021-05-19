@@ -2,7 +2,7 @@
 
 // Demography
 
-Demography::Demography(KingdoomEconomics& master): all_people_(0),increase_people_(0),maximum_people_(0),fermers_people_(0),my_master_(&master){};
+Demography::Demography(KingdoomEconomics* master): all_people_(0),increase_people_(0),maximum_people_(0),fermers_people_(0),my_master_(master){};
 
 void Demography::NextTurn(){
 	maximum_people_ = static_cast<unsigned>(static_cast<double>(my_master_->MyArea()) * ((static_cast<double>(my_master_->GetDensityLvl())/100.0) + 1.0));
@@ -25,7 +25,7 @@ void Demography::DecreaseFermersPeople(unsigned decrease_count)
 
 // KingdoomEconomics
 
-KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):nation_(Demography(*this)),my_id_(my_id),my_master_(master){};
+KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):nation_(Demography(this)),my_id_(my_id),my_master_(master){};
 
 unsigned KingdoomEconomics::MyArea(){
 	return my_master_.MyArea(my_id_);
