@@ -7,6 +7,7 @@ bool Resourse::operator==(const Resourse& other) const{
 }
 Resourse::Resourse(unsigned count, unsigned cost):count_(count), cost_conventional_units(cost)
 {
+	if(cost_conventional_units==0) ++cost_conventional_units;
 }
 
 Resourse& Resourse::operator=(const Resourse& in)
@@ -25,6 +26,7 @@ const Resourse Resourse::operator+(const Resourse& in)
 
 Resourse& Resourse::operator+(const int in)
 {
+	count_+= in;
 	return *this;
 }
 
@@ -36,34 +38,44 @@ Resourse& Resourse::operator+=(const Resourse& in)
 
 Resourse Resourse::operator-(const Resourse& in)
 {
-	return *this;
+	Resourse res = in;
+	res.count_ = res.count_ + (unsigned) ((double)(in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
+	return res;
 }
 
 Resourse& Resourse::operator-(const int in)
 {
+	count_-=in;
 	return *this;
 }
 
 Resourse& Resourse::operator-=(const Resourse& in)
 {
+	*this = *this - in;
 	return *this;
 }
 
 Resourse& Resourse::operator--()
 {
+	--count_;
 	return *this;
 }
 
 Resourse& Resourse::operator++()
 {
+	++count_;
 	return *this;
 }
 Resourse Resourse::operator--(int in)
 {
-	return *this;
+	Resourse res = *this;
+	--*this;
+	return res;
 }
 
 Resourse Resourse::operator++(int in)
 {
-	return *this;
+	Resourse res = *this;
+	++*this;
+	return res;
 }
