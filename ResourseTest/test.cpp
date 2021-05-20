@@ -109,3 +109,29 @@ TEST(ResourceOperatorOverloading, Operator_pred_dec){
 	EXPECT_EQ(res10.count_ ,9 );
 	EXPECT_EQ(ress.count_,9);
 }
+
+class Gold_ut: public Resource{
+	public:
+		Gold_ut(unsigned count):Resource(count,10000){};
+};
+
+class Wood_ut: public Resource{
+	public:
+		Wood_ut(unsigned count):Resource(count,100){};
+};
+
+TEST(ResourceArchTest,OneGoldConvertToHundredWood){
+	Gold_ut gold = Gold_ut(1);
+	Wood_ut wood = Wood_ut(0);
+	Resource& g = gold;
+	Resource& w = wood;
+	w = g;
+	EXPECT_EQ(wood.count_,100);
+}
+
+class Cost_ut{
+	public:
+		int buy_,consumption_,sell_; //in 0.01
+		Cost_ut(int buy, int consumption, int sell):buy_(buy),consumption_(consumption),sell_(sell){};
+};
+
