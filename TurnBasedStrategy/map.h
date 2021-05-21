@@ -42,8 +42,8 @@ class MapTerrain{ //  клас предсавляющий изображение
 			list_v.push_back(num);
 			borders.push_back(num);
 		}
-		uint32_t my_N();
-		uint32_t my_area(); // TODO:this
+		uint32_t My_N();
+		uint32_t MyArea(); // TODO:this
 };
 
 class MapGameObj: public EngineGameObjInterface{

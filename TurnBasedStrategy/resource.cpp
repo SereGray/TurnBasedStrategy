@@ -13,14 +13,14 @@ Resource::Resource(unsigned count, unsigned cost):count_(count), cost_convention
 Resource& Resource::operator=(const Resource& in)
 {
 	if(in == *this) return *this;
-	count_ = (unsigned) ((double)(in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
+	count_ = (unsigned) ((double)((unsigned long)in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
 	return *this;
 }
 
 const Resource Resource::operator+(const Resource& in)
 {
 	Resource res = in;
-	res.count_ = res.count_ + (unsigned) ((double)(in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
+	res.count_ = res.count_ + (unsigned) ((double)((unsigned long)in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
 	return res;
 }
 
@@ -39,7 +39,7 @@ Resource& Resource::operator+=(const Resource& in)
 Resource Resource::operator-(const Resource& in)
 {
 	Resource res = in;
-	res.count_ = res.count_ - (unsigned) ((double)(in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
+	res.count_ = res.count_ - (unsigned) ((double)((unsigned long)in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
 	return res;
 }
 

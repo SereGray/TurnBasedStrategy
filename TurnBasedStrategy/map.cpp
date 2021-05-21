@@ -14,11 +14,11 @@ void MapPoint::SetY(uint32_t Y){
 	y=Y;
 }
 
-uint32_t MapTerrain::my_N(){
+uint32_t MapTerrain::My_N(){
 	return N;
 }
 
-uint32_t MapTerrain::my_area()
+uint32_t MapTerrain::MyArea()
 {
 	return uint32_t();
 }
@@ -100,7 +100,7 @@ void MapGameObj::AddPoitsToMap( uint32_t po){ // ро - количество с�
 			adjacentList[GetNum(x,y)].N_owner=po;
 		}
 		MapTerrain newKingdoom(GetNum(x,y),po);
-		cout<<" new kingd n="<<newKingdoom.my_N()<<endl;
+		cout<<" new kingd n="<<newKingdoom.My_N()<<endl;
 		list_terrains.push_back(newKingdoom);
 		--po;
 	}
@@ -116,7 +116,7 @@ void MapGameObj::RefreshBorders(MapTerrain & terr){
 	//  получаю вершину смотрю список смежных  и владельца
 		// цикл проверяет соседние точки если соседняя точка не моя то значит проверяемая точка - гранинкая
 		for (auto smej_V : adjacentList[numV].adjacent_points) {
-			if (adjacentList[smej_V].N_owner != terr.my_N()) {
+			if (adjacentList[smej_V].N_owner != terr.My_N()) {
 				terr.borders.push_back(numV);
 				break; //  эта вершина граничная  выходим
 			}
@@ -314,8 +314,8 @@ void MapGameObj::BalanceArea() {
 		for(uint32_t NumPoint : path) {
 			// если текущий владелец отличается от владельца предыдущей точки меняю владельца точки
 			auto owner = adjacentList[NumPoint].N_owner;
-			vector<MapTerrain>::iterator currentKingd = find_if(list_terrains.begin(), list_terrains.end(), [owner](MapTerrain& kingd) { return owner == kingd.my_N(); });																																						   //NumCurrentTerr = adjacentList[NumPoint].N_owner;
-			if (currentKingd->my_N() != prevKingd->my_N()){
+			vector<MapTerrain>::iterator currentKingd = find_if(list_terrains.begin(), list_terrains.end(), [owner](MapTerrain& kingd) { return owner == kingd.My_N(); });																																						   //NumCurrentTerr = adjacentList[NumPoint].N_owner;
+			if (currentKingd->My_N() != prevKingd->My_N()){
 				// найти предыдущ terrain и убрать у него точку из списка   find_if
 				
 				// нахожу текущую точку(указатель на нее) у предыдущего королевства
@@ -324,7 +324,7 @@ void MapGameObj::BalanceArea() {
 				prevKingd->list_v.erase(prevPointIt); // удалил вершину из пред списка
 				currentKingd->list_v.push_back(prevNumPoint); // добавил вершину в текущ список 
 				prevKingd = currentKingd; 
-				adjacentList[prevNumPoint].N_owner = currentKingd->my_N(); // присвоил вершину окончательно в списке смежности
+				adjacentList[prevNumPoint].N_owner = currentKingd->My_N(); // присвоил вершину окончательно в списке смежности
 			}
 			prevNumPoint = NumPoint;
 		}
@@ -396,21 +396,21 @@ void MapGameObj::FillMap(){
 	//Обход
 		for(auto &kingd: list_terrains){
 			// движение по окружности границы по их порядку начиная с правой
-			if (iterOnBorders[kingd.my_N() - 1] >= kingd.borders.size()) {
-				iterOnBorders[kingd.my_N() - 1] = 0;  // если итератор вышел за 
+			if (iterOnBorders[kingd.My_N() - 1] >= kingd.borders.size()) {
+				iterOnBorders[kingd.My_N() - 1] = 0;  // если итератор вышел за 
 										//"границы королевства" то возвращаем на стартовую поз
 			}
 			//  если заграничная точка ничья то присваиваем (только 1)
 			//  далее прохожу по границе numV - номер заграничной вершины(точки)
 			// двигаюсь по списку смежности - по смежным вершинам вершины "tabSmej[kingd.borders[iterOnBorders[i]]]"
-			for(uint32_t numV: adjacentList[kingd.borders[iterOnBorders[kingd.my_N() - 1]]].adjacent_points){
+			for(uint32_t numV: adjacentList[kingd.borders[iterOnBorders[kingd.My_N() - 1]]].adjacent_points){
 				if(adjacentList[numV].N_owner==0){
-					adjacentList[numV].N_owner=kingd.my_N();
+					adjacentList[numV].N_owner=kingd.My_N();
 					kingd.list_v.push_back(numV);
 					break; // quit if ok
 				}
 			}
-			++iterOnBorders[kingd.my_N() - 1]; 	 // перемещаем итератор
+			++iterOnBorders[kingd.My_N() - 1]; 	 // перемещаем итератор
 		}	
 		for(auto & kingd : list_terrains) RefreshBorders(kingd);
 	}

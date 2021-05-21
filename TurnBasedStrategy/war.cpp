@@ -201,6 +201,11 @@ unsigned Kingdoom_defense::GetIndexOfGeneral(unsigned by_id)
 	
 }
 
+Kingdoom_defense::Kingdoom_defense(unsigned my_number, WarGameObj& master) :solders_(0), solder_force_(1.0), \
+my_id_(my_number), master_(&master), landaun_(*this)
+{
+}
+
 General& Kingdoom_defense::GetSpeedestGeneral(unsigned target)
 {
 	long long speed = -1;
@@ -227,14 +232,14 @@ void Kingdoom_defense::DecreaseSolders(unsigned count)
 	solders_ -= count;
 }
 
-unsigned Kingdoom_defense::GetCountSpecialists()
+unsigned Kingdoom_defense::GetCountFreeSpecialists()
 {
 	return solders_;
 }
 
 float Kingdoom_defense::GetSolderForce()
 {
-	unsigned lvl = master_.GetWarCraftLevel(my_id_); // TODO: test this
+	unsigned lvl = master_->GetWarCraftLevel(my_id_); // TODO: test this
 	return 1.0f + (lvl / 10);
 }
 
@@ -248,7 +253,7 @@ void Kingdoom_defense::NextTurn()
 
 void Kingdoom_defense::AddSummaryString(std::string text)
 {
-	master_.summaries_ += text + "\n";
+	master_->summaries_ += text + "\n";
 }
 
 std::string Kingdoom_defense::GetSummaryString()
@@ -264,8 +269,8 @@ unsigned Kingdoom_defense::AddGeneral(std::string name, unsigned skill, unsigned
 	return gen.GetMyId();
 }
 
-void Kingdoom_defense::SetAttack(General& gen, unsigned target){
-	gen.target_=target;
+void Kingdoom_defense::SetAttack(General& gen, unsigned solders, unsigned target){
+	gen.AttackTo(solders, target);
 }
 
 // WarGameObj class
@@ -394,6 +399,7 @@ void WarGameObj::NextTurn()
 
 
 //TODO: balance game Battle
+// TODO: add generals characteristics rise after battle
 // return 100 if first gen win, else -100. if no clear victory or drav return num betwen -100 and 100;
 int WarGameObj::Battle(General& attacker, General& defender)
 {

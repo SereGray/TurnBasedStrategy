@@ -66,26 +66,26 @@ class Kingdoom_defense {
 	float solder_force_; // 1.0 at def , always > 1.0
 public:
 	const unsigned my_id_;
-	WarGameObj& master_;
+	WarGameObj* master_;
 	std::vector<General> v_general_; //  kingdom generals
-	General landaun_; // default bad general
+	General landaun_; // default bad general // TODO: this general must be default, if no generals
 
 	void DeleteGeneral(unsigned by_id);
 	General& GetGeneral(unsigned by_id);
 	unsigned GetIndexOfGeneral(unsigned by_id);
-	Kingdoom_defense(unsigned my_number, WarGameObj& master) :solders_(0), solder_force_(1.0),\
-		my_id_(my_number), master_(master),landaun_(*this) {};
+	Kingdoom_defense(unsigned my_number, WarGameObj& master);
 	General& GetSpeedestGeneral(unsigned target);
 	unsigned AddGeneral(std::string name, unsigned skill, unsigned intelegence, \
 		unsigned speed, unsigned age); // TODO: refractor there
 	void AddSolder(unsigned count);
 	void DecreaseSolders(unsigned count);
-	unsigned GetCountSpecialists();
+	unsigned GetCountFreeSpecialists();
 	float GetSolderForce();
 	void NextTurn();
 	void AddSummaryString(std::string text);
 	std::string GetSummaryString();
-	void SetAttack(General& gen, unsigned target);
+	void SetAttack(General& gen, unsigned solders, unsigned target);
+
 };
 
 //если встретились два атакующих значит атакующий цели не достиг и из списка не удаляется, если он растерял все войско то он должен удалиться при следующей итерации, 
@@ -96,7 +96,7 @@ class WarGameObj : public EngineGameObjInterface
 	friend class Kingdoom_defense;
 	MapGameObj* map_obj_ = nullptr;
 	ScienceGameObj* science_obj = nullptr;
-	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h my_N) 
+	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h My_N) 
 	//std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_; TODO: not work
 	std::vector<std::pair<unsigned, unsigned>> vlocal_wars_; // содержит id
 
