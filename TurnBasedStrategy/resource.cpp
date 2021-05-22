@@ -5,7 +5,7 @@ bool Resource::operator==(const Resource& other) const{
 			this->cost_conventional_units==other.cost_conventional_units)return true;
 	return false;
 }
-Resource::Resource(unsigned count, unsigned cost):count_(count), cost_conventional_units(cost)
+Resource::Resource(int count, int cost):count_(count), cost_conventional_units(cost)
 {
 	if(cost_conventional_units==0) ++cost_conventional_units;
 }
@@ -13,14 +13,14 @@ Resource::Resource(unsigned count, unsigned cost):count_(count), cost_convention
 Resource& Resource::operator=(const Resource& in)
 {
 	if(in == *this) return *this;
-	count_ = (unsigned) ((double)((unsigned long)in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
+	count_ = (int) ((double)((long)in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
 	return *this;
 }
 
 const Resource Resource::operator+(const Resource& in)
 {
-	Resource res = in;
-	res.count_ = res.count_ + (unsigned) ((double)((unsigned long)in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
+	Resource res = *this;
+	res.count_ = count_ + (int) ((double)((long)in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
 	return res;
 }
 
@@ -38,8 +38,8 @@ Resource& Resource::operator+=(const Resource& in)
 
 Resource Resource::operator-(const Resource& in)
 {
-	Resource res = in;
-	res.count_ = res.count_ - (unsigned) ((double)((unsigned long)in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
+	Resource res = *this;
+	res.count_ = count_ - (int) ((double)((long)in.count_ * in.cost_conventional_units))/(double)cost_conventional_units;
 	return res;
 }
 
