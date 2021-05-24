@@ -208,11 +208,25 @@ TEST(ResourceArchTest, SpecialistCostSystemTest){
 	EXPECT_EQ(gold.count_, 67);
 	
 }
-/*
+class eco{
+	Gold_ut gold_;
+	Wood_ut wood_;
+	public:
+	template<typename T_res>
+	void GetRes(T_res res){
+//RTTI 
+	}
+
+};
+
 class spec{
 	Cost_ut<Gold_ut> gold(10,2,0);
 	Cost_ut<Wood_ut> wood(5,1,5);
 	public:
-//`	template<typename Functor>
+	template<typename Functor>
+		void ProcessToAllMembers(Functor f,eco& e){
+			eco.GetRes(f<Gold_ut>(gold));
+			eco.GetRes(f<Wood_ut>(wood));
+		}
 
-};*/
+};
