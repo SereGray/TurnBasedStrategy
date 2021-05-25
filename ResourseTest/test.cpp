@@ -220,9 +220,10 @@ class eco{
 };
 
 class spec{
-	Cost_ut<Gold_ut> gold(10,2,0);
-	Cost_ut<Wood_ut> wood(5,1,5);
+	Cost_ut<Gold_ut> gold;
+	Cost_ut<Wood_ut> wood;
 	public:
+		spec() :gold(Cost_ut<Gold_ut>(10, 2, 0)), wood(Cost_ut<Wood_ut>(5, 1, 5)) {};
 	template<typename Functor>
 		void ProcessToAllMembers(Functor f,eco& e){
 			eco.GetRes(f<Gold_ut>(gold));

@@ -275,6 +275,7 @@ namespace GeneralNameSpace {
 		EXPECT_EQ(kd->v_general_.size(), 0);
 	}*/
 
+
 }
 
 	class FixationGeneralPrivate : public ::testing::Test {
@@ -298,3 +299,38 @@ namespace GeneralNameSpace {
 		General& gen = kd->GetGeneral(id);
 		EXPECT_EQ(gen.skill_float_, 10.0);
 	}
+
+	/*namespace ThreeKingdoomFixationNamespace {
+		class ThreeKingdoomFixation : public ::testing::Test {
+		protected:
+			void SetUp() override {
+				WarGameObj* d = new WarGameObj;
+				kd0 = new Kingdoom_defense(0, *d);
+				kd1 = new Kingdoom_defense(1, *d);
+				kd2 = new Kingdoom_defense(2, *d);
+			}
+			void TearDown() override {
+				delete kd0;
+				delete kd1;
+				delete kd2;
+				delete d;
+			}
+			WarGameObj* d = nullptr;
+			Kingdoom_defense* kd0 = nullptr;
+			Kingdoom_defense* kd1 = nullptr;
+			Kingdoom_defense* kd2 = nullptr;
+
+		};
+
+		TEST_F(ThreeKingdoomFixation, GetLocalWars) {
+			unsigned id0 = kd0->AddGeneral("daun0", 0, 0, 5, 0);
+			kd0->AddSolder(100);
+			unsigned id1 = kd1->AddGeneral("daun1", 0, 0, 5, 0);
+			kd1->AddSolder(100);
+			unsigned id2 = kd2->AddGeneral("daun2", 0, 0, 5, 0);
+			kd2->AddSolder(100);
+			kd0->SetAttack(kd0->GetGeneral(id0), 50, 1);
+			kd1->SetAttack(kd1->GetGeneral(id1), 50, 0);
+			kd2->SetAttack(kd2->GetGeneral(id2), 50, 1);
+		}
+	}*/
