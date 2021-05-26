@@ -11,6 +11,7 @@ public:
 	Resource& operator= (const Resource& );
 	const Resource operator+ (const Resource& );
 	Resource& operator+ (const int );
+	Resource& operator*( const int);
 	Resource& operator+= (const Resource& );
 	Resource operator- (const Resource& );
 	Resource& operator- (const int );

@@ -1,3 +1,4 @@
+#include<functional>
 #include "pch.h"
 #include "../TurnBasedStrategy/resource.h"
 
@@ -95,6 +96,12 @@ TEST(ResourceOperatorOverloading, Operator_sum_int){
 	Resource res10 = Resource(10,10);
 	res10 = res10 + 5;
 	EXPECT_EQ(res10.count_ , 15);
+}
+
+TEST(ResourceOperatorOverloading, Operator_multiple_int){
+	Resource res7(1,7);
+	res7 = res7 * 10;
+	EXPECT_EQ(res7.count_, 10);
 }
 
 TEST(ResourceOperatorOverloading, Operator_minus_int){
@@ -206,28 +213,41 @@ TEST(ResourceArchTest, SpecialistCostSystemTest){
 		gold = gold - Pikiner.Consumpt();
 	}
 	EXPECT_EQ(gold.count_, 67);
-	
 }
+
+class spec{
+	Cost_ut<Gold_ut> gold_;
+	Cost_ut<Wood_ut> wood_;
+	public:
+		spec() :gold_(Cost_ut<Gold_ut>(10, 2, 0)), wood_(Cost_ut<Wood_ut>(5, 1, 5)) {};
+		template<typename T_res>
+		void ProcessToAllMembers(std::function<void(Cost_ut<T_res>&,unsigned)>& f,unsigned count=1) {
+			f(gold_,count);
+			f(wood_, count);
+		};
+};
+
 class eco{
+	public:
 	Gold_ut gold_;
 	Wood_ut wood_;
-	public:
+	eco(int gold, int wood):gold_(gold),wood_(wood){};
+	void Buy_spec(spec& m,unsigned count=1){
+		m.ProcessToAllMembers(ChangeRes, count);
+	}
 	template<typename T_res>
-	void GetRes(T_res res){
-//RTTI 
+	void ChangeRes(Cost_ut<T_res>& cost, unsigned count){
+		Resource& r_gold = gold_;
+		if(typeid(cost.Buy())==typeid(gold_)) r_gold -= cost.Buy() * static_cast<int>(count);
+		Resource r_wood = wood_;
+		if(typeid(cost.Buy())==typeid(r_wood)) r_wood -= cost.Buy() * static_cast<int>(count);
 	}
 
 };
-
-class spec{
-	Cost_ut<Gold_ut> gold;
-	Cost_ut<Wood_ut> wood;
-	public:
-		spec() :gold(Cost_ut<Gold_ut>(10, 2, 0)), wood(Cost_ut<Wood_ut>(5, 1, 5)) {};
-	template<typename Functor>
-		void ProcessToAllMembers(Functor f,eco& e){
-			eco.GetRes(f<Gold_ut>(gold));
-			eco.GetRes(f<Wood_ut>(wood));
-		}
-
-};
+TEST(ResourceArchTest, byingSpec){
+	eco e = eco(100,300);
+	spec pikiner;
+	e.Buy_spec(pikiner);
+	EXPECT_EQ(e.gold_.count_,90);
+	EXPECT_EQ(e.wood_.count_,295);
+}

@@ -30,6 +30,11 @@ Resource& Resource::operator+(const int in)
 	return *this;
 }
 
+Resource& Resource::operator*(const int in){
+	count_ *= in;
+	return *this;
+}
+
 Resource& Resource::operator+=(const Resource& in)
 {
 	*this = *this + in;
