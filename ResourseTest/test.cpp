@@ -181,13 +181,20 @@ TEST(ResourceArchTest,GoldMinusGold){
 	EXPECT_EQ(wood.count_,100);
 
 }*/
-
+class Base_cost {
+	public:
+	virtual ~Base_cost();
+	virtual Resource& Buy();
+};
+Base_cost::~Base_cost(){};
+Resource& Base_cost::Buy(){};
 template<typename T_res>
-class Cost_ut{
+class Cost_ut: public Base_cost{
+	public:
 		T_res buy_,consumption_,sell_; //in 0.01
 	public:
 		Cost_ut(int buy, int consumption, int sell):buy_(buy),consumption_(consumption),sell_(sell){};
-		Resource& Buy(){return buy_;};
+		Resource& Buy() override {return buy_;};
 		Resource& Consumpt(){return consumption_;};
 		Resource& Sell(){return sell_;};
 };
@@ -216,38 +223,56 @@ TEST(ResourceArchTest, SpecialistCostSystemTest){
 }
 
 class spec{
-	Cost_ut<Gold_ut> gold_;
-	Cost_ut<Wood_ut> wood_;
 	public:
-		spec() :gold_(Cost_ut<Gold_ut>(10, 2, 0)), wood_(Cost_ut<Wood_ut>(5, 1, 5)) {};
-		template<typename T_res>
-		void ProcessToAllMembers(std::function<void(Cost_ut<T_res>&,unsigned)>& f,unsigned count=1) {
+	Cost_ut<Gold_ut> gold;
+	Cost_ut<Wood_ut> wood;
+	Base_cost& gold_, wood_;
+		spec() :gold{Cost_ut<Gold_ut>(10, 2, 0)}, wood{Cost_ut<Wood_ut>(5, 1, 5)},gold_(gold), wood_(wood) {};
+		template<typename Visitor>
+		void Accept(Visitor f,unsigned count=1) {
 			f(gold_,count);
 			f(wood_, count);
 		};
 };
+class eco;
+struct Visiter{
+	eco& e_;
+	void (*ptrFunct_)(eco&,Base_cost&, int);
+	Visiter(eco& e,void (*ptrFunct)(eco&,Base_cost&, int)):e_(e),ptrFunct_(ptrFunct){};
+	void operator()(Base_cost& cost, int count){
+		ptrFunct_(e_,cost,count);
+	}
+};
 
 class eco{
 	public:
+	int i;
 	Gold_ut gold_;
 	Wood_ut wood_;
-	eco(int gold, int wood):gold_(gold),wood_(wood){};
-	void Buy_spec(spec& m,unsigned count=1){
-		m.ProcessToAllMembers(ChangeRes, count);
+	spec pikiner_;
+	Visiter visiter_;
+	eco(int gold, int wood):i(50),gold_(gold),wood_(wood), visiter_(Visiter(*this,&BuySpec)){};
+	void BuyS(unsigned count){
+		pikiner_.Accept(visiter_,count);
 	}
-	template<typename T_res>
-	void ChangeRes(Cost_ut<T_res>& cost, unsigned count){
-		Resource& r_gold = gold_;
-		if(typeid(cost.Buy())==typeid(gold_)) r_gold -= cost.Buy() * static_cast<int>(count);
-		Resource r_wood = wood_;
-		if(typeid(cost.Buy())==typeid(r_wood)) r_wood -= cost.Buy() * static_cast<int>(count);
+	static void BuySpec(eco& e, Base_cost& cost, int count){
+		Resource& gld = e.gold_, wood = e.wood_;
+		if(typeid(cost) == typeid(Cost_ut<Gold_ut>)){ 
+			Cost_ut<Gold_ut>& castgld = static_cast<Cost_ut<Gold_ut>&>(cost);
+			gld -= (castgld.Buy() * count); 
+		}
+		if(typeid(cost) == typeid(Cost_ut<Wood_ut>)){ 
+			Cost_ut<Wood_ut>& castgld = static_cast<Cost_ut<Wood_ut>&>(cost);
+			wood -= (castgld.Buy() * count); 
+		}
+
 	}
 
 };
 TEST(ResourceArchTest, byingSpec){
 	eco e = eco(100,300);
 	spec pikiner;
-	e.Buy_spec(pikiner);
+	e.BuyS(1);	
 	EXPECT_EQ(e.gold_.count_,90);
 	EXPECT_EQ(e.wood_.count_,295);
 }

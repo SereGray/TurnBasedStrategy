@@ -9,6 +9,7 @@ public:
 	bool operator==(const Resource&) const;
 	Resource(int count, int cost);
 	Resource& operator= (const Resource& );
+	Resource& operator= (const int);
 	const Resource operator+ (const Resource& );
 	Resource& operator+ (const int );
 	Resource& operator*( const int);
