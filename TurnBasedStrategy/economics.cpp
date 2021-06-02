@@ -23,9 +23,54 @@ void Demography::DecreaseFermersPeople(unsigned decrease_count)
 	fermers_people_ -= decrease_count;
 }
 
+
+// Gold
+Gold::Gold(int count) : Resource(count, 10000)
+{
+}
+
+// Food
+Food::Food(int count) : Resource(count, 100)
+{
+}
+
+// BaseCost
+BaseCost::~BaseCost() {};
+
+Resource& BaseCost::Buy() 
+{ 
+	Resource res(0, 1);
+	return res; 
+};
+
+// UnitCost class
+
+template<typename TypeResource>
+UnitCost<TypeResource>::UnitCost(int buy, int consumption, int sell) :buy_(buy), consumption_(consumption), sell_(sell)
+{
+}
+
+template<typename TypeResource>
+Resource& UnitCost<TypeResource>::Buy()
+{
+	return buy_;
+}
+
+template<typename TypeResource>
+Resource& UnitCost<TypeResource>::Consumption()
+{
+	return consumption_;
+}
+
+template<typename TypeResource>
+Resource& UnitCost<TypeResource>::Sell()
+{
+	return sell_;
+}
+
 // KingdoomEconomics
 
-KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):nation_(Demography(this)),my_id_(my_id),my_master_(master){};
+KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):gold_(10000),food_(10000000),nation_(Demography(this)),visiter_(*this,&VisitorBuySpecialist),my_id_(my_id),my_master_(master){};
 
 unsigned KingdoomEconomics::MyArea(){
 	return my_master_.MyArea(my_id_);
@@ -76,7 +121,26 @@ uint32_t KingdoomEconomics::CalculationSpecialistHiring()
 	return uint32_t();
 }
 
+void KingdoomEconomics::VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& cost, int count)
+{
+	Resource& gld = eco.gold_; // Если написать в одну строку Resource& gld = .., wd=.. то gld - ref , а wd - НЕТ !!!!!!!
+	Resource& wd = eco.food_;
+	if (typeid(cost) == typeid(UnitCost<Gold>&)) {
+		UnitCost<Gold>& castgld = static_cast<UnitCost<Gold>&>(cost);
+		gld -= (castgld.Buy() * count);
+	}
+	if (typeid(cost) == typeid(UnitCost<Food>&)) {
+		UnitCost<Food>& costwd = static_cast<UnitCost<Food>&>(cost);
+		wd -= (costwd.Buy() * count);
+	}
+}
+
 unsigned KingdoomEconomics::GetDensityLvl(){ return my_master_.GetDensityLvl(my_id_);}
+
+void KingdoomEconomics::BuySpecialist(unsigned count)
+{
+	pikiner_.Accept(visiter_, count);
+}
 
 // EconomicsGameObj class
 void EconomicsGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
@@ -99,4 +163,8 @@ unsigned EconomicsGameObj::MyArea(unsigned by_id){
 
 unsigned EconomicsGameObj::GetDensityLvl(unsigned by_id){
 	return science_obj_->GetKingdoomScience(by_id).GetDensityLvl();
+}
+
+Specialist::Specialist():gold{ UnitCost<Gold>(100, 2, 0) }, food{ UnitCost<Food>(5, 1, 5) }, gold_(gold), food_(food)
+{
 }

@@ -9,6 +9,7 @@
 #include"engine.h"
 #include"science.h"
 #include"map.h"
+#include"resource.h"
 
 // модель экономики: (+демографии)
 // посев доступного зерна (из остатков или покупного)
@@ -37,24 +38,82 @@ private:
 	void DecreaseFermersPeople(unsigned decrease_count); // функция убыли фермеров (наняли в качестве спец)
 };
 
+// Gold class
+class Gold : public Resource {
+public:
+	Gold(int);
+};
+
+// Eat class
+class Food : public Resource {
+public:
+	Food(int);
+};
+
+//
+class BaseCost {
+public:
+	virtual ~BaseCost();
+	virtual Resource& Buy();
+};
+
+template<typename TypeResource>
+class UnitCost : public BaseCost {
+public:
+	TypeResource buy_, consumption_, sell_; //in 0.01
+public:
+	UnitCost(int buy, int consumption, int sell);
+	Resource& Buy() override;
+	Resource& Consumption(); 
+	Resource& Sell();
+};
+
+class Specialist {
+public:
+	UnitCost<Gold> gold;
+	UnitCost<Food> food;
+	BaseCost& gold_;
+	BaseCost& food_;
+	Specialist();
+	template<typename Visitor>
+	void Accept(Visitor f, unsigned count = 1) {
+		f(gold_, count);
+		f(food_, count);
+	};
+};
+
 // 
 class KingdoomEconomics {
 public:
 	KingdoomEconomics(EconomicsGameObj& master, unsigned my_id);
-	unsigned MyArea();
+	Gold gold_;
+	Food food_;
 	Demography nation_; // 
-	uint64_t gold_; // накапливаемый ресурс
+	//uint64_t gold_; // накапливаемый ресурс
 	uint64_t profit_gold_; // прибыль на следующий ход ??
 	uint64_t consumption_gold_; // расход
 	uint64_t resourse;  // ненакапливаемый ресурс -- в данном случае еда (зерно)
 	uint64_t increase_resourse_;
 	uint64_t consumption_resourse_; //  выработка и потребление ресурса 
+
 	void SellResourse();
 	void BuyResourse();
 	void CostToCropsResourse();
 	void BuyThing();  // solder, scienist, General ...
 	unsigned GetDensityLvl();
+	void BuySpecialist(unsigned);
+	unsigned MyArea();
 private:
+	struct Visiter {
+		KingdoomEconomics& e_;
+		void (*ptrFunct_)(KingdoomEconomics&, BaseCost&, int);
+		Visiter(KingdoomEconomics& e, void (*ptrFunct)(KingdoomEconomics&, BaseCost&, int)) :e_(e), ptrFunct_(ptrFunct) {};
+		void operator()(BaseCost& cost, int count) {
+			ptrFunct_(e_, cost, count);
+		}
+	};
+	Specialist pikiner_; //test
+	Visiter visiter_;
 	unsigned my_id_;
 	EconomicsGameObj& my_master_;
 	void NextTurn(); //  вычет расходов из бюджета
@@ -64,6 +123,7 @@ private:
 	uint64_t CalculationSpecialistSalary(); // расчет стоимости специалиста 
 	//( чем больше ученых тем дороже их содержать (логарифмическая зависимость?)) по основанию ~3
 	uint32_t CalculationSpecialistHiring(); // стоимость найма зависит от количества уже работающих
+	static void VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& cost, int count);
 };
 
 class EconomicsGameObj : public EngineGameObjInterface{
@@ -84,3 +144,5 @@ class EconomicsGameObj : public EngineGameObjInterface{
 
 };	
 #endif
+
+

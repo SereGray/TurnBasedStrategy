@@ -187,7 +187,7 @@ class Base_cost {
 	virtual Resource& Buy();
 };
 Base_cost::~Base_cost(){};
-Resource& Base_cost::Buy(){};
+Resource& Base_cost::Buy() { return Resource(0, 1); };
 template<typename T_res>
 class Cost_ut: public Base_cost{
 	public:
@@ -226,7 +226,8 @@ class spec{
 	public:
 	Cost_ut<Gold_ut> gold;
 	Cost_ut<Wood_ut> wood;
-	Base_cost& gold_, wood_;
+	Base_cost& gold_;
+	Base_cost& wood_;
 		spec() :gold{Cost_ut<Gold_ut>(10, 2, 0)}, wood{Cost_ut<Wood_ut>(5, 1, 5)},gold_(gold), wood_(wood) {};
 		template<typename Visitor>
 		void Accept(Visitor f,unsigned count=1) {
@@ -234,38 +235,38 @@ class spec{
 			f(wood_, count);
 		};
 };
-class eco;
-struct Visiter{
-	eco& e_;
-	void (*ptrFunct_)(eco&,Base_cost&, int);
-	Visiter(eco& e,void (*ptrFunct)(eco&,Base_cost&, int)):e_(e),ptrFunct_(ptrFunct){};
-	void operator()(Base_cost& cost, int count){
-		ptrFunct_(e_,cost,count);
-	}
-};
+
 
 class eco{
+	struct Visiter {
+		eco& e_;
+		void (*ptrFunct_)(eco&, Base_cost&, int);
+		Visiter(eco& e, void (*ptrFunct)(eco&, Base_cost&, int)) :e_(e), ptrFunct_(ptrFunct) {};
+		void operator()(Base_cost& cost, int count) {
+			ptrFunct_(e_, cost, count);
+		}
+	};
+	spec pikiner_;
+	Visiter visiter_;
 	public:
 	int i;
 	Gold_ut gold_;
 	Wood_ut wood_;
-	spec pikiner_;
-	Visiter visiter_;
 	eco(int gold, int wood):i(50),gold_(gold),wood_(wood), visiter_(Visiter(*this,&BuySpec)){};
 	void BuyS(unsigned count){
 		pikiner_.Accept(visiter_,count);
 	}
 	static void BuySpec(eco& e, Base_cost& cost, int count){
-		Resource& gld = e.gold_, wood = e.wood_;
-		if(typeid(cost) == typeid(Cost_ut<Gold_ut>)){ 
+		Resource& gld = e.gold_; // Если написать в одну строку Resource& gld = .., wd=.. то gld - ref , а wd - НЕТ !!!!!!!
+		Resource& wd = e.wood_;
+		if(typeid(cost) == typeid(Cost_ut<Gold_ut>&)){ 
 			Cost_ut<Gold_ut>& castgld = static_cast<Cost_ut<Gold_ut>&>(cost);
 			gld -= (castgld.Buy() * count); 
 		}
-		if(typeid(cost) == typeid(Cost_ut<Wood_ut>)){ 
-			Cost_ut<Wood_ut>& castgld = static_cast<Cost_ut<Wood_ut>&>(cost);
-			wood -= (castgld.Buy() * count); 
+		if(typeid(cost) == typeid(Cost_ut<Wood_ut>&)){ 
+			Cost_ut<Wood_ut>& costwd = static_cast<Cost_ut<Wood_ut>&>(cost);
+			wd -= (costwd.Buy() * count); 
 		}
-
 	}
 
 };
