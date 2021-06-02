@@ -76,12 +76,24 @@ unsigned KingdoomEconomics::MyArea(){
 	return my_master_.MyArea(my_id_);
 }
 
-void KingdoomEconomics::SellResourse()
+bool KingdoomEconomics::SellResourse(Resource& in, int count)
 {
+	//TODO: throw if in == gold_
+	if(in.count_ < count) return false;
+	Resource& gold = gold_;
+	gold += in;
+	in = in - count;	
+	return true;
 }
 
-void KingdoomEconomics::BuyResourse()
+bool KingdoomEconomics::BuyResourse(Resource& in, int count)
 {
+	Resource& gold = gold_;
+	if( (gold - in).count_ < 0 ) return false;
+	gold -= in;
+	in = in + count;	
+	return true;
+
 }
 
 void KingdoomEconomics::CostToCropsResourse()
@@ -143,6 +155,8 @@ void KingdoomEconomics::BuySpecialist(unsigned count)
 }
 
 // EconomicsGameObj class
+EconomicsGameObj::EconomicsGameObj(){};
+EconomicsGameObj::~EconomicsGameObj(){};
 void EconomicsGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
 for(EngineGameObjInterface* infc: list_in){

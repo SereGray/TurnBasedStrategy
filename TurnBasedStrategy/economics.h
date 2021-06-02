@@ -96,8 +96,8 @@ public:
 	uint64_t increase_resourse_;
 	uint64_t consumption_resourse_; //  выработка и потребление ресурса 
 
-	void SellResourse();
-	void BuyResourse();
+	bool SellResourse(Resource&,int);
+	bool BuyResourse(Resource&,int);
 	void CostToCropsResourse();
 	void BuyThing();  // solder, scienist, General ...
 	unsigned GetDensityLvl();
