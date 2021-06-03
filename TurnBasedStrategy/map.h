@@ -5,8 +5,13 @@
 #ifndef MAP
 #define MAP
 
-#include <iostream>
+//#define CIMG
+
+#ifndef CIMG
 #include "CImg.h"
+#endif // CIMG
+
+#include <iostream>
 #include <vector>
 #include <algorithm>
 #include "engine.h"
@@ -64,7 +69,10 @@ class MapGameObj: public EngineGameObjInterface{
 	
 		MapGameObj(uint32_t w, uint32_t h, uint32_t p);
 		void PrintTabSmej();
+
+#ifdef CIMG
 		void ToFile(uint8_t);
+#endif // CIMG
 		void MapToScreen();
 	private:
 		void SaveState();

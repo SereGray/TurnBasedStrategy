@@ -76,6 +76,11 @@ unsigned KingdoomEconomics::MyArea(){
 	return my_master_.MyArea(my_id_);
 }
 
+unsigned KingdoomEconomics::MyId()
+{
+	return my_id_;
+}
+
 bool KingdoomEconomics::SellResourse(Resource& in, int count)
 {
 	//TODO: throw if in == gold_

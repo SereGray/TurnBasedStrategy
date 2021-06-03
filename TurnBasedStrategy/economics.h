@@ -103,6 +103,7 @@ public:
 	unsigned GetDensityLvl();
 	void BuySpecialist(unsigned);
 	unsigned MyArea();
+	unsigned MyId();
 private:
 	struct Visiter {
 		KingdoomEconomics& e_;

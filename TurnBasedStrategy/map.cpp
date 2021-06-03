@@ -137,6 +137,7 @@ uint32_t k=0;
 	}
 }
 
+#ifdef CIMG
 // функц вывода карты в графический файл с помощью CImg.h
 void MapGameObj::ToFile(uint8_t point_size=10) {
 	if(point_size < 10) point_size = 10;
@@ -163,6 +164,8 @@ void MapGameObj::ToFile(uint8_t point_size=10) {
 	}
 	img.save_bmp("map.bmp");
 }
+#endif //CIMG
+
 bool MapGameObj::FreeSpace(){
 	static uint32_t maxIteration=100;
 	if(--maxIteration==0)return false;
