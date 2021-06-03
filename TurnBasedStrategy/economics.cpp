@@ -5,21 +5,26 @@
 Demography::Demography(KingdoomEconomics* master): all_people_(0),increase_people_(0),maximum_people_(0),fermers_people_(0),my_master_(master){};
 
 void Demography::NextTurn(){
+	// TODO:Decreasing people
 	maximum_people_ = static_cast<unsigned>(static_cast<double>(my_master_->MyArea()) * ((static_cast<double>(my_master_->GetDensityLvl())/100.0) + 1.0));
 	increase_people_ =( all_people_ * (my_master_->MyArea())) / 10 ; //TODO: add Population growth science lvl
 	if(all_people_ < maximum_people_ && increase_people_ + all_people_ > maximum_people_){
 	       	increase_people_ = maximum_people_ - all_people_;
 	}else if(all_people_ >= maximum_people_) increase_people_ =0;
+	IncreaseFermersPeople();
 }
 
 void Demography::IncreaseFermersPeople()
 {
+	//TODO: fermers always <= area of kingdom()
 	all_people_+=increase_people_;
 	fermers_people_ += increase_people_;
 }
 
 void Demography::DecreaseFermersPeople(unsigned decrease_count)
 {
+	//TODO: throw decreasing > fermers_people
+	if(fermers_people_ < decrease_count) decrease_count = fermers_people_ ;
 	fermers_people_ -= decrease_count;
 }
 
@@ -86,7 +91,9 @@ bool KingdoomEconomics::SellResourse(Resource& in, int count)
 	//TODO: throw if in == gold_
 	if(in.count_ < count) return false;
 	Resource& gold = gold_;
-	gold += in;
+	Resource temporary = in;
+	temporary.count_ = count;
+	gold = gold + temporary;
 	in = in - count;	
 	return true;
 }
@@ -94,8 +101,10 @@ bool KingdoomEconomics::SellResourse(Resource& in, int count)
 bool KingdoomEconomics::BuyResourse(Resource& in, int count)
 {
 	Resource& gold = gold_;
-	if( (gold - in).count_ < 0 ) return false;
-	gold -= in;
+	Resource temporary = in;
+	in.count_ = count;
+	if( (gold - temporary).count_ < 0 ) return false;
+	gold = gold - in.count_;
 	in = in + count;	
 	return true;
 
