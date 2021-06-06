@@ -7,7 +7,10 @@ Demography::Demography(KingdoomEconomics* master): all_people_(0),increase_peopl
 void Demography::NextTurn(){
 	// TODO:Decreasing people
 	maximum_people_ = static_cast<unsigned>(static_cast<double>(my_master_->MyArea()) * ((static_cast<double>(my_master_->GetDensityLvl())/100.0) + 1.0));
-	increase_people_ =( all_people_ * (my_master_->MyArea())) / 10 ; //TODO: add Population growth science lvl
+	increase_people_ =( all_people_ ) / 20  ; //TODO: add Population growth science lvl
+	increase_people_ = increase_people_ / 100 * my_master_->GetIncreasingLvl();
+	if(all_people_ > maximum_people_) increase_people_ = (maximum_people_ - all_people_) / -10;
+	// calculating incrase_people_
 	if(all_people_ < maximum_people_ && increase_people_ + all_people_ > maximum_people_){
 	       	increase_people_ = maximum_people_ - all_people_;
 	}else if(all_people_ >= maximum_people_) increase_people_ =0;
@@ -163,6 +166,8 @@ void KingdoomEconomics::VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& c
 
 unsigned KingdoomEconomics::GetDensityLvl(){ return my_master_.GetDensityLvl(my_id_);}
 
+unsigned KingdoomEconomics::GetIncreasingLvl(){ return my_master_.GetIncreasingLvl(my_id_);};
+
 void KingdoomEconomics::BuySpecialist(unsigned count)
 {
 	pikiner_.Accept(visiter_, count);
@@ -191,6 +196,9 @@ unsigned EconomicsGameObj::MyArea(unsigned by_id){
 
 unsigned EconomicsGameObj::GetDensityLvl(unsigned by_id){
 	return science_obj_->GetKingdoomScience(by_id).GetDensityLvl();
+}
+unsigned EconomicsGameObj::GetIncreasingLvl(unsigned by_id){
+	return science_obj_->GetKingdoomScience(by_id).GetIncreasingLvl();
 }
 
 Specialist::Specialist():gold{ UnitCost<Gold>(100, 2, 0) }, food{ UnitCost<Food>(5, 1, 5) }, gold_(gold), food_(food)

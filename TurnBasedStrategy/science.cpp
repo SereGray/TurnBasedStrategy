@@ -55,6 +55,11 @@ unsigned KingdoomScience::GetDensityLvl()
 	return densety_people_.science_lvl_;
 }	
 
+unsigned KingdoomScience::GetIncreasingLvl()
+{
+	return increase_people_.science_lvl_;
+}
+
 void KingdoomScience::NextTurn()
 {
 	// двигаюсь по списку научных объектов

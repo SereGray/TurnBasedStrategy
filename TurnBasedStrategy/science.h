@@ -54,6 +54,7 @@ class KingdoomScience{
 		unsigned GetCountSpecialists();
 		unsigned GetWarcraftLvl();
 		unsigned GetDensityLvl();
+		unsigned GetIncreasingLvl();
 	private:
 		void NextTurn(); // расчет сл хода
 		std::string GetSummariesString();

@@ -102,6 +102,7 @@ public:
 	void CostToCropsResourse();
 	void BuyThing();  // solder, scienist, General ...
 	unsigned GetDensityLvl();
+	unsigned GetIncreasingLvl();
 	void BuySpecialist(unsigned);
 	unsigned MyArea();
 	unsigned MyId();
@@ -143,6 +144,7 @@ class EconomicsGameObj : public EngineGameObjInterface{
 	KingdoomEconomics& GetKingdoomEconomics(unsigned by_id);
 	unsigned MyArea(unsigned by_id);
 	unsigned GetDensityLvl(unsigned by_id);
+	unsigned GetIncreasingLvl(unsigned by_id);
 
 };	
 #endif

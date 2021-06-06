@@ -82,5 +82,57 @@ namespace KingdoomEconomicsTest {
 		EXPECT_FALSE(kd->BuyResourse(kd->food_,1000001));	
 	}
 	
+}
+
+namespace KingdoomEconomicsFakeNameSpace{
+	class KingdoomEconomicsFake :public KingdoomEconomics {
+	public:
+		KingdoomEconomicsFake(EconomicsGameObj& master, unsigned my_id): KingdoomEconomics(master,my_id),area_(1), density_(1), increase_(1){};
+		unsigned area_, density_, increase_;
+		unsigned MyArea(){ return area_;};
+		unsigned GetDensityLvl(){ return density_;};
+		unsigned GetIncreasingLvl() {return increase_;};
+	};
+
+	class KingdoomEconomicsFakeFixation : public ::testing::Test {
+	protected:
+		void SetUp() override {
+			master = new EconomicsGameObj;
+			kd = new KingdoomEconomicsFake(*master, 0);
+		}
+		void TearDown() override {
+			delete kd;
+			delete master;
+		}
+
+		EconomicsGameObj* master;
+		KingdoomEconomicsFake* kd;
+	};
+
+	TEST_F(KingdoomEconomicsFakeFixation, CreatingTest){
+		EXPECT_EQ(kd->MyId(),0);
+	}
+
+	TEST_F(KingdoomEconomicsFakeFixation, FakeAreaFakeDensityLvlTest){
+		kd->area_ = 10;
+		kd->density_ = 11;
+		EXPECT_EQ(kd->MyArea(), 10);
+		EXPECT_EQ(kd->GetDensityLvl(), 11);
+	}
+	
+	// Demography testing
+	
+	TEST_F(KingdoomEconomicsFakeFixation, DemographyNextTurnIncreasingPeople){
+		kd->area_ = 100;
+		kd->density_ = 1;
+		kd->nation_.all_people_ = 100;
+		kd->nation_.NextTurn();
+		EXPECT_EQ(kd->nation_.all_people_, 101);
+		kd->nation_.all_people_ = 100;
+		kd->area_ = 200;
+		kd->nation_.NextTurn();
+		EXPECT_EQ(kd->nation_.all_people_, 105);
+	}	
+
 
 }
