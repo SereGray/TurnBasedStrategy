@@ -32,7 +32,7 @@ public:
 	Demography(KingdoomEconomics* master);
 	void NextTurn();
 private:
-	Demography()=default;
+	Demography();
 	KingdoomEconomics* my_master_ = nullptr;
 public:
 	void IncreaseFermersPeople(); // функция прироста населения(новые люди автоматически фермеры)
@@ -133,12 +133,12 @@ class EconomicsGameObj : public EngineGameObjInterface{
 	std::vector<KingdoomEconomics> v_economics_;
 	ScienceGameObj* science_obj_ = nullptr;
 	MapGameObj* map_obj_ = nullptr;	
-	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	void SaveState();
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);
 	void NextTurn();
 	public:
+	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	EconomicsGameObj();
 	~EconomicsGameObj();
 	KingdoomEconomics& GetKingdoomEconomics(unsigned by_id);

@@ -11,7 +11,7 @@ void Demography::NextTurn(){
 	increase_people_ = increase_people_ / 100 * my_master_->GetIncreasingLvl();
 	if(all_people_ > maximum_people_) increase_people_ = (maximum_people_ - all_people_) / -10;
 	// calculating incrase_people_
-	if(all_people_ < maximum_people_ && increase_people_ + all_people_ > maximum_people_){
+	if(all_people_ < maximum_people_ && (increase_people_ + all_people_) > maximum_people_){
 	       	increase_people_ = maximum_people_ - all_people_;
 	}else if(all_people_ >= maximum_people_) increase_people_ =0;
 	IncreaseFermersPeople();
@@ -80,9 +80,6 @@ Resource& UnitCost<TypeResource>::Sell()
 
 KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):gold_(10000),food_(10000000),nation_(Demography(this)),visiter_(*this,&VisitorBuySpecialist),my_id_(my_id),my_master_(master){};
 
-unsigned KingdoomEconomics::MyArea(){
-	return my_master_.MyArea(my_id_);
-}
 
 unsigned KingdoomEconomics::MyId()
 {
@@ -164,9 +161,19 @@ void KingdoomEconomics::VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& c
 	}
 }
 
-unsigned KingdoomEconomics::GetDensityLvl(){ return my_master_.GetDensityLvl(my_id_);}
+unsigned KingdoomEconomics::GetDensityLvl()
+{ 
+	return my_master_.GetDensityLvl(my_id_);
+}
 
-unsigned KingdoomEconomics::GetIncreasingLvl(){ return my_master_.GetIncreasingLvl(my_id_);};
+unsigned KingdoomEconomics::GetIncreasingLvl()
+{ 
+	return my_master_.GetIncreasingLvl(my_id_);
+}
+
+unsigned KingdoomEconomics::MyArea() {
+	return my_master_.MyArea(my_id_);
+}
 
 void KingdoomEconomics::BuySpecialist(unsigned count)
 {
@@ -191,7 +198,7 @@ for(EngineGameObjInterface* infc: list_in){
 }
 
 unsigned EconomicsGameObj::MyArea(unsigned by_id){
-	return map_obj_->area_of(by_id);
+	return map_obj_->AreaKingdoom(by_id);
 }
 
 unsigned EconomicsGameObj::GetDensityLvl(unsigned by_id){

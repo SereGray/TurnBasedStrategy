@@ -306,7 +306,7 @@ void WarGameObj::SortLocalWarsByGeneralSpeed()
 
 bool WarGameObj::LocalWarNoAttackers(std::vector<std::pair<unsigned, unsigned>>::iterator it)
 {
-	if(map_obj_->area_of(it->first)==0 || map_obj_->area_of(it->second)==0) return true; //проверка существования гос - ва
+	if(map_obj_->AreaKingdoom(it->first)==0 || map_obj_->AreaKingdoom(it->second)==0) return true; //проверка существования гос - ва
 	for (General g : vkingdoom_def_[it->first].v_general_) {
 		if (g.action_ == 4 && g.count_solders_ > 0) return false;   
 	}

@@ -36,14 +36,14 @@ class MapPoint{
 		void SetY(uint32_t Y);
 };
 
-class MapTerrain{ //  клас предсавляющий изображение на карте территорию королевства и методы работы:
+class KingdoomMap{ //  клас предсавляющий изображение на карте территорию королевства и методы работы:
 	public:
-		uint32_t N;
+		uint32_t my_id_;
 		vector<uint32_t> list_v; // список вершин
 		vector<uint32_t> borders; // список границ 
 		// создание экземпляра из первой точки
-		MapTerrain(uint32_t num,uint32_t n){
-			N=n;
+		KingdoomMap(uint32_t num,uint32_t n){
+			my_id_=n;
 			list_v.push_back(num);
 			borders.push_back(num);
 		}
@@ -53,12 +53,13 @@ class MapTerrain{ //  клас предсавляющий изображение
 
 class MapGameObj: public EngineGameObjInterface{
 	public:
-		vector<MapPoint> adjacentList; // таблица смежности представляет из себя список всех вершин
-		vector<MapTerrain> list_terrains;
+		vector<MapPoint> adjacent_list_; // таблица смежности представляет из себя список всех вершин
+		vector<KingdoomMap> list_kingdoms_;
 	private:
-		uint32_t width,height;
+		virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
+		uint32_t width_,height_;
 	public:
-		uint32_t area_of(uint32_t n); //TODO: ?
+		uint32_t AreaKingdoom(uint32_t); //TODO: ?
 		// переход территории от одного владельца к другому
 		// return summaries
 		std::string ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders); //TODO:this
@@ -83,7 +84,7 @@ class MapGameObj: public EngineGameObjInterface{
 		unsigned GetCountSpecialists(); // must return 0
 
 		void FillMap();
-		MapTerrain GetMinTerrain();
+		KingdoomMap GetMinTerrain();
 		bool TerrainsDisbalanced(uint32_t offset);
 		void BalanceArea(); 
 		vector<uint32_t> FloydWarhsallPath(uint32_t start , uint32_t end, bool restart ); 
@@ -93,7 +94,7 @@ class MapGameObj: public EngineGameObjInterface{
 		void CreateDxDTable( vector<vector<uint32_t>> & inDxD);
 		void DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path);
 		bool FreeSpace();
-		void RefreshBorders(MapTerrain & terr);
+		void RefreshBorders(KingdoomMap & terr);
 		void AddPoitsToMap( uint32_t po);
 		void GenerateTab();
 		pair<uint32_t, uint32_t> GetCoord(uint32_t Num);

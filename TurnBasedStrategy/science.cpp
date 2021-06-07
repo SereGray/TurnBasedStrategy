@@ -88,6 +88,11 @@ KingdoomScience& ScienceGameObj::GetKingdoomScience(unsigned kingdom_id)
 	return v_kingdom_science[kingdom_id];
 }
 
+void ScienceGameObj::AddKingdoom(unsigned by_id)
+{
+	v_kingdom_science.push_back(KingdoomScience(by_id));
+}
+
 void ScienceGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
 }

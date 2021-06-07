@@ -1,4 +1,5 @@
 #include "pch.h"
+#include "../TurnBasedStrategy/economics.h"
 
 TEST(TestCaseName, TestName) {
   EXPECT_EQ(1, 1);
@@ -93,20 +94,27 @@ namespace KingdoomEconomicsFakeNameSpace{
 		unsigned GetDensityLvl(){ return density_;};
 		unsigned GetIncreasingLvl() {return increase_;};
 	};
-
+	
 	class KingdoomEconomicsFakeFixation : public ::testing::Test {
 	protected:
 		void SetUp() override {
 			master = new EconomicsGameObj;
 			kd = new KingdoomEconomicsFake(*master, 0);
+			map = new MapGameObj(3, 3, 1); // 3 x 3  kingdoom
+			science = new ScienceGameObj();
+			science->AddKingdoom(0);
+			master->SetInterface({ map, science });
 		}
 		void TearDown() override {
 			delete kd;
 			delete master;
 		}
 
+		ScienceGameObj* science;
+		MapGameObj* map;
 		EconomicsGameObj* master;
 		KingdoomEconomicsFake* kd;
+
 	};
 
 	TEST_F(KingdoomEconomicsFakeFixation, CreatingTest){
@@ -114,10 +122,8 @@ namespace KingdoomEconomicsFakeNameSpace{
 	}
 
 	TEST_F(KingdoomEconomicsFakeFixation, FakeAreaFakeDensityLvlTest){
-		kd->area_ = 10;
-		kd->density_ = 11;
-		EXPECT_EQ(kd->MyArea(), 10);
-		EXPECT_EQ(kd->GetDensityLvl(), 11);
+		EXPECT_EQ(kd->MyArea(), 9);
+		EXPECT_EQ(kd->GetDensityLvl(), 0);
 	}
 	
 	// Demography testing

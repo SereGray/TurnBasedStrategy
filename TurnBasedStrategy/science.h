@@ -66,6 +66,7 @@ class ScienceGameObj : public EngineGameObjInterface {
 public:									  
 	ScienceGameObj();
 	KingdoomScience& GetKingdoomScience(unsigned kingdom_id);
+	void AddKingdoom(unsigned);
 	~ScienceGameObj();
 private:
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);

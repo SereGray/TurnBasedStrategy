@@ -14,70 +14,70 @@ void MapPoint::SetY(uint32_t Y){
 	y=Y;
 }
 
-uint32_t MapTerrain::My_N(){
-	return N;
+uint32_t KingdoomMap::My_N(){
+	return my_id_;
 }
 
-uint32_t MapTerrain::MyArea()
+uint32_t KingdoomMap::MyArea()
 {
 	return uint32_t();
 }
 
-MapGameObj::MapGameObj(uint32_t w, uint32_t h, uint32_t p) : width(w), height(h) {
+MapGameObj::MapGameObj(uint32_t w, uint32_t h, uint32_t p) : width_(w), height_(h) {
 	// создаем таблицу списков смежности
-	cout << " gen tab\n";
+	//cout << " gen tab\n";
 	GenerateTab();
-	cout << "map to scre\n";
+	//cout << "map to scre\n";
 	AddPoitsToMap(p);
-	cout << "poins scre\n";
-	MapToScreen();
+	//cout << "poins scre\n";
+	//MapToScreen();
 	// заполняем территорию карты
 	FillMap();
 	cout << endl;
-	MapToScreen();
+	//MapToScreen();
 	// Выравниваю карту на 1 пиксель
 	BalanceArea();
-	cout << "Balancing ...\n";
-	MapToScreen();
+	//cout << "Balancing ...\n";
+	//MapToScreen();
 }
 
 uint32_t MapGameObj::GetNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
-	return x+y*width;
+	return x+y*width_;
 }
 
 pair<uint32_t, uint32_t> MapGameObj::GetCoord(uint32_t Num){
-	uint32_t x = Num - (Num / width) * width ;
-	uint32_t y = Num / width ;
+	uint32_t x = Num - (Num / width_) * width_ ;
+	uint32_t y = Num / width_ ;
 	return make_pair(x ,y);
 }
 
 void MapGameObj::GenerateTab(){
-	uint32_t max=height*width; // maby uint64_t
+	uint32_t max=height_*width_; // maby uint64_t
 	uint32_t w=0,h=0;
 	MapPoint pNull;
 	// заполняем таблицу нулевыми точками
 	for(uint32_t i=0;i<max;++i){
-		adjacentList.push_back(pNull);
+		adjacent_list_.push_back(pNull);
 	}
 	// заполняем таблицу смежности
 for(uint32_t i=0;i<max;++i){
-	adjacentList[i].SetX(h);
-	adjacentList[i].SetY(w);	
+	adjacent_list_[i].SetX(h);
+	adjacent_list_[i].SetY(w);	
 	// просматриваю таблицу вправо вниз добавляю 
 	// к текущей точке следущую смежную и к следующей текущую
 	// проверка правой границы
-	if(w<width-1){
-		adjacentList[i].adjacent_points.push_back(i+1);
-		adjacentList[i+1].adjacent_points.push_back(i); 
+	if(w<width_-1){
+		adjacent_list_[i].adjacent_points.push_back(i+1);
+		adjacent_list_[i+1].adjacent_points.push_back(i); 
 	}
 	// нижней границы
-	if(h<height-1){
-		adjacentList[i].adjacent_points.push_back(i+width);
-		adjacentList[i+width].adjacent_points.push_back(i);
+	if(h<height_-1){
+		adjacent_list_[i].adjacent_points.push_back(i+width_);
+		adjacent_list_[i+width_].adjacent_points.push_back(i);
 	}
 	// опредление координаты на карте
 	++w;
-	if(w==width){
+	if(w==width_){
 	w=0;
 	++h;
 	}
@@ -86,28 +86,26 @@ for(uint32_t i=0;i<max;++i){
 
 // // генерация и добавление начальных точек к карте
 void MapGameObj::AddPoitsToMap( uint32_t po){ // ро - количество стартовых точек
-	if(po>height*width) return;
+	if(po>height_*width_) return;
 	while(po>0){
-		uint32_t x=rand()%width;
-		uint32_t y=rand()%height;
-		if(adjacentList[x+y*width].N_owner==0){
-			adjacentList[GetNum(x,y)].N_owner=po;
+		uint32_t x=rand()%width_;
+		uint32_t y=rand()%height_;
+		if(adjacent_list_[x+y*width_].N_owner==0){
+			adjacent_list_[GetNum(x,y)].N_owner=po;
 		}else{
-			while(adjacentList[GetNum(x,y)].N_owner!=0){
-		x=rand()%width;
-		y=rand()%height;
+			while(adjacent_list_[GetNum(x,y)].N_owner!=0){
+		x=rand()%width_;
+		y=rand()%height_;
 			}
-			adjacentList[GetNum(x,y)].N_owner=po;
+			adjacent_list_[GetNum(x,y)].N_owner=po;
 		}
-		MapTerrain newKingdoom(GetNum(x,y),po);
-		cout<<" new kingd n="<<newKingdoom.My_N()<<endl;
-		list_terrains.push_back(newKingdoom);
-		--po;
+		KingdoomMap newKingdoom(GetNum(x,y),--po);
+		list_kingdoms_.push_back(newKingdoom);
 	}
 }
 
 // обновление границ (решение влоб)
-void MapGameObj::RefreshBorders(MapTerrain & terr){
+void MapGameObj::RefreshBorders(KingdoomMap & terr){
 	terr.borders.clear();
 	for(auto numV: terr.list_v){// обходим все вершины королевства по номерам и пров
 		//  условию границы  (список точек принадлежащ соседям не пуст или соседняя 
@@ -115,8 +113,8 @@ void MapGameObj::RefreshBorders(MapTerrain & terr){
 
 	//  получаю вершину смотрю список смежных  и владельца
 		// цикл проверяет соседние точки если соседняя точка не моя то значит проверяемая точка - гранинкая
-		for (auto smej_V : adjacentList[numV].adjacent_points) {
-			if (adjacentList[smej_V].N_owner != terr.My_N()) {
+		for (auto smej_V : adjacent_list_[numV].adjacent_points) {
+			if (adjacent_list_[smej_V].N_owner != terr.My_N()) {
 				terr.borders.push_back(numV);
 				break; //  эта вершина граничная  выходим
 			}
@@ -126,11 +124,11 @@ void MapGameObj::RefreshBorders(MapTerrain & terr){
 
 // вывод на экран карты
 void MapGameObj::MapToScreen(){
-		// проходим по всем вершинам и форматируем в виде таблицы heigth x width
+		// проходим по всем вершинам и форматируем в виде таблицы heigth x width_
 uint32_t k=0;
-	for(uint32_t j=0;j<height;++j){
-		for(uint32_t i=0;i<width;++i){
-			cout << adjacentList[k].N_owner<<" . ";
+	for(uint32_t j=0;j<height_;++j){
+		for(uint32_t i=0;i<width_;++i){
+			cout << adjacent_list_[k].N_owner<<" . ";
 			++k;
 		}
 		cout<<endl;
@@ -144,7 +142,7 @@ void MapGameObj::ToFile(uint8_t point_size=10) {
 	using namespace cimg_library;
 	// генерация цветов областей
 	vector<vector<unsigned char>> colors;
-	for(uint32_t i=0; i <= list_terrains.size(); ++i){ //TODO: check list size and N_owner 
+	for(uint32_t i=0; i <= list_kingdoms_.size(); ++i){ //TODO: check list size and N_owner 
 		unsigned char r,g,b;
 		r = rand() % UINT8_MAX;
 		g = rand() % UINT8_MAX;
@@ -152,10 +150,10 @@ void MapGameObj::ToFile(uint8_t point_size=10) {
 		vector<unsigned char> temp = { r, g, b};
 		colors.push_back(temp);
 	}
-	CImg<uint8_t> img(width * point_size, height * point_size, 1, 3); 
+	CImg<uint8_t> img(width_ * point_size, height_ * point_size, 1, 3); 
 	// двигаюсь по списку вершин и окрашиваю каждую точку в свой цвет области
 	uint32_t counter = 0;
-	for(MapPoint p: adjacentList){
+	for(MapPoint p: adjacent_list_){
 		uint32_t country = p.N_owner;
 		const unsigned char color[]={ colors[country][0],colors[country][1],colors[country][2]};
 		pair<uint32_t,uint32_t> coord = GetCoord(counter);
@@ -169,7 +167,7 @@ void MapGameObj::ToFile(uint8_t point_size=10) {
 bool MapGameObj::FreeSpace(){
 	static uint32_t maxIteration=100;
 	if(--maxIteration==0)return false;
-	for(MapPoint p: adjacentList){
+	for(MapPoint p: adjacent_list_){
 		if(p.N_owner==0) return true;
 	}
 	return false;
@@ -177,7 +175,7 @@ bool MapGameObj::FreeSpace(){
 
 void MapGameObj::DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path){
 	//считается что все вершины доступны иначе добавить вес ребра = бесконечности или др. промеж. варианты
-uint32_t n=adjacentList.size();
+uint32_t n=adjacent_list_.size();
 vector<uint32_t> dist(n, UINT32_MAX/2), parent(n);
 dist[numBorderV] = 0; // // стартовая вершина
 vector<bool> used(n);
@@ -189,8 +187,8 @@ for (uint32_t i = 0; i < n; ++i) {
 		if (dist[vertex] == UINT32_MAX/2)
 		break;
 		used[vertex] = true;
-		for (size_t j = 0; j < adjacentList[vertex].adjacent_points.size(); ++j) {
-			uint32_t to = adjacentList[vertex].adjacent_points[j];
+		for (size_t j = 0; j < adjacent_list_[vertex].adjacent_points.size(); ++j) {
+			uint32_t to = adjacent_list_[vertex].adjacent_points[j];
 			const uint32_t len =1; // вес ребра
 			if (dist[vertex] + len < dist[to]) {
 				dist[to] = dist[vertex] + len;
@@ -220,7 +218,7 @@ for (uint32_t i = 0; i < n; ++i) {
 void MapGameObj::CreateDxDTable( vector<vector<uint32_t>> & inDxD){  
 	uint32_t i=0;
 	inDxD.clear(); // 
-	for(MapPoint p : adjacentList){
+	for(MapPoint p : adjacent_list_){
 		for( uint32_t j: p.adjacent_points){
 			inDxD[i][j] = 1;  // set 1 to contiguous(smej) vertex
 			inDxD[j][i] = 1;
@@ -232,7 +230,7 @@ void MapGameObj::CreateDxDTable( vector<vector<uint32_t>> & inDxD){
 void MapGameObj::AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 	inMatrix.clear();
 	const uint32_t cost = 1; // default cost to move between two adjacent vertex
-	uint32_t n = adjacentList.size();
+	uint32_t n = adjacent_list_.size();
 	vector<uint32_t> v;
 	for (uint32_t j = 0; j < n; ++j) {
 		v.push_back(UINT32_MAX/2);
@@ -243,7 +241,7 @@ void MapGameObj::AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 	for (uint32_t i = 0; i < n; ++i) inMatrix[i][i] = 0;
 	// перевод из списка смежности в матрицу смежности
 	for (uint32_t i = 0; i < n; i++){
-		for (uint32_t vertex : adjacentList[i].adjacent_points){
+		for (uint32_t vertex : adjacent_list_[i].adjacent_points){
 			inMatrix[i][vertex] = cost;
 			inMatrix[vertex][i] = cost; 
 		}
@@ -294,9 +292,9 @@ vector<uint32_t> MapGameObj::FloydWarhsallPath(uint32_t start , uint32_t end, bo
 	
 void MapGameObj::BalanceArea() {
 	while (TerrainsDisbalanced(1)) {
-		std::sort(list_terrains.begin(), list_terrains.end(), [](MapTerrain lkdm, MapTerrain rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
-		MapTerrain kingdMin = *list_terrains.begin();
-		MapTerrain kingdMax = *(list_terrains.end() - 1);
+		std::sort(list_kingdoms_.begin(), list_kingdoms_.end(), [](KingdoomMap lkdm, KingdoomMap rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
+		KingdoomMap kingdMin = *list_kingdoms_.begin();
+		KingdoomMap kingdMax = *(list_kingdoms_.end() - 1);
 		// ищу путь наименьшей длины с прим. Флойд-Уоршелла
 		vector<uint32_t> path;   // после должен быть наикоротким
 		uint32_t lengthMinPath = UINT32_MAX;
@@ -313,11 +311,11 @@ void MapGameObj::BalanceArea() {
 		// двигаясь по пути
 		reverse(path.begin(), path.end());
 		uint32_t prevNumPoint = 0;
-		vector<MapTerrain>::iterator prevKingd = list_terrains.end() - 1;
+		vector<KingdoomMap>::iterator prevKingd = list_kingdoms_.end() - 1;
 		for(uint32_t NumPoint : path) {
 			// если текущий владелец отличается от владельца предыдущей точки меняю владельца точки
-			auto owner = adjacentList[NumPoint].N_owner;
-			vector<MapTerrain>::iterator currentKingd = find_if(list_terrains.begin(), list_terrains.end(), [owner](MapTerrain& kingd) { return owner == kingd.My_N(); });																																						   //NumCurrentTerr = adjacentList[NumPoint].N_owner;
+			auto owner = adjacent_list_[NumPoint].N_owner;
+			vector<KingdoomMap>::iterator currentKingd = find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [owner](KingdoomMap& kingd) { return owner == kingd.My_N(); });																																						   //NumCurrentTerr = adjacent_list_[NumPoint].N_owner;
 			if (currentKingd->My_N() != prevKingd->My_N()){
 				// найти предыдущ terrain и убрать у него точку из списка   find_if
 				
@@ -327,31 +325,31 @@ void MapGameObj::BalanceArea() {
 				prevKingd->list_v.erase(prevPointIt); // удалил вершину из пред списка
 				currentKingd->list_v.push_back(prevNumPoint); // добавил вершину в текущ список 
 				prevKingd = currentKingd; 
-				adjacentList[prevNumPoint].N_owner = currentKingd->My_N(); // присвоил вершину окончательно в списке смежности
+				adjacent_list_[prevNumPoint].N_owner = currentKingd->My_N(); // присвоил вершину окончательно в списке смежности
 			}
 			prevNumPoint = NumPoint;
 		}
-		for(auto & kingd : list_terrains) RefreshBorders(kingd);
+		for(auto & kingd : list_kingdoms_) RefreshBorders(kingd);
 	}
 }
 
 bool MapGameObj::TerrainsDisbalanced(uint32_t offset){ // offset - допуск на равенство 
-	uint32_t max=list_terrains[0].list_v.size();
-	for(auto terr : list_terrains){
+	uint32_t max=list_kingdoms_[0].list_v.size();
+	for(auto terr : list_kingdoms_){
 		if(max < terr.list_v.size())max=terr.list_v.size();
 	}
-	uint32_t min=list_terrains[0].list_v.size();
-	for(auto terr : list_terrains){
+	uint32_t min=list_kingdoms_[0].list_v.size();
+	for(auto terr : list_kingdoms_){
 		if(min > terr.list_v.size())min=terr.list_v.size();
 	}
 	if((max-min)>offset) return true;
 	return false;
 }
 		
-MapTerrain MapGameObj::GetMinTerrain(){
+KingdoomMap MapGameObj::GetMinTerrain(){
 	uint32_t min = 0 - 1;
-	MapTerrain res = list_terrains[0];
-	for(auto terr : list_terrains){
+	KingdoomMap res = list_kingdoms_[0];
+	for(auto terr : list_kingdoms_){
 		if(terr.list_v.size() < min) {
 		       	min = terr.list_v.size();
 			res = terr;
@@ -365,9 +363,14 @@ unsigned MapGameObj::GetCountSpecialists()
 	return 0;
 }
 
-uint32_t MapGameObj::area_of(uint32_t n)
+void MapGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
-	return uint32_t();
+}
+
+uint32_t MapGameObj::AreaKingdoom(uint32_t by_id)
+{
+	auto it = std::find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [by_id](KingdoomMap& kingd) {if (kingd.my_id_ == by_id)return true; return false; });
+	return it->list_v.size();
 }
 
 std::string MapGameObj::ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders)
@@ -393,11 +396,11 @@ std::string MapGameObj::GetSummariesString()
 void MapGameObj::FillMap(){
 	vector<uint32_t> iterOnBorders;		// список текущего положения итератора перебора 
 					//по пограничным вершинам для всех королевств ( массив итераторов по одному на королевство)
-	for(uint32_t i=0;i< list_terrains.size();++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
+	for(uint32_t i=0;i< list_kingdoms_.size();++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
 
 	while(FreeSpace()){// пока свободные клетки не закончатся
 	//Обход
-		for(auto &kingd: list_terrains){
+		for(auto &kingd: list_kingdoms_){
 			// движение по окружности границы по их порядку начиная с правой
 			if (iterOnBorders[kingd.My_N() - 1] >= kingd.borders.size()) {
 				iterOnBorders[kingd.My_N() - 1] = 0;  // если итератор вышел за 
@@ -406,22 +409,22 @@ void MapGameObj::FillMap(){
 			//  если заграничная точка ничья то присваиваем (только 1)
 			//  далее прохожу по границе numV - номер заграничной вершины(точки)
 			// двигаюсь по списку смежности - по смежным вершинам вершины "tabSmej[kingd.borders[iterOnBorders[i]]]"
-			for(uint32_t numV: adjacentList[kingd.borders[iterOnBorders[kingd.My_N() - 1]]].adjacent_points){
-				if(adjacentList[numV].N_owner==0){
-					adjacentList[numV].N_owner=kingd.My_N();
+			for(uint32_t numV: adjacent_list_[kingd.borders[iterOnBorders[kingd.My_N() - 1]]].adjacent_points){
+				if(adjacent_list_[numV].N_owner==0){
+					adjacent_list_[numV].N_owner=kingd.My_N();
 					kingd.list_v.push_back(numV);
 					break; // quit if ok
 				}
 			}
 			++iterOnBorders[kingd.My_N() - 1]; 	 // перемещаем итератор
 		}	
-		for(auto & kingd : list_terrains) RefreshBorders(kingd);
+		for(auto & kingd : list_kingdoms_) RefreshBorders(kingd);
 	}
 	
 }
 		void MapGameObj::PrintTabSmej(){
 			uint32_t i=0;
-			for(MapPoint p:adjacentList){
+			for(MapPoint p:adjacent_list_){
 				cout << i <<" num smej:"<< p.adjacent_points.size() << endl;
 				++i;
 				for(uint32_t v: p.adjacent_points){
