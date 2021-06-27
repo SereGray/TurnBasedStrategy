@@ -40,6 +40,13 @@ void TheScience::AddScienist()
 }
 
 
+// KingdoomScience
+
+unsigned KingdoomScience::GetMyId()
+{
+	return my_id_;
+}
+
 unsigned KingdoomScience::GetCountSpecialists()
 {
 	return 0;
@@ -91,6 +98,12 @@ KingdoomScience& ScienceGameObj::GetKingdoomScience(unsigned kingdom_id)
 void ScienceGameObj::AddKingdoom(unsigned by_id)
 {
 	v_kingdom_science.push_back(KingdoomScience(by_id));
+}
+
+//TODO: return ref
+KingdoomScience* ScienceGameObj::GetKingdoom(unsigned by_id)
+{
+	return GetObjFromVectorUt(by_id, v_kingdom_science);
 }
 
 void ScienceGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)

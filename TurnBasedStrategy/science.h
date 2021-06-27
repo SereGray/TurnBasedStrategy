@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 #include <memory>
+#include "utility.h"
 
 //  общая наука - уровень общей науки определяет скорость развития предметных областе науки 
 class TheScience{
@@ -51,6 +52,7 @@ class KingdoomScience{
 		KingdoomScience(unsigned my_id) :densety_people_(SubjectScience(science, "densety people")), increase_people_(SubjectScience(science, "increase people")), harvesting_(SubjectScience(science,"harvesting")),selling_res_(SubjectScience(science,"Selling resourse")), war_craft_(SubjectScience(science,"war craft")), my_id_(my_id) {};
 		std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
 		//SubjectScience densety_people_(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
+		unsigned GetMyId();
 		unsigned GetCountSpecialists();
 		unsigned GetWarcraftLvl();
 		unsigned GetDensityLvl();
@@ -67,6 +69,7 @@ public:
 	ScienceGameObj();
 	KingdoomScience& GetKingdoomScience(unsigned kingdom_id);
 	void AddKingdoom(unsigned);
+	KingdoomScience* GetKingdoom(unsigned);
 	~ScienceGameObj();
 private:
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
