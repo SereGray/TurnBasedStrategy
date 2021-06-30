@@ -21,14 +21,15 @@ class TheScience{
 	unsigned		scienist_lvl_;
 	float Scienist_force();				// подсчет силы ученого запускать в NextTurn() т.к.результат static
 	void Increase(unsigned scienist_count); // увеличение науки 
-	unsigned GetCountSpecialists();
-	void AddScienist();
 public:
 	// TODO: проверить что прирост идет у предметной области науки а не у всей
 	unsigned science_lvl_;		//общий научный уровень   TODO: test static ?
 	std::string name_;					// name 
+
 	TheScience() :progress_(0),progress_limit_(100), scienist_force_(1.0), count_scienist_(0),scienist_lvl_(0), science_lvl_(0),  name_("science") {};
 	TheScience(std::string nameScience);
+	unsigned GetCountSpecialists();
+	void ChangeCountSpecialists(int);
 };
 
 
@@ -45,19 +46,39 @@ class SubjectScience: public TheScience{
 
 
 class KingdoomScience{
-	TheScience science;
+	TheScience science_;
 	SubjectScience densety_people_, increase_people_, harvesting_, selling_res_, war_craft_;
+	unsigned free_scienists_;
 	public:
 		const unsigned my_id_;
-		KingdoomScience(unsigned my_id) :densety_people_(SubjectScience(science, "densety people")), increase_people_(SubjectScience(science, "increase people")), harvesting_(SubjectScience(science,"harvesting")),selling_res_(SubjectScience(science,"Selling resourse")), war_craft_(SubjectScience(science,"war craft")), my_id_(my_id) {};
+		KingdoomScience(unsigned my_id) :densety_people_(SubjectScience(science_, "densety people")),\
+			increase_people_(SubjectScience(science_, "increase people")), harvesting_(SubjectScience(science_,"harvesting"))\
+			,selling_res_(SubjectScience(science_,"Selling resourse")), war_craft_(SubjectScience(science_,"war craft")),\
+			my_id_(my_id), free_scienists_(0) {};
 		std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
 		//SubjectScience densety_people_(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
 		unsigned GetMyId();
-		unsigned GetCountSpecialists();
+		unsigned GetCountAllSpecialists();
 		unsigned GetWarcraftLvl();
 		unsigned GetDensityLvl();
 		unsigned GetIncreasingLvl();
+		void ChangeCountSpec_DensetyPeople(int);
+		void ChangeCountSpec_Science(int);
+		void ChangeCountSpec_IncreasePeople(int);
+		void ChangeCountSpec_Harvesting(int);
+		void ChangeCountSpec_SellingRes(int);
+		void ChangeCountSpec_WarCraft(int);
+		void ChangeFreeSpecialist(int);
+		unsigned GetCountSpec_DensetyPeople();
+		unsigned GetCountSpec_Science();
+		unsigned GetCountSpec_IncreasePeople();
+		unsigned GetCountSpec_Harvesting();
+		unsigned GetCountSpec_SellingRes();
+		unsigned GetCountSpec_WarCraft();
+		unsigned GetFreeSpecialist();
 	private:
+		void ChangeCountSpecialist(TheScience&, int);
+		unsigned GetCountSpecialists(TheScience&);
 		void NextTurn(); // расчет сл хода
 		std::string GetSummariesString();
 		

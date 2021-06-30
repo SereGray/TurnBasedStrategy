@@ -7,7 +7,7 @@ Demography::Demography(KingdoomEconomics* master): all_people_(0),increase_peopl
 void Demography::NextTurn(){
 	// TODO:Decreasing people
 	maximum_people_ = static_cast<unsigned>(static_cast<double>(my_master_->MyArea()) * ((static_cast<double>(my_master_->GetDensityLvl())/100.0) + 1.0));
-	increase_people_ =( all_people_ ) / 20  ; //TODO: add Population growth science lvl
+	increase_people_ =( all_people_ ) / 20  ; //TODO: add Population growth science_ lvl
 	increase_people_ = increase_people_ / 100 * my_master_->GetIncreasingLvl();
 	if(all_people_ > maximum_people_) increase_people_ = (maximum_people_ - all_people_) / -10;
 	// calculating incrase_people_

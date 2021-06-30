@@ -32,11 +32,12 @@ void TheScience::Increase(unsigned scienist_count)
 
 unsigned TheScience::GetCountSpecialists()
 {
-	return 0;
+	return count_scienist_;
 }
 
-void TheScience::AddScienist()
+void TheScience::ChangeCountSpecialists(int count)
 {
+	count_scienist_ += count;
 }
 
 
@@ -47,9 +48,11 @@ unsigned KingdoomScience::GetMyId()
 	return my_id_;
 }
 
-unsigned KingdoomScience::GetCountSpecialists()
+unsigned KingdoomScience::GetCountAllSpecialists()
 {
-	return 0;
+	return free_scienists_ + science_.GetCountSpecialists() + densety_people_.GetCountSpecialists() + \
+		increase_people_.GetCountSpecialists() + harvesting_.GetCountSpecialists() + selling_res_.GetCountSpecialists()\
+		+ war_craft_.GetCountSpecialists(); 
 }
 
 unsigned KingdoomScience::GetWarcraftLvl()
@@ -66,6 +69,113 @@ unsigned KingdoomScience::GetIncreasingLvl()
 {
 	return increase_people_.science_lvl_;
 }
+
+void KingdoomScience::ChangeCountSpec_DensetyPeople(int count)
+{
+	ChangeCountSpecialist(densety_people_, count);
+}
+
+void KingdoomScience::ChangeCountSpec_Science(int count) 
+{
+	ChangeCountSpecialist(science_, count);
+}
+
+void KingdoomScience::ChangeCountSpec_IncreasePeople(int count) 
+{
+	ChangeCountSpecialist(increase_people_, count);
+}
+
+void KingdoomScience::ChangeCountSpec_Harvesting(int count) 
+{
+	ChangeCountSpecialist(harvesting_, count);
+}
+
+void KingdoomScience::ChangeCountSpec_SellingRes(int count) 
+{
+	ChangeCountSpecialist(selling_res_, count);
+}
+
+void KingdoomScience::ChangeCountSpec_WarCraft(int count)
+{
+	ChangeCountSpecialist(war_craft_, count);
+}
+
+void KingdoomScience::ChangeFreeSpecialist(int count)
+{
+	if (count < 0 && free_scienists_ > count) {
+		free_scienists_ += count;
+	}
+	else if (count < 0 && free_scienists_ <= count) {
+		free_scienists_ = 0;
+	}
+	else if (count >= 0) {
+		free_scienists_ += count;
+	}
+}
+
+
+unsigned KingdoomScience::GetCountSpec_DensetyPeople()
+{
+	return GetCountSpecialists(densety_people_);
+}
+
+unsigned KingdoomScience::GetCountSpec_Science()
+{
+	return GetCountSpecialists(science_);
+}
+
+unsigned KingdoomScience::GetCountSpec_IncreasePeople()
+{
+	return GetCountSpecialists(increase_people_);
+}
+
+unsigned KingdoomScience::GetCountSpec_Harvesting()
+{
+	return GetCountSpecialists(harvesting_);
+}
+
+unsigned KingdoomScience::GetCountSpec_SellingRes()
+{
+	return GetCountSpecialists(selling_res_);
+}
+
+unsigned KingdoomScience::GetCountSpec_WarCraft()
+{
+	return GetCountSpecialists(war_craft_);
+}
+
+unsigned KingdoomScience::GetFreeSpecialist()
+{
+	return free_scienists_;
+}
+
+
+void KingdoomScience::ChangeCountSpecialist(TheScience& sub_science, int count)
+{
+	unsigned count_scienist = sub_science.GetCountSpecialists();
+	if (count < 0 && count_scienist > count) {
+		sub_science.ChangeCountSpecialists(count);
+		free_scienists_ -= count;
+	}
+	else if (count < 0 && count_scienist < count) {
+		sub_science.ChangeCountSpecialists( count_scienist * (-1));
+		free_scienists_ += count_scienist;
+	}
+	else if (count >= 0 && free_scienists_ > count) {
+		sub_science.ChangeCountSpecialists(count);
+		free_scienists_ -= count;
+	}
+	else if (count >= 0 && free_scienists_ <= count) {
+		sub_science.ChangeCountSpecialists(free_scienists_);
+		free_scienists_ = 0;
+	}
+}
+
+unsigned KingdoomScience::GetCountSpecialists(TheScience& sub_science)
+{
+	return sub_science.GetCountSpecialists();
+}
+
 
 void KingdoomScience::NextTurn()
 {
