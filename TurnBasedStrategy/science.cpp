@@ -14,20 +14,18 @@ TheScience::TheScience(std::string nameScience)
 }
 
 
-float TheScience::Scienist_force()
-{
-	return 0.0f;
-}
 
-void TheScience::Increase(unsigned scienist_count)
+float TheScience::NextTurn()
 {
-	progress_ = progress_ + static_cast<unsigned>(scienist_count * scienist_force_);
-	if (progress_ > progress_limit_) 
+	progress_ = progress_ + static_cast<unsigned>(count_scienist_ * scienist_force_);
+	if (progress_ >= progress_limit_) 
 	{
 		++science_lvl_;
 		progress_ = progress_ - progress_limit_;
-		progress_limit_ += progress_limit_ / 20; // add 20 % to limit
+		progress_limit_ += progress_limit_ / 10; // add 10 % to limit
+		scienist_force_ = scienist_force_ + science_lvl_ * 0.01f;
 	}
+	return scienist_force_;
 }
 
 unsigned TheScience::GetCountSpecialists()
@@ -39,6 +37,13 @@ void TheScience::ChangeCountSpecialists(int count)
 {
 	count_scienist_ += count;
 }
+
+std::pair<unsigned, unsigned> TheScience::GetProgress()
+{
+	return std::pair<unsigned, unsigned>(std::make_pair(progress_,progress_limit_));
+}
+
+
 
 
 // KingdoomScience
@@ -53,6 +58,20 @@ unsigned KingdoomScience::GetCountAllSpecialists()
 	return free_scienists_ + science_.GetCountSpecialists() + densety_people_.GetCountSpecialists() + \
 		increase_people_.GetCountSpecialists() + harvesting_.GetCountSpecialists() + selling_res_.GetCountSpecialists()\
 		+ war_craft_.GetCountSpecialists(); 
+}
+unsigned KingdoomScience::GetScienceLvl()
+{
+	return science_.science_lvl_;
+}
+
+unsigned KingdoomScience::GetHarvestingLvl()
+{
+	return harvesting_.science_lvl_;
+}
+
+unsigned KingdoomScience::GetSellingResLvl()
+{
+	return selling_res_.science_lvl_;
 }
 
 unsigned KingdoomScience::GetWarcraftLvl()

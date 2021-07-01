@@ -13,14 +13,12 @@
 //  общая наука - уровень общей науки определяет скорость развития предметных областе науки 
 class TheScience{
 	// класс наука
-        private:	
+private:	
 	unsigned		progress_;			// количество работы ученых над текущим уровнем
 	unsigned		progress_limit_;	// макс прогресс для этого уровняя (если больше то повыш ур.)
-	float	scienist_force_;	// сколько прогресса добавляет один ученый
+	float			scienist_force_;	// сколько прогресса добавляет один ученый
 	unsigned		count_scienist_; 
 	unsigned		scienist_lvl_;
-	float Scienist_force();				// подсчет силы ученого запускать в NextTurn() т.к.результат static
-	void Increase(unsigned scienist_count); // увеличение науки 
 public:
 	// TODO: проверить что прирост идет у предметной области науки а не у всей
 	unsigned science_lvl_;		//общий научный уровень   TODO: test static ?
@@ -30,6 +28,8 @@ public:
 	TheScience(std::string nameScience);
 	unsigned GetCountSpecialists();
 	void ChangeCountSpecialists(int);
+	std::pair<unsigned, unsigned> GetProgress();
+	float NextTurn(); // return scienist force_
 };
 
 
@@ -42,6 +42,7 @@ class SubjectScience: public TheScience{
 		TheScience& pbase_science_;
 		SubjectScience(TheScience& base_science, std::string name) : TheScience::TheScience(name), pbase_science_(base_science), name_(name) {};
 		void Increase(unsigned scienist_count); // увеличение науки 
+		float NextTurn();
 };
 
 
@@ -59,6 +60,9 @@ class KingdoomScience{
 		//SubjectScience densety_people_(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
 		unsigned GetMyId();
 		unsigned GetCountAllSpecialists();
+		unsigned GetScienceLvl();
+		unsigned GetHarvestingLvl();
+		unsigned GetSellingResLvl();
 		unsigned GetWarcraftLvl();
 		unsigned GetDensityLvl();
 		unsigned GetIncreasingLvl();
