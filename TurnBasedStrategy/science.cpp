@@ -18,7 +18,7 @@ TheScience::TheScience(std::string nameScience)
 float TheScience::NextTurn()
 {
 	progress_ = progress_ + static_cast<unsigned>(count_scienist_ * scienist_force_);
-	if (progress_ >= progress_limit_) 
+	while(progress_ >= progress_limit_) 
 	{
 		++science_lvl_;
 		progress_ = progress_ - progress_limit_;

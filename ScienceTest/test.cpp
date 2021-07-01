@@ -104,3 +104,13 @@ TEST(TheScienceTestCase, TheScienceProgressLimitOverFlow) {
 	std::pair<unsigned, unsigned> test_92_121_pair = std::make_pair<unsigned, unsigned>(92, 121);
 	EXPECT_EQ(test_92_121_pair, science.GetProgress());
 }
+
+TEST(TheScienceTestCase, TheScienceProgressMonsterUp) {
+	TheScience science;
+	science.ChangeCountSpecialists(610);
+	float force = science.NextTurn();
+	EXPECT_EQ(5, science.science_lvl_);
+	EXPECT_FLOAT_EQ(1.15f, force);
+	std::pair<unsigned, unsigned> test = std::make_pair<unsigned, unsigned>(0, 160);
+	EXPECT_EQ(test, science.GetProgress());
+}
