@@ -13,7 +13,7 @@
 //  общая наука - уровень общей науки определяет скорость развития предметных областе науки 
 class TheScience{
 	// класс наука
-private:	
+protected:	
 	unsigned		progress_;			// количество работы ученых над текущим уровнем
 	unsigned		progress_limit_;	// макс прогресс для этого уровняя (если больше то повыш ур.)
 	float			scienist_force_;	// сколько прогресса добавляет один ученый
@@ -29,7 +29,8 @@ public:
 	unsigned GetCountSpecialists();
 	void ChangeCountSpecialists(int);
 	std::pair<unsigned, unsigned> GetProgress();
-	float NextTurn(); // return scienist force_
+	void NextTurn(); // return scienist force_
+	float GetScienistForce();
 };
 
 
@@ -41,8 +42,7 @@ class SubjectScience: public TheScience{
 		std::string name_;
 		TheScience& pbase_science_;
 		SubjectScience(TheScience& base_science, std::string name) : TheScience::TheScience(name), pbase_science_(base_science), name_(name) {};
-		void Increase(unsigned scienist_count); // увеличение науки 
-		float NextTurn();
+		void NextTurn();
 };
 
 

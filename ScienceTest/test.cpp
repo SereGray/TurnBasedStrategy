@@ -82,35 +82,77 @@ TEST(ScienceTestCase, KingdoomGetSubjectScienceLvl_return_0) {
 TEST(TheScienceTestCase, TheScienceProgressLimitOverFlow) {
 	TheScience science;
 	EXPECT_EQ(science.science_lvl_, 0);
-	float force = science.NextTurn();
+	science.NextTurn();
 	EXPECT_EQ(science.science_lvl_, 0);
-	EXPECT_FLOAT_EQ(force, 1.0f);
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.0f);
 	std::pair<unsigned, unsigned> test_0_pair = std::make_pair<unsigned, unsigned>(0, 100);
 	EXPECT_EQ(science.GetProgress(), test_0_pair);
 	science.ChangeCountSpecialists(100);
-	force = science.NextTurn();
+	science.NextTurn();
 	EXPECT_EQ(science.science_lvl_, 1);
-	EXPECT_FLOAT_EQ(force, 1.01f);
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.01f);
 	std::pair<unsigned, unsigned> test_0_110_pair = std::make_pair<unsigned, unsigned>(0, 110);
 	EXPECT_EQ(science.GetProgress(), test_0_110_pair);
-	force = science.NextTurn();
+	science.NextTurn();
 	EXPECT_EQ(science.science_lvl_, 1);
-	EXPECT_FLOAT_EQ(force, 1.01f);
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.01f);
 	std::pair<unsigned, unsigned> test_101_110_pair = std::make_pair<unsigned, unsigned>(101, 110);
 	EXPECT_EQ(test_101_110_pair, science.GetProgress());
-	force = science.NextTurn();
+	science.NextTurn();
 	EXPECT_EQ(science.science_lvl_, 2);
-	EXPECT_FLOAT_EQ(force, 1.03f);
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.03f);
 	std::pair<unsigned, unsigned> test_92_121_pair = std::make_pair<unsigned, unsigned>(92, 121);
 	EXPECT_EQ(test_92_121_pair, science.GetProgress());
 }
 
-TEST(TheScienceTestCase, TheScienceProgressMonsterUp) {
+TEST(TheScienceTestCase, TheScienceProgressBigUp) {
 	TheScience science;
 	science.ChangeCountSpecialists(610);
-	float force = science.NextTurn();
+	science.NextTurn();
 	EXPECT_EQ(5, science.science_lvl_);
-	EXPECT_FLOAT_EQ(1.15f, force);
+	EXPECT_FLOAT_EQ(1.15f, science.GetScienistForce());
 	std::pair<unsigned, unsigned> test = std::make_pair<unsigned, unsigned>(0, 160);
 	EXPECT_EQ(test, science.GetProgress());
+}
+
+TEST(SubjectScienceTestCase, ProgressOverflow) {
+	TheScience the_science;
+	SubjectScience science(the_science,"test");
+	EXPECT_EQ(science.science_lvl_, 0);
+	science.NextTurn();
+	EXPECT_EQ(science.science_lvl_, 0);
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.0f);
+	std::pair<unsigned, unsigned> test_0_pair = std::make_pair<unsigned, unsigned>(0, 100);
+	EXPECT_EQ(science.GetProgress(), test_0_pair);
+	science.ChangeCountSpecialists(100);
+	science.NextTurn();
+	EXPECT_EQ(science.science_lvl_, 1);
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.0f);
+	std::pair<unsigned, unsigned> test_0_110_pair = std::make_pair<unsigned, unsigned>(0, 110);
+	EXPECT_EQ(science.GetProgress(), test_0_110_pair);
+	science.NextTurn();
+	EXPECT_EQ(science.science_lvl_, 1);
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.0f);
+	std::pair<unsigned, unsigned> test_101_110_pair = std::make_pair<unsigned, unsigned>(100, 110);
+	EXPECT_EQ(test_101_110_pair, science.GetProgress());
+	science.NextTurn();
+	EXPECT_EQ(science.science_lvl_, 2);
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.0f);
+	std::pair<unsigned, unsigned> test_92_121_pair = std::make_pair<unsigned, unsigned>(90, 121);
+	EXPECT_EQ(test_92_121_pair, science.GetProgress());
+}
+
+TEST(SubjectScienceTestCase, ProgressOverflowScienistForceChanged) {
+	TheScience the_science;
+	SubjectScience science(the_science, "test");
+	the_science.ChangeCountSpecialists(610);
+	the_science.NextTurn();
+	EXPECT_FLOAT_EQ(1.15f, the_science.GetScienistForce());
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.0f);
+	science.ChangeCountSpecialists(100);
+	science.NextTurn();
+	EXPECT_EQ(science.science_lvl_, 1);
+	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.15f);
+	std::pair<unsigned, unsigned> test_15_110_pair = std::make_pair<unsigned, unsigned>(15, 110);
+	EXPECT_EQ(science.GetProgress(), test_15_110_pair);
 }

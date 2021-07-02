@@ -15,7 +15,7 @@ TheScience::TheScience(std::string nameScience)
 
 
 
-float TheScience::NextTurn()
+void TheScience::NextTurn()
 {
 	progress_ = progress_ + static_cast<unsigned>(count_scienist_ * scienist_force_);
 	while(progress_ >= progress_limit_) 
@@ -25,6 +25,10 @@ float TheScience::NextTurn()
 		progress_limit_ += progress_limit_ / 10; // add 10 % to limit
 		scienist_force_ = scienist_force_ + science_lvl_ * 0.01f;
 	}
+}
+
+float TheScience::GetScienistForce()
+{
 	return scienist_force_;
 }
 
@@ -43,8 +47,19 @@ std::pair<unsigned, unsigned> TheScience::GetProgress()
 	return std::pair<unsigned, unsigned>(std::make_pair(progress_,progress_limit_));
 }
 
+// SubjectScience
 
-
+void SubjectScience::NextTurn()
+{
+	scienist_force_ = pbase_science_.GetScienistForce();
+	progress_ = progress_ + static_cast<unsigned>(count_scienist_ * scienist_force_);
+	while (progress_ >= progress_limit_)
+	{
+		++science_lvl_;
+		progress_ = progress_ - progress_limit_;
+		progress_limit_ += progress_limit_ / 10; // add 10 % to limit
+	}
+}
 
 // KingdoomScience
 
@@ -208,9 +223,7 @@ std::string KingdoomScience::GetSummariesString()
 	return std::string();
 }
 
-void SubjectScience::Increase(unsigned scienist_count)
-{
-}
+
 
 // игровой объект наука
 //class ScienceGameObj
