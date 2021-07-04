@@ -1,4 +1,5 @@
 #include "science.h"
+#include <cmath>
 //#include <memory>
 
 
@@ -17,7 +18,7 @@ TheScience::TheScience(std::string nameScience)
 
 void TheScience::NextTurn()
 {
-	progress_ = progress_ + static_cast<unsigned>(count_scienist_ * scienist_force_);
+	progress_ = progress_ + static_cast<unsigned>(std::round((count_scienist_ * scienist_force_)));
 	while(progress_ >= progress_limit_) 
 	{
 		++science_lvl_;
@@ -52,7 +53,7 @@ std::pair<unsigned, unsigned> TheScience::GetProgress()
 void SubjectScience::NextTurn()
 {
 	scienist_force_ = pbase_science_.GetScienistForce();
-	progress_ = progress_ + static_cast<unsigned>(count_scienist_ * scienist_force_);
+	progress_ = progress_ + static_cast<unsigned>(std::round((count_scienist_ * scienist_force_)));
 	while (progress_ >= progress_limit_)
 	{
 		++science_lvl_;
@@ -124,7 +125,7 @@ void KingdoomScience::ChangeCountSpec_Harvesting(int count)
 	ChangeCountSpecialist(harvesting_, count);
 }
 
-void KingdoomScience::ChangeCountSpec_SellingRes(int count) 
+void KingdoomScience::ChangeCountSpec_SellingRes(int count)
 {
 	ChangeCountSpecialist(selling_res_, count);
 }
@@ -184,6 +185,8 @@ unsigned KingdoomScience::GetFreeSpecialist()
 }
 
 
+
+
 void KingdoomScience::ChangeCountSpecialist(TheScience& sub_science, int count)
 {
 	unsigned count_scienist = sub_science.GetCountSpecialists();
@@ -223,7 +226,15 @@ std::string KingdoomScience::GetSummariesString()
 	return std::string();
 }
 
-
+void KingdoomScience::ResetSpecialists()
+{
+	ChangeCountSpec_Science(science_.GetCountSpecialists() * (-1));
+	ChangeCountSpec_DensetyPeople(densety_people_.GetCountSpecialists() * (-1));
+	ChangeCountSpec_IncreasePeople(increase_people_.GetCountSpecialists() * (-1));
+	ChangeCountSpec_Harvesting(harvesting_.GetCountSpecialists() * (-1));
+	ChangeCountSpec_SellingRes(selling_res_.GetCountSpecialists() * (-1));
+	ChangeCountSpec_WarCraft(war_craft_.GetCountSpecialists() * (-1));
+}
 
 // игровой объект наука
 //class ScienceGameObj

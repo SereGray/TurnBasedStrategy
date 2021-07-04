@@ -152,7 +152,8 @@ TEST(SubjectScienceTestCase, ProgressOverflowScienistForceChanged) {
 	science.ChangeCountSpecialists(100);
 	science.NextTurn();
 	EXPECT_EQ(science.science_lvl_, 1);
+	EXPECT_EQ(100, science.GetCountSpecialists());
 	EXPECT_FLOAT_EQ(science.GetScienistForce(), 1.15f);
 	std::pair<unsigned, unsigned> test_15_110_pair = std::make_pair<unsigned, unsigned>(15, 110);
-	EXPECT_EQ(science.GetProgress(), test_15_110_pair);
+	EXPECT_EQ(science.GetProgress(), test_15_110_pair)<< std::round(1.1499999*100);
 }

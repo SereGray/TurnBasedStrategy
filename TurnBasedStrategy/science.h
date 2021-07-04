@@ -80,6 +80,7 @@ class KingdoomScience{
 		unsigned GetCountSpec_SellingRes();
 		unsigned GetCountSpec_WarCraft();
 		unsigned GetFreeSpecialist();
+		void ResetSpecialists();
 	private:
 		void ChangeCountSpecialist(TheScience&, int);
 		unsigned GetCountSpecialists(TheScience&);
