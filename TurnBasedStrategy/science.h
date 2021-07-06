@@ -80,11 +80,18 @@ class KingdoomScience{
 		unsigned GetCountSpec_SellingRes();
 		unsigned GetCountSpec_WarCraft();
 		unsigned GetFreeSpecialist();
-		void ResetSpecialists();
+		void ResetAllSpecialist();
+		void ChangeFreeSpecialists(int);
+		std::pair<unsigned, unsigned> GetProgress_DensetyPeople();
+		std::pair<unsigned, unsigned> GetProgress_Science();
+		std::pair<unsigned, unsigned> GetProgress_IncreasePeople();
+		std::pair<unsigned, unsigned> GetProgress_Harvesting();
+		std::pair<unsigned, unsigned> GetProgress_SellingRes();
+		std::pair<unsigned, unsigned> GetProgress_WarCraft();
+		void NextTurn(); // расчет сл хода
 	private:
 		void ChangeCountSpecialist(TheScience&, int);
 		unsigned GetCountSpecialists(TheScience&);
-		void NextTurn(); // расчет сл хода
 		std::string GetSummariesString();
 		
 };

@@ -216,9 +216,14 @@ unsigned KingdoomScience::GetCountSpecialists(TheScience& sub_science)
 
 void KingdoomScience::NextTurn()
 {
+	science_.NextTurn();
+	densety_people_.NextTurn();
+	increase_people_.NextTurn();
+	harvesting_.NextTurn();
+	selling_res_.NextTurn();
+	war_craft_.NextTurn();
 	// двигаюсь по списку научных объектов
 	// высчитываю новое значение прогесса
-	// если прогрес больше чем макс то поднимаю уровень и переношу избыточный прогресс на следующий уровень
 }
 
 std::string KingdoomScience::GetSummariesString()
@@ -226,7 +231,7 @@ std::string KingdoomScience::GetSummariesString()
 	return std::string();
 }
 
-void KingdoomScience::ResetSpecialists()
+void KingdoomScience::ResetAllSpecialist()
 {
 	ChangeCountSpec_Science(science_.GetCountSpecialists() * (-1));
 	ChangeCountSpec_DensetyPeople(densety_people_.GetCountSpecialists() * (-1));
@@ -234,6 +239,41 @@ void KingdoomScience::ResetSpecialists()
 	ChangeCountSpec_Harvesting(harvesting_.GetCountSpecialists() * (-1));
 	ChangeCountSpec_SellingRes(selling_res_.GetCountSpecialists() * (-1));
 	ChangeCountSpec_WarCraft(war_craft_.GetCountSpecialists() * (-1));
+}
+
+void KingdoomScience::ChangeFreeSpecialists(int count) 
+{
+	free_scienists_ += count;
+}
+
+std::pair<unsigned, unsigned> KingdoomScience::GetProgress_DensetyPeople()
+{
+	return densety_people_.GetProgress();
+}
+
+std::pair<unsigned, unsigned> KingdoomScience::GetProgress_Science()
+{
+	return science_.GetProgress();
+}
+
+std::pair<unsigned, unsigned> KingdoomScience::GetProgress_IncreasePeople()
+{
+	return increase_people_.GetProgress();
+}
+
+std::pair<unsigned, unsigned> KingdoomScience::GetProgress_Harvesting()
+{
+	return harvesting_.GetProgress();
+}
+
+std::pair<unsigned, unsigned> KingdoomScience::GetProgress_SellingRes()
+{
+	return selling_res_.GetProgress();
+}
+
+std::pair<unsigned, unsigned> KingdoomScience::GetProgress_WarCraft()
+{
+	return war_craft_.GetProgress();
 }
 
 // игровой объект наука

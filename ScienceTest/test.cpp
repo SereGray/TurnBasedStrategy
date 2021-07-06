@@ -157,3 +157,133 @@ TEST(SubjectScienceTestCase, ProgressOverflowScienistForceChanged) {
 	std::pair<unsigned, unsigned> test_15_110_pair = std::make_pair<unsigned, unsigned>(15, 110);
 	EXPECT_EQ(science.GetProgress(), test_15_110_pair)<< std::round(1.1499999*100);
 }
+
+TEST(KingdoomScienceTestCase, Creation_Test) {
+	KingdoomScience kingdoom(0);
+	EXPECT_EQ(0, kingdoom.GetMyId());
+	EXPECT_EQ(0, kingdoom.GetCountAllSpecialists());
+	EXPECT_EQ(0, kingdoom.GetFreeSpecialist());
+}
+
+TEST(KingdoomScienceTestCase, FreeScienistCountTest)
+{
+	KingdoomScience kingdoom(0);
+	kingdoom.ChangeCountSpec_DensetyPeople(100);
+	EXPECT_EQ(0, kingdoom.GetFreeSpecialist());
+	EXPECT_EQ(0, kingdoom.GetCountSpec_DensetyPeople());
+	kingdoom.ChangeFreeSpecialists(100);
+	EXPECT_EQ(100, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_DensetyPeople(-1000);
+	EXPECT_EQ(0, kingdoom.GetCountSpec_DensetyPeople());
+	EXPECT_EQ(100, kingdoom.GetFreeSpecialist());
+	kingdoom.ResetAllSpecialist();
+	EXPECT_EQ(100, kingdoom.GetFreeSpecialist());
+}
+
+TEST(KingdoomScienceTestCase, ScienistCountTest)
+{
+	KingdoomScience kingdoom(0);
+	kingdoom.ChangeFreeSpecialists(120);
+	kingdoom.ChangeCountSpec_DensetyPeople(100);
+	EXPECT_EQ(100, kingdoom.GetCountSpec_DensetyPeople());
+	EXPECT_EQ(20, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_DensetyPeople(-100);
+	EXPECT_EQ(120, kingdoom.GetFreeSpecialist());
+	EXPECT_EQ(0, kingdoom.GetCountSpec_DensetyPeople());
+	kingdoom.ChangeCountSpec_Harvesting(100);
+	EXPECT_EQ(100, kingdoom.GetCountSpec_Harvesting());
+	EXPECT_EQ(20, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_Harvesting(-100);
+	EXPECT_EQ(0, kingdoom.GetCountSpec_Harvesting());
+	EXPECT_EQ(120, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_IncreasePeople(100);
+	EXPECT_EQ(100, kingdoom.GetCountSpec_IncreasePeople());
+	EXPECT_EQ(20, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_IncreasePeople(-100);
+	EXPECT_EQ(0, kingdoom.GetCountSpec_IncreasePeople());
+	EXPECT_EQ(120, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_Science(100);
+	EXPECT_EQ(100, kingdoom.GetCountSpec_Science());
+	EXPECT_EQ(20, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_Science(-100);
+	EXPECT_EQ(0, kingdoom.GetCountSpec_Science());
+	EXPECT_EQ(120, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_SellingRes(100);
+	EXPECT_EQ(100, kingdoom.GetCountSpec_SellingRes());
+	EXPECT_EQ(20, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_SellingRes(-100);
+	EXPECT_EQ(0, kingdoom.GetCountSpec_SellingRes());
+	EXPECT_EQ(120, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_WarCraft(100);
+	EXPECT_EQ(100, kingdoom.GetCountSpec_WarCraft());
+	EXPECT_EQ(20, kingdoom.GetFreeSpecialist());
+	kingdoom.ChangeCountSpec_WarCraft(-100);
+	EXPECT_EQ(0, kingdoom.GetCountSpec_WarCraft());
+	EXPECT_EQ(120, kingdoom.GetFreeSpecialist());
+}
+
+TEST(KingdoomScienceTestCase, LvlUp_w100scienists)
+{
+	KingdoomScience kingdoom(0);
+	std::pair<unsigned, unsigned> progress0(0, 110);
+	kingdoom.ChangeFreeSpecialists(100);
+	kingdoom.ChangeCountSpec_DensetyPeople(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetDensityLvl());
+	EXPECT_EQ(progress0, kingdoom.GetProgress_DensetyPeople());
+	kingdoom.ChangeCountSpec_DensetyPeople(-100);
+	kingdoom.ChangeCountSpec_Harvesting(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetHarvestingLvl());
+	EXPECT_EQ(progress0, kingdoom.GetProgress_Harvesting());
+	kingdoom.ChangeCountSpec_Harvesting(-100);
+	kingdoom.ChangeCountSpec_IncreasePeople(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetIncreasingLvl());
+	EXPECT_EQ(progress0, kingdoom.GetProgress_IncreasePeople());
+	kingdoom.ChangeCountSpec_IncreasePeople(-100);
+	kingdoom.ChangeCountSpec_SellingRes(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetSellingResLvl());
+	EXPECT_EQ(progress0, kingdoom.GetProgress_SellingRes());
+	kingdoom.ChangeCountSpec_SellingRes(-100);
+	kingdoom.ChangeCountSpec_WarCraft(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetWarcraftLvl());
+	EXPECT_EQ(progress0, kingdoom.GetProgress_WarCraft());
+	kingdoom.ChangeCountSpec_WarCraft(-100);
+	kingdoom.ChangeCountSpec_Science(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetScienceLvl());
+	EXPECT_EQ(progress0, kingdoom.GetProgress_Science());
+	kingdoom.ChangeCountSpec_Science(-100);
+
+	// science force now 1.01
+	std::pair<unsigned, unsigned> progress101(101, 110);
+	kingdoom.ChangeCountSpec_DensetyPeople(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetDensityLvl());
+	EXPECT_EQ(progress101, kingdoom.GetProgress_DensetyPeople());
+	kingdoom.ChangeCountSpec_DensetyPeople(-100);
+	kingdoom.ChangeCountSpec_Harvesting(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetHarvestingLvl());
+	EXPECT_EQ(progress101, kingdoom.GetProgress_Harvesting());
+	kingdoom.ChangeCountSpec_Harvesting(-100);
+	kingdoom.ChangeCountSpec_IncreasePeople(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetIncreasingLvl());
+	EXPECT_EQ(progress101, kingdoom.GetProgress_IncreasePeople());
+	kingdoom.ChangeCountSpec_IncreasePeople(-100);
+	kingdoom.ChangeCountSpec_SellingRes(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetSellingResLvl());
+	EXPECT_EQ(progress101, kingdoom.GetProgress_SellingRes());
+	kingdoom.ChangeCountSpec_SellingRes(-100);
+	kingdoom.ChangeCountSpec_SellingRes(-100);
+	kingdoom.ChangeCountSpec_WarCraft(100);
+	kingdoom.NextTurn();
+	EXPECT_EQ(1, kingdoom.GetWarcraftLvl());
+	EXPECT_EQ(progress101, kingdoom.GetProgress_WarCraft());
+	kingdoom.ChangeCountSpec_WarCraft(-100);
+}
