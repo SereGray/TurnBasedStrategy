@@ -23,7 +23,7 @@ namespace KingdoomEconomicsTest {
 	};
 
 	TEST_F(KingdoomEconomicsFixation, CreatingTest) {
-		EXPECT_EQ(kd->MyId(), 0);
+		EXPECT_EQ(kd->GetMyId(), 0);
 	}
 	
 	// Demography testing
@@ -116,7 +116,7 @@ namespace KingdoomEconomicsFakeNameSpace{
 	}
 
 	TEST_F(KingdoomEconomicsFakeFixation, CreatingTest){
-		EXPECT_EQ(kd->MyId(),0);
+		EXPECT_EQ(kd->GetMyId(),0);
 	}
 
 	TEST_F(KingdoomEconomicsFakeFixation, FakeAreaFakeDensityLvlTest){

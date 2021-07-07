@@ -13,19 +13,19 @@ TEST(ScienceTestCase, CreationTest) {
 
 TEST(ScienceTestCase, AddKingdoomTest) {
 	ScienceGameObj scienceGameObj;
-	EXPECT_THROW(scienceGameObj.GetKingdoom(0), VectorUtException);
+	EXPECT_THROW(scienceGameObj.GetKingdoomScience(0), VectorUtException);
 	scienceGameObj.AddKingdoom(0);
-	KingdoomScience* localKingdoom = scienceGameObj.GetKingdoom(0);
-	EXPECT_EQ(localKingdoom->my_id_, 0);
+	KingdoomScience* localKingdoom = scienceGameObj.GetKingdoomScience(0);
+	EXPECT_EQ(localKingdoom->GetMyId(), 0);
 }
 
 TEST(ScienceTestCase, KingdomGetCountSpecialists)
 {
 	ScienceGameObj scienceGameObj;
 	scienceGameObj.AddKingdoom(0);
-	KingdoomScience* localKingdoom = scienceGameObj.GetKingdoom(0);
+	KingdoomScience* localKingdoom = scienceGameObj.GetKingdoomScience(0);
 	EXPECT_EQ(localKingdoom->GetCountAllSpecialists(),0);
-	localKingdoom->ChangeFreeSpecialist(10);
+	localKingdoom->ChangeFreeSpecialists(10);
 	EXPECT_EQ(localKingdoom->GetCountAllSpecialists(), 10);
 	localKingdoom->ChangeCountSpec_DensetyPeople(15);
 	EXPECT_EQ(localKingdoom->GetCountAllSpecialists(), 10);
@@ -40,27 +40,27 @@ TEST(ScienceTestCase, KingdomGetCountSpecialists)
 TEST(ScienceTestCase, KingdoomChangeSpecialists) {
 	ScienceGameObj scienceGameObj;
 	scienceGameObj.AddKingdoom(0);
-	KingdoomScience* localKingdoom = scienceGameObj.GetKingdoom(0);
-	localKingdoom->ChangeFreeSpecialist(10);
+	KingdoomScience* localKingdoom = scienceGameObj.GetKingdoomScience(0);
+	localKingdoom->ChangeFreeSpecialists(10);
 	localKingdoom->ChangeCountSpec_DensetyPeople(15);
 	EXPECT_EQ(localKingdoom->GetCountSpec_DensetyPeople(), 10);
 	EXPECT_EQ(localKingdoom->GetFreeSpecialist(), 0);
-	localKingdoom->ChangeFreeSpecialist(15);
+	localKingdoom->ChangeFreeSpecialists(15);
 	localKingdoom->ChangeCountSpec_Harvesting(5);
 	EXPECT_EQ(localKingdoom->GetCountSpec_Harvesting(), 5);
 	EXPECT_EQ(localKingdoom->GetFreeSpecialist(), 10);
 	localKingdoom->ChangeCountSpec_IncreasePeople(20);
 	EXPECT_EQ(localKingdoom->GetCountSpec_IncreasePeople(), 10);
 	EXPECT_EQ(localKingdoom->GetFreeSpecialist(), 0);
-	localKingdoom->ChangeFreeSpecialist(10);
+	localKingdoom->ChangeFreeSpecialists(10);
 	localKingdoom->ChangeCountSpec_Science(20);
 	EXPECT_EQ(localKingdoom->GetCountSpec_Science(), 10);
 	EXPECT_EQ(localKingdoom->GetFreeSpecialist(), 0);
-	localKingdoom->ChangeFreeSpecialist(20);
+	localKingdoom->ChangeFreeSpecialists(20);
 	localKingdoom->ChangeCountSpec_SellingRes(20);
 	EXPECT_EQ(localKingdoom->GetCountSpec_SellingRes(), 20);
 	EXPECT_EQ(localKingdoom->GetFreeSpecialist(), 0);
-	localKingdoom->ChangeFreeSpecialist(10);
+	localKingdoom->ChangeFreeSpecialists(10);
 	localKingdoom->ChangeCountSpec_WarCraft(10);
 	EXPECT_EQ(localKingdoom->GetCountSpec_WarCraft(), 10);
 	EXPECT_EQ(localKingdoom->GetFreeSpecialist(), 0);
@@ -70,7 +70,7 @@ TEST(ScienceTestCase, KingdoomChangeSpecialists) {
 TEST(ScienceTestCase, KingdoomGetSubjectScienceLvl_return_0) {
 	ScienceGameObj scienceGameObj;
 	scienceGameObj.AddKingdoom(0);
-	KingdoomScience* localKingdoom = scienceGameObj.GetKingdoom(0);
+	KingdoomScience* localKingdoom = scienceGameObj.GetKingdoomScience(0);
 	EXPECT_EQ(localKingdoom->GetDensityLvl(), 0);
 	EXPECT_EQ(localKingdoom->GetScienceLvl(), 0);
 	EXPECT_EQ(localKingdoom->GetIncreasingLvl(), 0);
@@ -117,7 +117,7 @@ TEST(TheScienceTestCase, TheScienceProgressBigUp) {
 
 TEST(SubjectScienceTestCase, ProgressOverflow) {
 	TheScience the_science;
-	SubjectScience science(the_science,"test");
+	SubjectScience science(&the_science,"test");
 	EXPECT_EQ(science.science_lvl_, 0);
 	science.NextTurn();
 	EXPECT_EQ(science.science_lvl_, 0);
@@ -144,7 +144,7 @@ TEST(SubjectScienceTestCase, ProgressOverflow) {
 
 TEST(SubjectScienceTestCase, ProgressOverflowScienistForceChanged) {
 	TheScience the_science;
-	SubjectScience science(the_science, "test");
+	SubjectScience science(&the_science, "test");
 	the_science.ChangeCountSpecialists(610);
 	the_science.NextTurn();
 	EXPECT_FLOAT_EQ(1.15f, the_science.GetScienistForce());
@@ -286,4 +286,137 @@ TEST(KingdoomScienceTestCase, LvlUp_w100scienists)
 	EXPECT_EQ(1, kingdoom.GetWarcraftLvl());
 	EXPECT_EQ(progress101, kingdoom.GetProgress_WarCraft());
 	kingdoom.ChangeCountSpec_WarCraft(-100);
+}
+
+TEST(KingdoomScienceTestCase, WarCraftLvlUp_after_ScienceLvlUp)
+{
+	KingdoomScience kingdoom(0);
+	kingdoom.ChangeFreeSpecialists(610 + 87);
+	kingdoom.ChangeCountSpec_Science(610);
+	kingdoom.ChangeCountSpec_WarCraft(87);
+	kingdoom.NextTurn();
+	EXPECT_EQ(5, kingdoom.GetScienceLvl());
+	std::pair<unsigned, unsigned> test666_1 = std::make_pair<unsigned, unsigned>(0, 160);
+	EXPECT_EQ(test666_1, kingdoom.GetProgress_Science());
+	EXPECT_EQ(1, kingdoom.GetWarcraftLvl());
+	std::pair<unsigned, unsigned> test666_2 = std::make_pair<unsigned, unsigned>(0, 110);
+	EXPECT_EQ(test666_2, kingdoom.GetProgress_WarCraft());
+	// repeat
+	KingdoomScience kingdoom1(1);
+	kingdoom1.ChangeFreeSpecialists(610 + 87);
+	kingdoom1.ChangeCountSpec_Science(610);
+	kingdoom1.ChangeCountSpec_WarCraft(87);
+	kingdoom1.NextTurn();
+	EXPECT_EQ(5, kingdoom1.GetScienceLvl());
+	EXPECT_EQ(test666_1, kingdoom1.GetProgress_Science());
+	EXPECT_EQ(1, kingdoom1.GetWarcraftLvl());
+	EXPECT_EQ(test666_2, kingdoom1.GetProgress_WarCraft());
+}
+
+TEST(KingdoomScienceTestCase, Test_access_by_pointer)
+{
+	KingdoomScience* kingdoom0 = new KingdoomScience(0);
+	kingdoom0->ChangeFreeSpecialists(610 + 87);
+	kingdoom0->ChangeCountSpec_Science(610);
+	kingdoom0->ChangeCountSpec_WarCraft(87);
+	kingdoom0->NextTurn();
+	EXPECT_EQ(5, kingdoom0->GetScienceLvl());
+	std::pair<unsigned, unsigned> test666_1 = std::make_pair<unsigned, unsigned>(0, 160);
+	EXPECT_EQ(test666_1, kingdoom0->GetProgress_Science());
+	EXPECT_EQ(1, kingdoom0->GetWarcraftLvl());
+	std::pair<unsigned, unsigned> test666_2 = std::make_pair<unsigned, unsigned>(0, 110);
+	EXPECT_EQ(test666_2, kingdoom0->GetProgress_WarCraft());
+	delete kingdoom0;
+}
+
+TEST(KingdoomScienceTestCase, Test_copy_constr)
+{
+	KingdoomScience kingdoom1(0);
+	KingdoomScience kingdoom(kingdoom1);
+	kingdoom.ChangeFreeSpecialists(610 + 87);
+	kingdoom.ChangeCountSpec_Science(610);
+	kingdoom.ChangeCountSpec_WarCraft(87);
+	kingdoom.NextTurn();
+	EXPECT_EQ(5, kingdoom.GetScienceLvl());
+	std::pair<unsigned, unsigned> test666_1 = std::make_pair<unsigned, unsigned>(0, 160);
+	EXPECT_EQ(test666_1, kingdoom.GetProgress_Science());
+	EXPECT_EQ(1, kingdoom.GetWarcraftLvl());
+	std::pair<unsigned, unsigned> test666_2 = std::make_pair<unsigned, unsigned>(0, 110);
+	EXPECT_EQ(test666_2, kingdoom.GetProgress_WarCraft());
+}
+TEST(KingdoomScienceTestCase, Test_vector_of_KingdScience)
+{
+	std::vector<KingdoomScience> v_kingdoom;
+	v_kingdoom.push_back(KingdoomScience(0));
+	v_kingdoom.push_back(KingdoomScience(1));
+	v_kingdoom.push_back(KingdoomScience(2));
+	auto it = v_kingdoom.begin();
+	KingdoomScience *kingdoom0 = &(*it);
+	KingdoomScience* kingdoom1 = &(*it++);
+	KingdoomScience* kingdoom2 = &(*it++);
+	kingdoom0->ChangeFreeSpecialists(610 + 87);
+	kingdoom0->ChangeCountSpec_Science(610);
+	kingdoom0->ChangeCountSpec_WarCraft(87);
+	kingdoom0->NextTurn();
+	EXPECT_EQ(5, kingdoom0->GetScienceLvl());
+	std::pair<unsigned, unsigned> test666_1 = std::make_pair<unsigned, unsigned>(0, 160);
+	EXPECT_EQ(test666_1, kingdoom0->GetProgress_Science());
+	EXPECT_EQ(1, kingdoom0->GetWarcraftLvl());
+	std::pair<unsigned, unsigned> test666_2 = std::make_pair<unsigned, unsigned>(0, 110);
+	EXPECT_EQ(test666_2, kingdoom0->GetProgress_WarCraft());
+}
+TEST(ScienceGameObjTestCase, CreationTest) 
+{
+	ScienceGameObj science_gameobj;
+	science_gameobj.AddKingdoom(0);
+	EXPECT_EQ(0, science_gameobj.GetKingdoomScience(0)->GetMyId());
+}
+
+TEST(ScienceGameObjTestCase, NextTurnTest) {
+	ScienceGameObj science_gameobj;
+	science_gameobj.AddKingdoom(0);
+	KingdoomScience* kingd0 = science_gameobj.GetKingdoomScience(0);
+	kingd0->ChangeFreeSpecialists(100);
+	kingd0->ChangeCountSpec_Science(999);
+	science_gameobj.NextTurn();
+	EXPECT_EQ(100, kingd0->GetCountSpec_Science());
+	EXPECT_EQ(1, kingd0->GetScienceLvl());
+	std::pair<unsigned, unsigned> test0 = std::make_pair<unsigned, unsigned>(0, 110);
+	EXPECT_EQ(test0, kingd0->GetProgress_Science());
+}
+TEST(ScienceGameObjTestCase, NextTurnTestforThreeKingdooms) {
+	ScienceGameObj science_gameobj;
+	science_gameobj.AddKingdoom(0);
+	science_gameobj.AddKingdoom(13);
+	science_gameobj.AddKingdoom(666);
+	EXPECT_EQ(0, science_gameobj.GetKingdoomScience(0)->GetMyId());
+	EXPECT_EQ(13, science_gameobj.GetKingdoomScience(13)->GetMyId());
+	EXPECT_EQ(666, science_gameobj.GetKingdoomScience(666)->GetMyId());
+	KingdoomScience* kingd0 = science_gameobj.GetKingdoomScience(0);
+	KingdoomScience* kingd13 = science_gameobj.GetKingdoomScience(13);
+	KingdoomScience* kingd666 = science_gameobj.GetKingdoomScience(666);
+	kingd0->ChangeFreeSpecialists(610); // 610 scienist up science lvl to 5
+	kingd13->ChangeFreeSpecialists(100);
+	kingd666->ChangeFreeSpecialists(610+87); // 610 scienist up science lvl to 5 & 87 scienist up warcraft to 1 lvl
+
+	kingd0->ChangeCountSpec_Science(610);
+	kingd13->ChangeCountSpec_Science(100);
+	kingd666->ChangeCountSpec_Science(610);
+	kingd666->ChangeCountSpec_WarCraft(87);
+
+	science_gameobj.NextTurn();
+	EXPECT_EQ(5, kingd0->GetScienceLvl());
+	std::pair<unsigned, unsigned> test0 = std::make_pair<unsigned, unsigned>(0, 160);
+	EXPECT_EQ(test0, kingd0->GetProgress_Science());
+
+	EXPECT_EQ(1, kingd13->GetScienceLvl());
+	std::pair<unsigned, unsigned> test13 = std::make_pair<unsigned, unsigned>(0, 110);
+	EXPECT_EQ(test13, kingd13->GetProgress_Science());
+
+	EXPECT_EQ(5, kingd666->GetScienceLvl());
+	std::pair<unsigned, unsigned> test666_1 = std::make_pair<unsigned, unsigned>(0, 160);
+	EXPECT_EQ(test666_1, kingd666->GetProgress_Science());
+	EXPECT_EQ(1, kingd666->GetWarcraftLvl());
+	std::pair<unsigned, unsigned> test666_2 = std::make_pair<unsigned, unsigned>(0, 110);
+	EXPECT_EQ(test666_2, kingd666->GetProgress_WarCraft());
 }

@@ -435,7 +435,7 @@ int WarGameObj::Battle(General& attacker, General& defender)
 
 unsigned WarGameObj::GetWarCraftLevel(unsigned my_id_)
 {
-	return science_obj->GetKingdoomScience(my_id_).GetWarcraftLvl();
+	return science_obj->GetKingdoomScience(my_id_)->GetWarcraftLvl();
 }
 
 std::string WarGameObj::GetSummariesString()

@@ -1,5 +1,6 @@
 #include "science.h"
 #include <cmath>
+#include <iostream>
 //#include <memory>
 
 
@@ -12,6 +13,18 @@ TheScience::TheScience(std::string nameScience)
 	scienist_force_ = 1.0;
 	count_scienist_ = 0;
 	science_lvl_ = 0;
+}
+
+TheScience& TheScience::operator()(const TheScience& other)
+{
+	progress_ = other.progress_;
+	progress_limit_ = other.progress_limit_;
+	scienist_force_ = other.scienist_force_;
+	count_scienist_ = other.count_scienist_;
+	scienist_lvl_ = other.scienist_lvl_;
+	science_lvl_ = other.science_lvl_;
+	name_ = other.name_;
+	return *this;
 }
 
 
@@ -50,9 +63,25 @@ std::pair<unsigned, unsigned> TheScience::GetProgress()
 
 // SubjectScience
 
+
+
+
+SubjectScience& SubjectScience::operator()(TheScience* base_science, const SubjectScience& other)
+{
+	pbase_science_ = base_science;
+	progress_ = other.progress_;
+	progress_limit_ = other.progress_limit_;
+	scienist_force_ = other.scienist_force_;
+	count_scienist_ = other.count_scienist_;
+	scienist_lvl_ = other.scienist_lvl_;
+	science_lvl_ = other.science_lvl_;
+	name_ = other.name_;
+	return *this;
+}
+
 void SubjectScience::NextTurn()
 {
-	scienist_force_ = pbase_science_.GetScienistForce();
+	scienist_force_ = pbase_science_->GetScienistForce();
 	progress_ = progress_ + static_cast<unsigned>(std::round((count_scienist_ * scienist_force_)));
 	while (progress_ >= progress_limit_)
 	{
@@ -64,7 +93,7 @@ void SubjectScience::NextTurn()
 
 // KingdoomScience
 
-unsigned KingdoomScience::GetMyId()
+unsigned KingdoomScience::GetMyId() const
 {
 	return my_id_;
 }
@@ -135,7 +164,7 @@ void KingdoomScience::ChangeCountSpec_WarCraft(int count)
 	ChangeCountSpecialist(war_craft_, count);
 }
 
-void KingdoomScience::ChangeFreeSpecialist(int count)
+void KingdoomScience::ChangeFreeSpecialists(int count)
 {
 	if (count < 0 && free_scienists_ > count) {
 		free_scienists_ += count;
@@ -213,6 +242,18 @@ unsigned KingdoomScience::GetCountSpecialists(TheScience& sub_science)
 	return sub_science.GetCountSpecialists();
 }
 
+KingdoomScience::KingdoomScience(const KingdoomScience& other)
+{
+	science_(other.science_);
+	densety_people_(&science_,other.densety_people_);
+	increase_people_(&science_, other.increase_people_);
+	harvesting_(&science_, other.harvesting_);
+	selling_res_ (&science_, other.selling_res_);
+	war_craft_(&science_, other.war_craft_);
+	free_scienists_ =other.free_scienists_;
+	my_id_ = other.GetMyId();
+}
+
 
 void KingdoomScience::NextTurn()
 {
@@ -241,10 +282,6 @@ void KingdoomScience::ResetAllSpecialist()
 	ChangeCountSpec_WarCraft(war_craft_.GetCountSpecialists() * (-1));
 }
 
-void KingdoomScience::ChangeFreeSpecialists(int count) 
-{
-	free_scienists_ += count;
-}
 
 std::pair<unsigned, unsigned> KingdoomScience::GetProgress_DensetyPeople()
 {
@@ -283,9 +320,9 @@ ScienceGameObj::ScienceGameObj() {}
 
 ScienceGameObj::~ScienceGameObj() {}
 
-KingdoomScience& ScienceGameObj::GetKingdoomScience(unsigned kingdom_id)
+KingdoomScience* ScienceGameObj::GetKingdoomScience(unsigned by_id)
 {
-	return v_kingdom_science[kingdom_id];
+	return GetObjFromVectorUt(by_id, v_kingdom_science);
 }
 
 void ScienceGameObj::AddKingdoom(unsigned by_id)
@@ -293,11 +330,6 @@ void ScienceGameObj::AddKingdoom(unsigned by_id)
 	v_kingdom_science.push_back(KingdoomScience(by_id));
 }
 
-//TODO: return ref
-KingdoomScience* ScienceGameObj::GetKingdoom(unsigned by_id)
-{
-	return GetObjFromVectorUt(by_id, v_kingdom_science);
-}
 
 void ScienceGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
@@ -317,6 +349,10 @@ void ScienceGameObj::CreateState(unsigned num_players, unsigned map_size)
 
 void ScienceGameObj::NextTurn()
 {
+	for (auto &kingd : v_kingdom_science)
+	{
+		kingd.NextTurn();
+	}
 }
 
 

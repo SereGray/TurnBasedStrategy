@@ -105,7 +105,7 @@ public:
 	unsigned GetIncreasingLvl();
 	void BuySpecialist(unsigned);
 	unsigned MyArea();
-	unsigned MyId();
+	unsigned GetMyId();
 private:
 	struct Visiter {
 		KingdoomEconomics& e_;
@@ -141,7 +141,7 @@ class EconomicsGameObj : public EngineGameObjInterface{
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	EconomicsGameObj();
 	~EconomicsGameObj();
-	KingdoomEconomics& GetKingdoomEconomics(unsigned by_id);
+	KingdoomEconomics* GetKingdoomEconomics(unsigned by_id);
 	unsigned MyArea(unsigned by_id);
 	unsigned GetDensityLvl(unsigned by_id);
 	unsigned GetIncreasingLvl(unsigned by_id);

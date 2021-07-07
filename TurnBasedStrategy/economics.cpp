@@ -81,7 +81,7 @@ Resource& UnitCost<TypeResource>::Sell()
 KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):gold_(10000),food_(10000000),nation_(Demography(this)),visiter_(*this,&VisitorBuySpecialist),my_id_(my_id),my_master_(master){};
 
 
-unsigned KingdoomEconomics::MyId()
+unsigned KingdoomEconomics::GetMyId()
 {
 	return my_id_;
 }
@@ -182,7 +182,13 @@ void KingdoomEconomics::BuySpecialist(unsigned count)
 
 // EconomicsGameObj class
 EconomicsGameObj::EconomicsGameObj(){};
-EconomicsGameObj::~EconomicsGameObj(){};
+EconomicsGameObj::~EconomicsGameObj(){}
+
+KingdoomEconomics* EconomicsGameObj::GetKingdoomEconomics(unsigned by_id)
+{
+	return GetObjFromVectorUt(by_id, v_economics_);
+}
+;
 void EconomicsGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
 for(EngineGameObjInterface* infc: list_in){
@@ -202,10 +208,10 @@ unsigned EconomicsGameObj::MyArea(unsigned by_id){
 }
 
 unsigned EconomicsGameObj::GetDensityLvl(unsigned by_id){
-	return science_obj_->GetKingdoomScience(by_id).GetDensityLvl();
+	return science_obj_->GetKingdoomScience(by_id)->GetDensityLvl();
 }
 unsigned EconomicsGameObj::GetIncreasingLvl(unsigned by_id){
-	return science_obj_->GetKingdoomScience(by_id).GetIncreasingLvl();
+	return science_obj_->GetKingdoomScience(by_id)->GetIncreasingLvl();
 }
 
 Specialist::Specialist():gold{ UnitCost<Gold>(100, 2, 0) }, food{ UnitCost<Food>(5, 1, 5) }, gold_(gold), food_(food)
