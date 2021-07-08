@@ -10,6 +10,7 @@
 #include"science.h"
 #include"map.h"
 #include"resource.h"
+#include<map>
 
 // модель экономики: (+демографии)
 // посев доступного зерна (из остатков или покупного)
@@ -69,53 +70,64 @@ public:
 	Resource& Sell();
 };
 
+
+
 class Specialist {
 public:
-	UnitCost<Gold> gold;
-	UnitCost<Food> food;
-	BaseCost& gold_;
-	BaseCost& food_;
-	Specialist();
-	template<typename Visitor>
-	void Accept(Visitor f, unsigned count = 1) {
-		f(gold_, count);
-		f(food_, count);
+	UnitCost<Gold> gold_;
+	UnitCost<Food> food_;
+	BaseCost& r_gold_;
+	BaseCost& r_food_;
+	Specialist(UnitCost<Gold> gold, UnitCost<Food> food);
+	template<class Visitor>
+	bool Accept(Visitor f, unsigned count = 1) {
+		if (!f(r_gold_, count)) {
+			return false;
+		}
+		if (!f(r_food_, count)) {
+			return false;
+		}
 	};
 };
 
+struct Specialist1Compare
+{
+	bool operator() (const Specialist& lhs, const Specialist& rhs) const
+	{
+		return lhs.gold_.buy_.count_ < rhs.gold_.buy_.count_;
+	}
+};
 // 
 class KingdoomEconomics {
 public:
 	KingdoomEconomics(EconomicsGameObj& master, unsigned my_id);
-	Gold gold_;
+	std::map<Specialist, unsigned, Specialist1Compare> m_specialists_;
+	Gold gold_; // накапливаемый ресурс
 	Food food_;
 	Demography nation_; // 
-	//uint64_t gold_; // накапливаемый ресурс
-	uint64_t profit_gold_; // прибыль на следующий ход ??
-	uint64_t consumption_gold_; // расход
-	uint64_t resourse;  // ненакапливаемый ресурс -- в данном случае еда (зерно)
-	uint64_t increase_resourse_;
-	uint64_t consumption_resourse_; //  выработка и потребление ресурса 
+	int profit_gold_; // прибыль на следующий ход ??
+	int consumption_gold_; // расход
+	int increase_resourse_;
+	int consumption_resourse_; //  выработка и потребление ресурса 
 
 	bool SellResourse(Resource&,int);
 	bool BuyResourse(Resource&,int);
-	void CostToCropsResourse();
-	void BuyThing();  // solder, scienist, General ...
 	unsigned GetDensityLvl();
 	unsigned GetIncreasingLvl();
-	void BuySpecialist(unsigned);
+	void BuySpecialist(Specialist&, unsigned);
 	unsigned MyArea();
 	unsigned GetMyId();
 private:
+
 	struct Visiter {
 		KingdoomEconomics& e_;
-		void (*ptrFunct_)(KingdoomEconomics&, BaseCost&, int);
-		Visiter(KingdoomEconomics& e, void (*ptrFunct)(KingdoomEconomics&, BaseCost&, int)) :e_(e), ptrFunct_(ptrFunct) {};
-		void operator()(BaseCost& cost, int count) {
-			ptrFunct_(e_, cost, count);
+		bool (*ptrFunct_)(KingdoomEconomics&, BaseCost&, int);
+		Visiter(KingdoomEconomics& e, bool (*ptrFunct)(KingdoomEconomics&, BaseCost&, int)) :e_(e), ptrFunct_(ptrFunct) {};
+		bool operator()(BaseCost& cost, int count) {
+			return ptrFunct_(e_, cost, count);
 		}
 	};
-	Specialist pikiner_; //test
+
 	Visiter visiter_;
 	unsigned my_id_;
 	EconomicsGameObj& my_master_;
@@ -126,7 +138,7 @@ private:
 	uint64_t CalculationSpecialistSalary(); // расчет стоимости специалиста 
 	//( чем больше ученых тем дороже их содержать (логарифмическая зависимость?)) по основанию ~3
 	uint32_t CalculationSpecialistHiring(); // стоимость найма зависит от количества уже работающих
-	static void VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& cost, int count);
+	static bool VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& cost, int count);
 };
 
 class EconomicsGameObj : public EngineGameObjInterface{
@@ -137,16 +149,18 @@ class EconomicsGameObj : public EngineGameObjInterface{
 	void LoadState();
 	void CreateState(unsigned num_players, unsigned map_size);
 	void NextTurn();
-	public:
+public:
 	virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 	EconomicsGameObj();
 	~EconomicsGameObj();
 	KingdoomEconomics* GetKingdoomEconomics(unsigned by_id);
+	void AddKingdomEconomics(unsigned by_id);
 	unsigned MyArea(unsigned by_id);
 	unsigned GetDensityLvl(unsigned by_id);
 	unsigned GetIncreasingLvl(unsigned by_id);
 
-};	
+};
+
 #endif
 
 

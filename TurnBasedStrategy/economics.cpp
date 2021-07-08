@@ -78,7 +78,9 @@ Resource& UnitCost<TypeResource>::Sell()
 
 // KingdoomEconomics
 
-KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):gold_(10000),food_(10000000),nation_(Demography()),visiter_(*this,&VisitorBuySpecialist),my_id_(my_id),my_master_(master){};
+KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):gold_(10000),food_(10000000),\
+nation_(Demography()), profit_gold_(0),consumption_gold_(0),increase_resourse_(0),consumption_resourse_(0),\
+visiter_(*this,&VisitorBuySpecialist),my_id_(my_id),my_master_(master){};
 
 
 unsigned KingdoomEconomics::GetMyId()
@@ -110,14 +112,6 @@ bool KingdoomEconomics::BuyResourse(Resource& in, int count)
 
 }
 
-void KingdoomEconomics::CostToCropsResourse()
-{
-}
-
-void KingdoomEconomics::BuyThing()
-{
-}
-
 void KingdoomEconomics::NextTurn()
 {
 	nation_.NextTurn(MyArea(),GetIncreasingLvl(),GetDensityLvl());
@@ -147,16 +141,18 @@ uint32_t KingdoomEconomics::CalculationSpecialistHiring()
 	return uint32_t();
 }
 
-void KingdoomEconomics::VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& cost, int count)
+bool KingdoomEconomics::VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& cost, int count)
 {
 	Resource& gld = eco.gold_; // Если написать в одну строку Resource& gld = .., wd=.. то gld - ref , а wd - НЕТ !!!!!!!
 	Resource& wd = eco.food_;
 	if (typeid(cost) == typeid(UnitCost<Gold>&)) {
 		UnitCost<Gold>& castgld = static_cast<UnitCost<Gold>&>(cost);
+		if ((gld - castgld.Buy() * count).count_ < 0 ) return false;
 		gld -= (castgld.Buy() * count);
 	}
 	if (typeid(cost) == typeid(UnitCost<Food>&)) {
 		UnitCost<Food>& costwd = static_cast<UnitCost<Food>&>(cost);
+		if ((wd - costwd.Buy() * count).count_ < 0) return false;
 		wd -= (costwd.Buy() * count);
 	}
 }
@@ -175,9 +171,13 @@ unsigned KingdoomEconomics::MyArea() {
 	return my_master_.MyArea(my_id_);
 }
 
-void KingdoomEconomics::BuySpecialist(unsigned count)
+void KingdoomEconomics::BuySpecialist(Specialist& spec,unsigned count)
 {
-	pikiner_.Accept(visiter_, count);
+	if (m_specialists_.count(spec) == 0)
+	{
+		m_specialists_.insert(std::pair<Specialist, unsigned>(spec, count));
+	}
+	spec.Accept(visiter_, count);
 }
 
 // EconomicsGameObj class
@@ -187,6 +187,10 @@ EconomicsGameObj::~EconomicsGameObj(){}
 KingdoomEconomics* EconomicsGameObj::GetKingdoomEconomics(unsigned by_id)
 {
 	return GetObjFromVectorUt(by_id, v_economics_);
+}
+void EconomicsGameObj::AddKingdomEconomics(unsigned by_id)
+{
+	v_economics_.push_back(KingdoomEconomics(*this,by_id));
 }
 ;
 void EconomicsGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
@@ -214,6 +218,6 @@ unsigned EconomicsGameObj::GetIncreasingLvl(unsigned by_id){
 	return science_obj_->GetKingdoomScience(by_id)->GetIncreasingLvl();
 }
 
-Specialist::Specialist():gold{ UnitCost<Gold>(100, 2, 0) }, food{ UnitCost<Food>(5, 1, 5) }, gold_(gold), food_(food)
+Specialist::Specialist(UnitCost<Gold> gold, UnitCost<Food> food):gold_{ UnitCost<Gold>(100, 2, 0) }, food_{ UnitCost<Food>(5, 1, 5) }, r_gold_(gold_), r_food_(food_)
 {
 }

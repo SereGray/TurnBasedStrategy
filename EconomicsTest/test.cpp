@@ -153,6 +153,7 @@ namespace KingdoomEconomicsTest {
 		EXPECT_FALSE(kd->BuyResourse(kd->food_,1000001));	
 	}
 	
+
 }
 
 namespace KingdoomEconomicsFakeNameSpace{
@@ -161,8 +162,9 @@ namespace KingdoomEconomicsFakeNameSpace{
 	protected:
 		void SetUp() override {
 			master = new EconomicsGameObj();
-			kd = new KingdoomEconomics(*master, 0);
-			map = new MapGameObj(5, 5, 1); // 3 x 3  kingdoom
+			master->AddKingdomEconomics(0);
+			kd = master->GetKingdoomEconomics(0);
+			map = new MapGameObj(10, 10, 1); // 3 x 3  kingdoom
 			science = new ScienceGameObj();
 			science->AddKingdoom(0);
 			master->SetInterface({ map, science });
