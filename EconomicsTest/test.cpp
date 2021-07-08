@@ -6,6 +6,76 @@ TEST(TestCaseName, TestName) {
   EXPECT_TRUE(true);
 }
 
+TEST(DemographyTestCase, Creation) {
+	Demography nation;
+	EXPECT_EQ(0, nation.all_people_);
+	EXPECT_EQ(0, nation.increase_people_);
+	EXPECT_EQ(0, nation.maximum_people_);
+	EXPECT_EQ(0, nation.fermers_people_);
+}
+
+TEST(DemographyTestCase, NextTurn_with_0_people) {
+	Demography nation;
+	nation.NextTurn(100, 1, 1);
+	EXPECT_EQ(0, nation.all_people_);
+	EXPECT_EQ(0, nation.increase_people_);
+	EXPECT_EQ(101, nation.maximum_people_);
+	EXPECT_EQ(0, nation.fermers_people_);
+}
+
+TEST(DemographyTestCase, NextTurn_with_100_people_area_limit) {
+	Demography nation;
+	nation.all_people_ = 100;
+	nation.NextTurn(100, 1, 1);
+	EXPECT_EQ(101, nation.all_people_);
+	EXPECT_EQ(1, nation.increase_people_);
+	EXPECT_EQ(101, nation.maximum_people_);
+	EXPECT_EQ(1, nation.fermers_people_);
+}
+
+TEST(DemographyTestCase, NextTurn_with_100_people) {
+	Demography nation;
+	nation.all_people_ = 100;
+	nation.NextTurn(150, 1, 1);
+	EXPECT_EQ(106, nation.all_people_);
+	EXPECT_EQ(6, nation.increase_people_);
+	EXPECT_EQ(152, nation.maximum_people_);
+	EXPECT_EQ(6, nation.fermers_people_);
+}
+
+TEST(DemographyTestCase, NextTurn_with_100_people_area_back_to_back_limit) {
+	Demography nation;
+	nation.all_people_ = 100;
+	nation.NextTurn(106, 1, 1);
+	EXPECT_EQ(106, nation.all_people_);
+	EXPECT_EQ(6, nation.increase_people_);
+	EXPECT_EQ(107, nation.maximum_people_);
+	EXPECT_EQ(6, nation.fermers_people_);
+}
+
+TEST(DemographyTestCase, IncreaseDecreaseFermers)
+{
+	Demography nation_;
+	nation_.all_people_ = 20;
+	nation_.increase_people_ = 10;
+	nation_.IncreaseFermersPeople();
+	EXPECT_EQ(nation_.all_people_, 30) << "first increasing";
+	EXPECT_EQ(nation_.fermers_people_, 10) << "first increasing";
+	nation_.IncreaseFermersPeople();
+	EXPECT_EQ(nation_.all_people_, 40) << "second increasing";
+	EXPECT_EQ(nation_.fermers_people_, 20) << "second increasing";
+	nation_.increase_people_ = -10;
+	nation_.IncreaseFermersPeople();
+	EXPECT_EQ(nation_.all_people_, 30) << "after negative increasing";
+	EXPECT_EQ(nation_.fermers_people_, 10) << "after negative increasing";
+	nation_.DecreaseFermersPeople(1);
+	EXPECT_EQ(nation_.all_people_, 30);
+	EXPECT_EQ(nation_.fermers_people_, 9) << "after decrease";
+	nation_.DecreaseFermersPeople(10);
+	EXPECT_EQ(nation_.all_people_, 30);
+	EXPECT_EQ(nation_.fermers_people_, 0) << "after negative value test";
+}
+
 namespace KingdoomEconomicsTest {
 	class KingdoomEconomicsFixation : public ::testing::Test {
 	protected:

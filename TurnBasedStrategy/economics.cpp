@@ -2,13 +2,13 @@
 
 // Demography
 
-Demography::Demography(KingdoomEconomics* master): all_people_(0),increase_people_(0),maximum_people_(0),fermers_people_(0),my_master_(master){};
+Demography::Demography(): all_people_(0),increase_people_(0),maximum_people_(0),fermers_people_(0){};
 
-void Demography::NextTurn(){
+void Demography::NextTurn(unsigned area, unsigned increasing_lvl, unsigned densety_lvl){
 	// TODO:Decreasing people
-	maximum_people_ = static_cast<unsigned>(static_cast<double>(my_master_->MyArea()) * ((static_cast<double>(my_master_->GetDensityLvl())/100.0) + 1.0));
+	maximum_people_ = std::round(static_cast<double>(area) * ((static_cast<double>(densety_lvl)/100.0) + 1.0));
 	increase_people_ =( all_people_ ) / 20  ; //TODO: add Population growth science_ lvl
-	increase_people_ = increase_people_ / 100 * my_master_->GetIncreasingLvl();
+	increase_people_ = std::round(static_cast<double>(increase_people_) *((static_cast<double>(increasing_lvl) / 10.0) + 1.0));
 	if(all_people_ > maximum_people_) increase_people_ = (maximum_people_ - all_people_) / -10;
 	// calculating incrase_people_
 	if(all_people_ < maximum_people_ && (increase_people_ + all_people_) > maximum_people_){
@@ -78,7 +78,7 @@ Resource& UnitCost<TypeResource>::Sell()
 
 // KingdoomEconomics
 
-KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):gold_(10000),food_(10000000),nation_(Demography(this)),visiter_(*this,&VisitorBuySpecialist),my_id_(my_id),my_master_(master){};
+KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):gold_(10000),food_(10000000),nation_(Demography()),visiter_(*this,&VisitorBuySpecialist),my_id_(my_id),my_master_(master){};
 
 
 unsigned KingdoomEconomics::GetMyId()
@@ -120,7 +120,7 @@ void KingdoomEconomics::BuyThing()
 
 void KingdoomEconomics::NextTurn()
 {
-	nation_.NextTurn();
+	nation_.NextTurn(MyArea(),GetIncreasingLvl(),GetDensityLvl());
 }
 
 std::string KingdoomEconomics::GetSummariesString()

@@ -29,11 +29,11 @@ public:
 	int32_t increase_people_;  
 	uint64_t maximum_people_; 
 	uint64_t fermers_people_;// общее количество людей занятых в экономике
-	Demography(KingdoomEconomics* master);
-	void NextTurn();
-private:
 	Demography();
-	KingdoomEconomics* my_master_ = nullptr;
+	void NextTurn(unsigned area, unsigned increasing_lvl, unsigned densety_lvl);
+private:
+
+
 public:
 	void IncreaseFermersPeople(); // функция прироста населения(новые люди автоматически фермеры)
 	void DecreaseFermersPeople(unsigned decrease_count); // функция убыли фермеров (наняли в качестве спец)
