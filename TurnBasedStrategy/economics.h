@@ -87,6 +87,7 @@ public:
 		if (!f(r_food_, count)) {
 			return false;
 		}
+		return true;
 	};
 };
 

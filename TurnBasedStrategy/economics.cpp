@@ -5,7 +5,6 @@
 Demography::Demography(): all_people_(0),increase_people_(0),maximum_people_(0),fermers_people_(0){};
 
 void Demography::NextTurn(unsigned area, unsigned increasing_lvl, unsigned densety_lvl){
-	// TODO:Decreasing people
 	maximum_people_ = std::round(static_cast<double>(area) * ((static_cast<double>(densety_lvl)/100.0) + 1.0));
 	increase_people_ =( all_people_ ) / 20  ; //TODO: add Population growth science_ lvl
 	increase_people_ = std::round(static_cast<double>(increase_people_) *((static_cast<double>(increasing_lvl) / 10.0) + 1.0));
@@ -90,6 +89,7 @@ unsigned KingdoomEconomics::GetMyId()
 
 bool KingdoomEconomics::SellResourse(Resource& in, int count)
 {
+	if (count <= 0) return false;
 	//TODO: throw if in == gold_
 	if(in.count_ < count) return false;
 	Resource& gold = gold_;
@@ -102,6 +102,7 @@ bool KingdoomEconomics::SellResourse(Resource& in, int count)
 
 bool KingdoomEconomics::BuyResourse(Resource& in, int count)
 {
+	if (count <= 0) return false;
 	Resource& gold = gold_;
 	Resource temporary = in;
 	in.count_ = count;
@@ -141,20 +142,31 @@ uint32_t KingdoomEconomics::CalculationSpecialistHiring()
 	return uint32_t();
 }
 
+// TODO: check typeid(cost) if there are no matches
+// TODO: check input
+// TODO: test
 bool KingdoomEconomics::VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& cost, int count)
 {
-	Resource& gld = eco.gold_; // Если написать в одну строку Resource& gld = .., wd=.. то gld - ref , а wd - НЕТ !!!!!!!
-	Resource& wd = eco.food_;
+	Resource& gld = eco.gold_, &wd = eco.food_;
 	if (typeid(cost) == typeid(UnitCost<Gold>&)) {
 		UnitCost<Gold>& castgld = static_cast<UnitCost<Gold>&>(cost);
 		if ((gld - castgld.Buy() * count).count_ < 0 ) return false;
-		gld -= (castgld.Buy() * count);
+		
 	}
 	if (typeid(cost) == typeid(UnitCost<Food>&)) {
 		UnitCost<Food>& costwd = static_cast<UnitCost<Food>&>(cost);
 		if ((wd - costwd.Buy() * count).count_ < 0) return false;
 		wd -= (costwd.Buy() * count);
 	}
+	if (typeid(cost) == typeid(UnitCost<Gold>&)) {
+		UnitCost<Gold>& castgld = static_cast<UnitCost<Gold>&>(cost);
+		gld -= (castgld.Buy() * count);
+	}
+	if (typeid(cost) == typeid(UnitCost<Food>&)) {
+		UnitCost<Food>& costwd = static_cast<UnitCost<Food>&>(cost);
+		wd -= (costwd.Buy() * count);
+	}
+	return true;
 }
 
 unsigned KingdoomEconomics::GetDensityLvl()
@@ -173,6 +185,7 @@ unsigned KingdoomEconomics::MyArea() {
 
 void KingdoomEconomics::BuySpecialist(Specialist& spec,unsigned count)
 {
+	//TODO reg spec-s
 	if (m_specialists_.count(spec) == 0)
 	{
 		m_specialists_.insert(std::pair<Specialist, unsigned>(spec, count));
