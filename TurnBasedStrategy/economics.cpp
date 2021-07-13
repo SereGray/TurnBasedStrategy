@@ -79,7 +79,7 @@ Resource& UnitCost<TypeResource>::Sell()
 
 KingdoomEconomics::KingdoomEconomics(EconomicsGameObj& master, unsigned my_id):gold_(10000),food_(10000000),\
 nation_(Demography()), profit_gold_(0),consumption_gold_(0),increase_resourse_(0),consumption_resourse_(0),\
-visiter_(*this,&VisitorBuySpecialist),my_id_(my_id),my_master_(master){};
+visiter_(*this,&VisitorChangeCountSpecialists),my_id_(my_id),my_master_(master){};
 
 
 unsigned KingdoomEconomics::GetMyId()
@@ -145,26 +145,40 @@ uint32_t KingdoomEconomics::CalculationSpecialistHiring()
 // TODO: check typeid(cost) if there are no matches
 // TODO: check input
 // TODO: test
-bool KingdoomEconomics::VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& cost, int count)
+bool KingdoomEconomics::VisitorChangeCountSpecialists(KingdoomEconomics& eco, BaseCost& cost, int count)
 {
 	Resource& gld = eco.gold_, &wd = eco.food_;
-	if (typeid(cost) == typeid(UnitCost<Gold>&)) {
-		UnitCost<Gold>& castgld = static_cast<UnitCost<Gold>&>(cost);
-		if ((gld - castgld.Buy() * count).count_ < 0 ) return false;
-		
+	if (count > 0) {
+		if (typeid(cost) == typeid(UnitCost<Gold>&)) {
+			UnitCost<Gold>& costgld = static_cast<UnitCost<Gold>&>(cost);
+			if ((gld - costgld.Buy() * count).count_ < 0) return false;
+
+		}
+		if (typeid(cost) == typeid(UnitCost<Food>&)) {
+			UnitCost<Food>& costwd = static_cast<UnitCost<Food>&>(cost);
+			if ((wd - costwd.Buy() * count).count_ < 0) return false;
+			wd -= (costwd.Buy() * count);
+		}
+		if (typeid(cost) == typeid(UnitCost<Gold>&)) {
+			UnitCost<Gold>& costgld = static_cast<UnitCost<Gold>&>(cost);
+			gld -= (costgld.Buy() * count);
+		}
+		if (typeid(cost) == typeid(UnitCost<Food>&)) {
+			UnitCost<Food>& costwd = static_cast<UnitCost<Food>&>(cost);
+			wd -= (costwd.Buy() * count);
+		}
+		return true;
 	}
-	if (typeid(cost) == typeid(UnitCost<Food>&)) {
-		UnitCost<Food>& costwd = static_cast<UnitCost<Food>&>(cost);
-		if ((wd - costwd.Buy() * count).count_ < 0) return false;
-		wd -= (costwd.Buy() * count);
-	}
-	if (typeid(cost) == typeid(UnitCost<Gold>&)) {
-		UnitCost<Gold>& castgld = static_cast<UnitCost<Gold>&>(cost);
-		gld -= (castgld.Buy() * count);
-	}
-	if (typeid(cost) == typeid(UnitCost<Food>&)) {
-		UnitCost<Food>& costwd = static_cast<UnitCost<Food>&>(cost);
-		wd -= (costwd.Buy() * count);
+	if (count < 0) {
+		if (typeid(cost) == typeid(UnitCost<Gold>&)) {
+			UnitCost<Gold>& costgld = static_cast<UnitCost<Gold>&>(cost);
+			gld += (costgld.Sell() * count);
+		}
+		if (typeid(cost) == typeid(UnitCost<Food>&)) {
+			UnitCost<Food>& costwd = static_cast<UnitCost<Food>&>(cost);
+			wd -= (costwd.Sell() * count);
+		}
+		return true;
 	}
 	return true;
 }
@@ -183,14 +197,10 @@ unsigned KingdoomEconomics::MyArea() {
 	return my_master_.MyArea(my_id_);
 }
 
-void KingdoomEconomics::BuySpecialist(Specialist& spec,unsigned count)
+void KingdoomEconomics::ChangeCountSpecialists(Specialist& spec,unsigned count)
 {
 	//TODO reg spec-s
-	if (m_specialists_.count(spec) == 0)
-	{
-		m_specialists_.insert(std::pair<Specialist, unsigned>(spec, count));
-	}
-	spec.Accept(visiter_, count);
+	spec.Accept(visiter_, count);	
 }
 
 // EconomicsGameObj class

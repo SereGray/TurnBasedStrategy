@@ -10,6 +10,7 @@
 #include"science.h"
 #include"map.h"
 #include"resource.h"
+#include "units.h"
 #include<map>
 
 // модель экономики: (+демографии)
@@ -102,7 +103,6 @@ struct Specialist1Compare
 class KingdoomEconomics {
 public:
 	KingdoomEconomics(EconomicsGameObj& master, unsigned my_id);
-	std::map<Specialist, unsigned, Specialist1Compare> m_specialists_;
 	Gold gold_; // накапливаемый ресурс
 	Food food_;
 	Demography nation_; // 
@@ -115,11 +115,11 @@ public:
 	bool BuyResourse(Resource&,int);
 	unsigned GetDensityLvl();
 	unsigned GetIncreasingLvl();
-	void BuySpecialist(Specialist&, unsigned);
+	void ChangeCountSpecialists(Specialist&, unsigned);
 	unsigned MyArea();
 	unsigned GetMyId();
 private:
-
+	std::map<Specialist, unsigned, Specialist1Compare> m_specialists_;  // хранит 
 	struct Visiter {
 		KingdoomEconomics& e_;
 		bool (*ptrFunct_)(KingdoomEconomics&, BaseCost&, int);
@@ -139,7 +139,7 @@ private:
 	uint64_t CalculationSpecialistSalary(); // расчет стоимости специалиста 
 	//( чем больше ученых тем дороже их содержать (логарифмическая зависимость?)) по основанию ~3
 	uint32_t CalculationSpecialistHiring(); // стоимость найма зависит от количества уже работающих
-	static bool VisitorBuySpecialist(KingdoomEconomics& eco, BaseCost& cost, int count);
+	static bool VisitorChangeCountSpecialists(KingdoomEconomics& eco, BaseCost& cost, int count);
 };
 
 class EconomicsGameObj : public EngineGameObjInterface{
