@@ -10,7 +10,7 @@
 #include"science.h"
 #include"map.h"
 #include"resource.h"
-#include "units.h"
+#include"units.h"
 #include<map>
 
 // модель экономики: (+демографии)
@@ -41,65 +41,8 @@ public:
 	void DecreaseFermersPeople(unsigned decrease_count); // функция убыли фермеров (наняли в качестве спец)
 };
 
-// Gold class
-class Gold : public Resource {
-public:
-	Gold(int);
-};
-
-// Eat class
-class Food : public Resource {
-public:
-	Food(int);
-};
-
-//
-class BaseCost {
-public:
-	virtual ~BaseCost();
-	virtual Resource& Buy();
-};
-
-template<typename TypeResource>
-class UnitCost : public BaseCost {
-public:
-	TypeResource buy_, consumption_, sell_; //in 0.01
-public:
-	UnitCost(int buy, int consumption, int sell);
-	Resource& Buy() override;
-	Resource& Consumption(); 
-	Resource& Sell();
-};
 
 
-
-class Specialist {
-public:
-	UnitCost<Gold> gold_;
-	UnitCost<Food> food_;
-	BaseCost& r_gold_;
-	BaseCost& r_food_;
-	Specialist(UnitCost<Gold> gold, UnitCost<Food> food);
-	template<class Visitor>
-	bool Accept(Visitor f, unsigned count = 1) {
-		if (!f(r_gold_, count)) {
-			return false;
-		}
-		if (!f(r_food_, count)) {
-			return false;
-		}
-		return true;
-	};
-};
-
-struct Specialist1Compare
-{
-	bool operator() (const Specialist& lhs, const Specialist& rhs) const
-	{
-		return lhs.gold_.buy_.count_ < rhs.gold_.buy_.count_;
-	}
-};
-// 
 class KingdoomEconomics {
 public:
 	KingdoomEconomics(EconomicsGameObj& master, unsigned my_id);
@@ -118,8 +61,7 @@ public:
 	void ChangeCountSpecialists(Specialist&, unsigned);
 	unsigned MyArea();
 	unsigned GetMyId();
-private:
-	std::map<Specialist, unsigned, Specialist1Compare> m_specialists_;  // хранит 
+private: 
 	struct Visiter {
 		KingdoomEconomics& e_;
 		bool (*ptrFunct_)(KingdoomEconomics&, BaseCost&, int);

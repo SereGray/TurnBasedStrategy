@@ -149,6 +149,7 @@
     <ClCompile Include="science.cpp" />
     <ClCompile Include="tbs_interface.cpp" />
     <ClCompile Include="turn_based_strategy.cpp" />
+    <ClCompile Include="units.cpp" />
     <ClCompile Include="utility.cpp" />
     <ClCompile Include="war.cpp" />
   </ItemGroup>
@@ -162,6 +163,7 @@
     <ClInclude Include="science.h" />
     <ClInclude Include="tbs_interface.h" />
     <ClInclude Include="turn_based_strategy.h" />
+    <ClInclude Include="units.h" />
     <ClInclude Include="utility.h" />
     <ClInclude Include="war.h" />
   </ItemGroup>

@@ -31,49 +31,6 @@ void Demography::DecreaseFermersPeople(unsigned decrease_count)
 }
 
 
-// Gold
-Gold::Gold(int count) : Resource(count, 10000)
-{
-}
-
-// Food
-Food::Food(int count) : Resource(count, 100)
-{
-}
-
-// BaseCost
-BaseCost::~BaseCost() {};
-
-Resource& BaseCost::Buy() 
-{ 
-	Resource res(0, 1);
-	return res; 
-};
-
-// UnitCost class
-
-template<typename TypeResource>
-UnitCost<TypeResource>::UnitCost(int buy, int consumption, int sell) :buy_(buy), consumption_(consumption), sell_(sell)
-{
-}
-
-template<typename TypeResource>
-Resource& UnitCost<TypeResource>::Buy()
-{
-	return buy_;
-}
-
-template<typename TypeResource>
-Resource& UnitCost<TypeResource>::Consumption()
-{
-	return consumption_;
-}
-
-template<typename TypeResource>
-Resource& UnitCost<TypeResource>::Sell()
-{
-	return sell_;
-}
 
 // KingdoomEconomics
 
@@ -239,8 +196,4 @@ unsigned EconomicsGameObj::GetDensityLvl(unsigned by_id){
 }
 unsigned EconomicsGameObj::GetIncreasingLvl(unsigned by_id){
 	return science_obj_->GetKingdoomScience(by_id)->GetIncreasingLvl();
-}
-
-Specialist::Specialist(UnitCost<Gold> gold, UnitCost<Food> food):gold_{ UnitCost<Gold>(100, 2, 0) }, food_{ UnitCost<Food>(5, 1, 5) }, r_gold_(gold_), r_food_(food_)
-{
 }

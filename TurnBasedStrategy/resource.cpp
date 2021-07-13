@@ -89,3 +89,31 @@ Resource Resource::operator++(int in)
 	++*this;
 	return res;
 }
+
+
+
+// Gold
+Gold::Gold(int count) : Resource(count, 10000)
+{
+}
+
+// Food
+Food::Food(int count) : Resource(count, 100)
+{
+}
+
+// BaseCost
+
+BaseCost::~BaseCost() {};
+
+Resource& BaseCost::Buy()
+{
+	Resource res(0, 1);
+	return res;
+};
+
+Resource& BaseCost::Sell()
+{
+	Resource res(0, 1);
+	return res;
+}
