@@ -14,7 +14,7 @@ void MapPoint::SetY(uint32_t Y){
 	y=Y;
 }
 
-uint32_t KingdoomMap::My_N(){
+uint32_t KingdoomMap::GetMyId(){
 	return my_id_;
 }
 
@@ -23,22 +23,15 @@ uint32_t KingdoomMap::MyArea()
 	return uint32_t();
 }
 
-MapGameObj::MapGameObj(uint32_t w, uint32_t h, uint32_t p) : width_(w), height_(h) {
+MapGameObj::MapGameObj(uint32_t width, uint32_t height, uint32_t kingdoms) : width_(width), height_(height) {
 	// создаем таблицу списков смежности
-	//cout << " gen tab\n";
 	GenerateTab();
-	//cout << "map to scre\n";
-	AddPoitsToMap(p);
-	//cout << "poins scre\n";
-	//MapToScreen();
+	// добавляю начальные точки
+	AddPoitsToMap(kingdoms);
 	// заполняем территорию карты
 	FillMap();
-	cout << endl;
-	//MapToScreen();
 	// Выравниваю карту на 1 пиксель
 	BalanceArea();
-	//cout << "Balancing ...\n";
-	//MapToScreen();
 }
 
 uint32_t MapGameObj::GetNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
@@ -52,8 +45,8 @@ pair<uint32_t, uint32_t> MapGameObj::GetCoord(uint32_t Num){
 }
 
 void MapGameObj::GenerateTab(){
-	uint32_t max=height_*width_; // maby uint64_t
-	uint32_t w=0,h=0;
+	unsigned long long max=height_*width_; // maby uint64_t
+	unsigned width=0,heigth=0;
 	MapPoint pNull;
 	// заполняем таблицу нулевыми точками
 	for(uint32_t i=0;i<max;++i){
@@ -61,25 +54,25 @@ void MapGameObj::GenerateTab(){
 	}
 	// заполняем таблицу смежности
 for(uint32_t i=0;i<max;++i){
-	adjacent_list_[i].SetX(h);
-	adjacent_list_[i].SetY(w);	
+	adjacent_list_[i].SetX(heigth);
+	adjacent_list_[i].SetY(width);	
 	// просматриваю таблицу вправо вниз добавляю 
 	// к текущей точке следущую смежную и к следующей текущую
 	// проверка правой границы
-	if(w<width_-1){
+	if(width<width_-1){
 		adjacent_list_[i].adjacent_points.push_back(i+1);
 		adjacent_list_[i+1].adjacent_points.push_back(i); 
 	}
 	// нижней границы
-	if(h<height_-1){
+	if(heigth<height_-1){
 		adjacent_list_[i].adjacent_points.push_back(i+width_);
 		adjacent_list_[i+width_].adjacent_points.push_back(i);
 	}
 	// опредление координаты на карте
-	++w;
-	if(w==width_){
-	w=0;
-	++h;
+	++width;
+	if(width==width_){
+	width=0;
+	++heigth;
 	}
 	}
 }
@@ -114,7 +107,7 @@ void MapGameObj::RefreshBorders(KingdoomMap & terr){
 	//  получаю вершину смотрю список смежных  и владельца
 		// цикл проверяет соседние точки если соседняя точка не моя то значит проверяемая точка - гранинкая
 		for (auto smej_V : adjacent_list_[numV].adjacent_points) {
-			if (adjacent_list_[smej_V].N_owner != terr.My_N()) {
+			if (adjacent_list_[smej_V].N_owner != terr.GetMyId()) {
 				terr.borders.push_back(numV);
 				break; //  эта вершина граничная  выходим
 			}
@@ -153,8 +146,8 @@ void MapGameObj::ToFile(uint8_t point_size=10) {
 	CImg<uint8_t> img(width_ * point_size, height_ * point_size, 1, 3); 
 	// двигаюсь по списку вершин и окрашиваю каждую точку в свой цвет области
 	uint32_t counter = 0;
-	for(MapPoint p: adjacent_list_){
-		uint32_t country = p.N_owner;
+	for(MapPoint kingdoms: adjacent_list_){
+		uint32_t country = kingdoms.N_owner;
 		const unsigned char color[]={ colors[country][0],colors[country][1],colors[country][2]};
 		pair<uint32_t,uint32_t> coord = GetCoord(counter);
 		img.draw_rectangle((coord.first * point_size),(coord.second * point_size),( coord.first * point_size + point_size),( coord.second * point_size + point_size), color);
@@ -315,8 +308,8 @@ void MapGameObj::BalanceArea() {
 		for(uint32_t NumPoint : path) {
 			// если текущий владелец отличается от владельца предыдущей точки меняю владельца точки
 			auto owner = adjacent_list_[NumPoint].N_owner;
-			vector<KingdoomMap>::iterator currentKingd = find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [owner](KingdoomMap& kingd) { return owner == kingd.My_N(); });																																						   //NumCurrentTerr = adjacent_list_[NumPoint].N_owner;
-			if (currentKingd->My_N() != prevKingd->My_N()){
+			vector<KingdoomMap>::iterator currentKingd = find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [owner](KingdoomMap& kingd) { return owner == kingd.GetMyId(); });																																						   //NumCurrentTerr = adjacent_list_[NumPoint].N_owner;
+			if (currentKingd->GetMyId() != prevKingd->GetMyId()){
 				// найти предыдущ terrain и убрать у него точку из списка   find_if
 				
 				// нахожу текущую точку(указатель на нее) у предыдущего королевства
@@ -325,7 +318,7 @@ void MapGameObj::BalanceArea() {
 				prevKingd->list_v.erase(prevPointIt); // удалил вершину из пред списка
 				currentKingd->list_v.push_back(prevNumPoint); // добавил вершину в текущ список 
 				prevKingd = currentKingd; 
-				adjacent_list_[prevNumPoint].N_owner = currentKingd->My_N(); // присвоил вершину окончательно в списке смежности
+				adjacent_list_[prevNumPoint].N_owner = currentKingd->GetMyId(); // присвоил вершину окончательно в списке смежности
 			}
 			prevNumPoint = NumPoint;
 		}
@@ -402,21 +395,21 @@ void MapGameObj::FillMap(){
 	//Обход
 		for(auto &kingd: list_kingdoms_){
 			// движение по окружности границы по их порядку начиная с правой
-			if (iterOnBorders[kingd.My_N() - 1] >= kingd.borders.size()) {
-				iterOnBorders[kingd.My_N() - 1] = 0;  // если итератор вышел за 
+			if (iterOnBorders[kingd.GetMyId() - 1] >= kingd.borders.size()) {
+				iterOnBorders[kingd.GetMyId() - 1] = 0;  // если итератор вышел за 
 										//"границы королевства" то возвращаем на стартовую поз
 			}
 			//  если заграничная точка ничья то присваиваем (только 1)
 			//  далее прохожу по границе numV - номер заграничной вершины(точки)
 			// двигаюсь по списку смежности - по смежным вершинам вершины "tabSmej[kingd.borders[iterOnBorders[i]]]"
-			for(uint32_t numV: adjacent_list_[kingd.borders[iterOnBorders[kingd.My_N() - 1]]].adjacent_points){
+			for(uint32_t numV: adjacent_list_[kingd.borders[iterOnBorders[kingd.GetMyId() - 1]]].adjacent_points){
 				if(adjacent_list_[numV].N_owner==0){
-					adjacent_list_[numV].N_owner=kingd.My_N();
+					adjacent_list_[numV].N_owner=kingd.GetMyId();
 					kingd.list_v.push_back(numV);
 					break; // quit if ok
 				}
 			}
-			++iterOnBorders[kingd.My_N() - 1]; 	 // перемещаем итератор
+			++iterOnBorders[kingd.GetMyId() - 1]; 	 // перемещаем итератор
 		}	
 		for(auto & kingd : list_kingdoms_) RefreshBorders(kingd);
 	}

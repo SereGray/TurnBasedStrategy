@@ -99,12 +99,12 @@ int Resource::Count()
 
 
 // Gold
-Gold::Gold(int count) : Resource(count, 10000)
+Gold::Gold(int count) : Resource(count, 100)
 {
 }
 
 // Food
-Food::Food(int count) : Resource(count, 100)
+Food::Food(int count) : Resource(count, 1)
 {
 }
 

@@ -62,6 +62,7 @@ public:
 	unsigned MyArea();
 	unsigned GetMyId();
 private: 
+
 	struct Visiter {
 		KingdoomEconomics& e_;
 		bool (*ptrFunct_)(KingdoomEconomics&, BaseCost&, int);

@@ -6,7 +6,7 @@
 #include"resource.h"
 
 struct Unit {
-	unsigned count_;
+	unsigned count_;  // all units count
 	//TODO: vector<BaseCost&> costs
 	//TODO: initialistion with variadic arg - BaseCost&
 	UnitCost<Gold> gold_;
@@ -16,7 +16,7 @@ struct Unit {
 	Unit(UnitCost<Gold> gold, UnitCost<Food> food);
 
 	template<class Visitor> // visitor pattern - visitor buy/sell units in kingdom economics undependent regardless of the number of types of resources
-	bool Accept(Visitor f, unsigned count) {
+	bool Accept(Visitor f, unsigned count) { // visitor - is callable obj (functor)
 		if (!f(r_gold_, count)) {
 			return false;
 		}

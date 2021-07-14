@@ -96,7 +96,7 @@ class WarGameObj : public EngineGameObjInterface
 	friend class Kingdoom_defense;
 	MapGameObj* map_obj_ = nullptr;
 	ScienceGameObj* science_obj = nullptr;
-	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h My_N) 
+	std::vector<Kingdoom_defense> vkingdoom_def_;   // список игроков (они идут по номерам соответсвующим номерам в map.h GetMyId) 
 	//std::vector<std::pair<Kingdoom_defense&, Kingdoom_defense& >> vlocal_wars_; TODO: not work
 	std::vector<std::pair<unsigned, unsigned>> vlocal_wars_; // содержит id
 

@@ -176,11 +176,11 @@ void EconomicsGameObj::AddKingdomEconomics(unsigned by_id)
 void EconomicsGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
 for(EngineGameObjInterface* infc: list_in){
-	if (typeid(*infc) == typeid(*science_obj_))
+	if (typeid(*infc) == typeid(ScienceGameObj*))
 	{
 		science_obj_ = dynamic_cast<ScienceGameObj*>(infc);
 	}
-	if(typeid(*infc) == typeid(*map_obj_))
+	if(typeid(*infc) == typeid(MapGameObj*))
 	{
 		map_obj_ = dynamic_cast<MapGameObj*>(infc);
 	}

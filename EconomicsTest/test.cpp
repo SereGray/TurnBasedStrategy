@@ -156,6 +156,16 @@ namespace KingdoomEconomicsTest {
 
 }
 
+TEST(KingEconomicsTestCase, CreationVectorOfKingdomEconomics) {
+	EconomicsGameObj master;
+	std::vector<KingdoomEconomics> v_kingdom;
+	v_kingdom.push_back(KingdoomEconomics(master, 1));
+	v_kingdom.push_back(KingdoomEconomics(master, 2));
+	v_kingdom.push_back(KingdoomEconomics(master, 3));
+	EXPECT_EQ(1, v_kingdom[0].GetMyId());
+	EXPECT_EQ(2, v_kingdom[1].GetMyId());
+	EXPECT_EQ(3, v_kingdom[2].GetMyId());
+}
 namespace KingdoomEconomicsFakeNameSpace{
 		
 	class KingdoomEconomicsFakeFixation : public ::testing::Test {
@@ -164,13 +174,12 @@ namespace KingdoomEconomicsFakeNameSpace{
 			master = new EconomicsGameObj();
 			master->AddKingdomEconomics(0);
 			kd = master->GetKingdoomEconomics(0);
-			map = new MapGameObj(10, 10, 1); // 3 x 3  kingdoom
+			map = new MapGameObj(10, 10, 2); // 3 x 3  kingdoom
 			science = new ScienceGameObj();
 			science->AddKingdoom(0);
 			master->SetInterface({ map, science });
 		}
 		void TearDown() override {
-			delete kd;
 			delete master;
 			delete science;
 			delete map;
@@ -187,16 +196,16 @@ namespace KingdoomEconomicsFakeNameSpace{
 		EXPECT_TRUE(true);
 	}
 
+	/*
 	TEST_F(KingdoomEconomicsFakeFixation, CreatingTest){
 		EXPECT_EQ(kd->GetMyId(),0);
 	}
+	*/
 
-	TEST_F(KingdoomEconomicsFakeFixation, FakeAreaFakeDensityLvlTest){
+	/*TEST_F(KingdoomEconomicsFakeFixation, FakeAreaFakeDensityLvlTest){
 		EXPECT_EQ(kd->MyArea(), 9);
 		EXPECT_EQ(kd->GetDensityLvl(), 0);
-	}
-	
-	// Demography testing
+	}*/
 	
 	/*TEST_F(KingdoomEconomicsFakeFixation, DemographyNextTurnIncreasingPeople){
 		kd->area_ = 100;

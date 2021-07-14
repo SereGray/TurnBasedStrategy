@@ -38,7 +38,7 @@ class MapPoint{
 
 class KingdoomMap{ //  клас предсавляющий изображение на карте территорию королевства и методы работы:
 	public:
-		uint32_t my_id_;
+		uint32_t my_id_; // TODO: SET ID
 		vector<uint32_t> list_v; // список вершин
 		vector<uint32_t> borders; // список границ 
 		// создание экземпляра из первой точки
@@ -47,7 +47,7 @@ class KingdoomMap{ //  клас предсавляющий изображени�
 			list_v.push_back(num);
 			borders.push_back(num);
 		}
-		uint32_t My_N();
+		uint32_t GetMyId();
 		uint32_t MyArea(); // TODO:this
 };
 
@@ -69,6 +69,7 @@ class MapGameObj: public EngineGameObjInterface{
 		uint32_t GetColor(); // color is  +8empty bits +RGB 24b ( 8-8-8 bit)
 	
 		MapGameObj(uint32_t w, uint32_t h, uint32_t p);
+
 		void PrintTabSmej();
 
 #ifdef CIMG
