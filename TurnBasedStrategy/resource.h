@@ -1,10 +1,11 @@
 #ifndef RESOURSE
 #define RESOURSE
+#include<cmath>
 
 class Resource {
 public:
-	int count_;
-	int cost_conventional_units; // cost in hundredths e.g cost_conventional_units=1 equal 0.01, 100 equal1
+	float count_;
+	int cost_conventional_units_; // cost in y.e
 	Resource()=delete;
 	bool operator==(const Resource&) const;
 	Resource(int count, int cost);
@@ -22,6 +23,7 @@ public:
 	Resource& operator++();
 	Resource operator++(int );
 	~Resource() = default;
+	int Count();
 };
 
 

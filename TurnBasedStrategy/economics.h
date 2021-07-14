@@ -58,7 +58,7 @@ public:
 	bool BuyResourse(Resource&,int);
 	unsigned GetDensityLvl();
 	unsigned GetIncreasingLvl();
-	void ChangeCountSpecialists(Specialist&, unsigned);
+	void ChangeCountSpecialists(Unit&, unsigned);
 	unsigned MyArea();
 	unsigned GetMyId();
 private: 

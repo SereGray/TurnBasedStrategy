@@ -154,7 +154,7 @@ unsigned KingdoomEconomics::MyArea() {
 	return my_master_.MyArea(my_id_);
 }
 
-void KingdoomEconomics::ChangeCountSpecialists(Specialist& spec,unsigned count)
+void KingdoomEconomics::ChangeCountSpecialists(Unit& spec,unsigned count)
 {
 	//TODO reg spec-s
 	spec.Accept(visiter_, count);	
