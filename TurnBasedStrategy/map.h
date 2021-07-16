@@ -24,13 +24,13 @@ class MapPoint{
 
 		MapPoint(){
 			border_map=false;
-			N_owner=0;
+			N_owner=-1; // -1  point is free
 		}
 
 		vector<uint32_t> adjacent_points; // смежные точки 
 		vector<uint32_t> list_neighbor; // смежные точки принадлежащие другим игровым объектам                        NULL 
 		bool border_map;
-		uint16_t N_owner;
+		int N_owner;
 		pair<uint32_t,uint32_t> GetCoord();
 		void SetX(uint32_t X);
 		void SetY(uint32_t Y);
@@ -42,11 +42,7 @@ class KingdoomMap{ //  клас предсавляющий изображени�
 		vector<uint32_t> list_v; // список вершин
 		vector<uint32_t> borders; // список границ 
 		// создание экземпляра из первой точки
-		KingdoomMap(uint32_t num,uint32_t n){
-			my_id_=n;
-			list_v.push_back(num);
-			borders.push_back(num);
-		}
+		KingdoomMap(uint32_t num, uint32_t my_id);
 		uint32_t GetMyId();
 		uint32_t MyArea(); // TODO:this
 };
@@ -64,7 +60,7 @@ class MapGameObj: public EngineGameObjInterface{
 		// return summaries
 		std::string ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders); //TODO:this
 		// получить писок соседей 
-		vector<uint32_t> GetNeighborsList(uint32_t my_N);
+		vector<uint32_t> GetNeighborsList(uint32_t my_id);
 		// получить цвет территории
 		uint32_t GetColor(); // color is  +8empty bits +RGB 24b ( 8-8-8 bit)
 	

@@ -14,6 +14,11 @@ void MapPoint::SetY(uint32_t Y){
 	y=Y;
 }
 
+KingdoomMap::KingdoomMap(uint32_t num, uint32_t my_id) :my_id_(my_id) {
+	list_v.push_back(num);
+	borders.push_back(num);
+}
+
 uint32_t KingdoomMap::GetMyId(){
 	return my_id_;
 }
@@ -81,18 +86,19 @@ for(uint32_t i=0;i<max;++i){
 void MapGameObj::AddPoitsToMap( uint32_t po){ // ро - количество стартовых точек
 	if(po>height_*width_) return;
 	while(po>0){
+		--po;
 		uint32_t x=rand()%width_;
 		uint32_t y=rand()%height_;
-		if(adjacent_list_[x+y*width_].N_owner==0){
+		if(adjacent_list_[x+y*width_].N_owner==-1){
 			adjacent_list_[GetNum(x,y)].N_owner=po;
 		}else{
-			while(adjacent_list_[GetNum(x,y)].N_owner!=0){
+			while(adjacent_list_[GetNum(x,y)].N_owner!=-1){
 		x=rand()%width_;
 		y=rand()%height_;
 			}
 			adjacent_list_[GetNum(x,y)].N_owner=po;
 		}
-		KingdoomMap newKingdoom(GetNum(x,y),--po);
+		KingdoomMap newKingdoom(GetNum(x,y),po);
 		list_kingdoms_.push_back(newKingdoom);
 	}
 }
@@ -161,7 +167,7 @@ bool MapGameObj::FreeSpace(){
 	static uint32_t maxIteration=100;
 	if(--maxIteration==0)return false;
 	for(MapPoint p: adjacent_list_){
-		if(p.N_owner==0) return true;
+		if(p.N_owner==-1) return true;
 	}
 	return false;
 }
@@ -395,21 +401,21 @@ void MapGameObj::FillMap(){
 	//Обход
 		for(auto &kingd: list_kingdoms_){
 			// движение по окружности границы по их порядку начиная с правой
-			if (iterOnBorders[kingd.GetMyId() - 1] >= kingd.borders.size()) {
-				iterOnBorders[kingd.GetMyId() - 1] = 0;  // если итератор вышел за 
+			if (iterOnBorders[kingd.GetMyId() ] >= kingd.borders.size()) {
+				iterOnBorders[kingd.GetMyId() ] = 0;  // если итератор вышел за 
 										//"границы королевства" то возвращаем на стартовую поз
 			}
 			//  если заграничная точка ничья то присваиваем (только 1)
 			//  далее прохожу по границе numV - номер заграничной вершины(точки)
 			// двигаюсь по списку смежности - по смежным вершинам вершины "tabSmej[kingd.borders[iterOnBorders[i]]]"
-			for(uint32_t numV: adjacent_list_[kingd.borders[iterOnBorders[kingd.GetMyId() - 1]]].adjacent_points){
-				if(adjacent_list_[numV].N_owner==0){
+			for(uint32_t numV: adjacent_list_[kingd.borders[iterOnBorders[kingd.GetMyId()]]].adjacent_points){
+				if(adjacent_list_[numV].N_owner==-1){
 					adjacent_list_[numV].N_owner=kingd.GetMyId();
 					kingd.list_v.push_back(numV);
 					break; // quit if ok
 				}
 			}
-			++iterOnBorders[kingd.GetMyId() - 1]; 	 // перемещаем итератор
+			++iterOnBorders[kingd.GetMyId() ]; 	 // перемещаем итератор
 		}	
 		for(auto & kingd : list_kingdoms_) RefreshBorders(kingd);
 	}

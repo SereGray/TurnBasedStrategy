@@ -174,7 +174,7 @@ namespace KingdoomEconomicsFakeNameSpace{
 			master = new EconomicsGameObj();
 			master->AddKingdomEconomics(0);
 			kd = master->GetKingdoomEconomics(0);
-			map = new MapGameObj(10, 10, 2); // 3 x 3  kingdoom
+			map = new MapGameObj(3, 3, 1); // 3 x 3  kingdoom
 			science = new ScienceGameObj();
 			science->AddKingdoom(0);
 			master->SetInterface({ map, science });
@@ -191,21 +191,51 @@ namespace KingdoomEconomicsFakeNameSpace{
 		KingdoomEconomics* kd;
 
 	};
-
+	
 	TEST_F(KingdoomEconomicsFakeFixation, EmptyTest) {
 		EXPECT_TRUE(true);
 	}
+	
 
-	/*
 	TEST_F(KingdoomEconomicsFakeFixation, CreatingTest){
 		EXPECT_EQ(kd->GetMyId(),0);
 	}
-	*/
 
-	/*TEST_F(KingdoomEconomicsFakeFixation, FakeAreaFakeDensityLvlTest){
+
+	// 
+	class B { virtual void f() {}; };
+	class D : public B { virtual void f() {}; };
+	class D2 : public B { virtual void f() {}; };
+
+	TEST(RTTI_StudyTestCase, rtti_study) {
+		D d;
+		D2 d2;
+		D* d_ptr;
+		D2* d2_ptr;
+		std::vector<B*> list_in;
+		list_in.push_back(&d2);
+		list_in.push_back(&d);
+		B* b = &d;
+		EXPECT_TRUE(typeid(b) == typeid(B*));
+		EXPECT_TRUE(typeid(*b) == typeid(D));
+		for (B* infc : list_in) {
+			if (typeid(*infc) == typeid(D))
+			{
+				d_ptr = dynamic_cast<D*>(infc);
+			}
+			if (typeid(*infc) == typeid(D2));
+			{
+				d2_ptr = dynamic_cast<D2*>(infc);
+			}
+		}
+		EXPECT_TRUE(typeid(d_ptr) == typeid(D*));// << typeid(d_ptr) << " " << typeid(D*);
+		EXPECT_TRUE(typeid(*d_ptr) == typeid(D));
+	}
+
+	TEST_F(KingdoomEconomicsFakeFixation, FakeAreaFakeDensityLvlTest){
 		EXPECT_EQ(kd->MyArea(), 9);
 		EXPECT_EQ(kd->GetDensityLvl(), 0);
-	}*/
+	}
 	
 	/*TEST_F(KingdoomEconomicsFakeFixation, DemographyNextTurnIncreasingPeople){
 		kd->area_ = 100;
