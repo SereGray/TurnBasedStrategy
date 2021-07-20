@@ -188,7 +188,7 @@ for(EngineGameObjInterface* infc: list_in){
 }
 
 unsigned EconomicsGameObj::MyArea(unsigned by_id){
-	return map_obj_->AreaKingdoom(by_id);
+	return map_obj_->AreaKingdom(by_id);
 }
 
 unsigned EconomicsGameObj::GetDensityLvl(unsigned by_id){

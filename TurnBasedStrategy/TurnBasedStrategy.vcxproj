@@ -154,7 +154,6 @@
     <ClCompile Include="war.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="CImg.h" />
     <ClInclude Include="client_cli.h" />
     <ClInclude Include="economics.h" />
     <ClInclude Include="engine.h" />

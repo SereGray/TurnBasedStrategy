@@ -8,7 +8,7 @@
 //#define CIMG
 
 #ifndef CIMG
-#include "CImg.h"
+//#include "CImg.h" deleted
 #endif // CIMG
 
 #include <iostream>
@@ -19,12 +19,12 @@
 using namespace std;
 
 class MapPoint{
-	uint32_t x,y; //   TODO: не инициализированны
+	unsigned x_ ,y_; //   TODO: не инициализированны
 	public:
 
-		MapPoint(){
+		MapPoint():x_(0), y_(0){
 			border_map=false;
-			N_owner=-1; // -1  point is free
+			N_owner=-1; // -1  point is free		
 		}
 
 		vector<uint32_t> adjacent_points; // смежные точки 
@@ -36,26 +36,26 @@ class MapPoint{
 		void SetY(uint32_t Y);
 };
 
-class KingdoomMap{ //  клас предсавляющий изображение на карте территорию королевства и методы работы:
+class KingdomMap{ //  клас предсавляющий изображение на карте территорию королевства и методы работы:
 	public:
-		uint32_t my_id_; // TODO: SET ID
-		vector<uint32_t> list_v; // список вершин
-		vector<uint32_t> borders; // список границ 
+		unsigned my_id_; // TODO: SET ID
+		vector<unsigned> list_v; // список вершин
+		vector<unsigned> borders; // список границ 
 		// создание экземпляра из первой точки
-		KingdoomMap(uint32_t num, uint32_t my_id);
-		uint32_t GetMyId();
-		uint32_t MyArea(); // TODO:this
+		KingdomMap(uint32_t num, uint32_t my_id);
+		unsigned GetMyId();
+		unsigned MyArea(); // TODO:this
 };
 
 class MapGameObj: public EngineGameObjInterface{
 	public:
 		vector<MapPoint> adjacent_list_; // таблица смежности представляет из себя список всех вершин
-		vector<KingdoomMap> list_kingdoms_;
+		vector<KingdomMap> list_kingdoms_;
 	private:
 		virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 		uint32_t width_,height_;
 	public:
-		uint32_t AreaKingdoom(uint32_t); //TODO: ?
+		uint32_t AreaKingdom(uint32_t); //TODO: ?
 		// переход территории от одного владельца к другому
 		// return summaries
 		std::string ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders); //TODO:this
@@ -81,7 +81,7 @@ class MapGameObj: public EngineGameObjInterface{
 		unsigned GetCountSpecialists(); // must return 0
 
 		void FillMap();
-		KingdoomMap GetMinTerrain();
+		KingdomMap GetMinTerrain();
 		bool TerrainsDisbalanced(uint32_t offset);
 		void BalanceArea(); 
 		vector<uint32_t> FloydWarhsallPath(uint32_t start , uint32_t end, bool restart ); 
@@ -91,11 +91,12 @@ class MapGameObj: public EngineGameObjInterface{
 		void CreateDxDTable( vector<vector<uint32_t>> & inDxD);
 		void DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path);
 		bool FreeSpace();
-		void RefreshBorders(KingdoomMap & terr);
-		void AddPoitsToMap( uint32_t po);
+		void RefreshBorders(KingdomMap & terr);
+		void AddStartPoitsToMap( uint32_t po);
 		void GenerateTab();
 		pair<uint32_t, uint32_t> GetCoord(uint32_t Num);
-		uint32_t GetNum(uint32_t x, uint32_t y);
+		unsigned GetNum(unsigned x, unsigned y);
+		unsigned GetNum(std::pair<unsigned, unsigned> coord);
 };
 
 #endif

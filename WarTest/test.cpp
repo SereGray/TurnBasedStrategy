@@ -216,7 +216,7 @@ namespace GeneralNameSpace {
 
 
 	TEST_F(FixationKingdoom_defense, KingdoomLandaun ) {
-		EXPECT_EQ(kd->landaun_.GetMyId(), MAXUINT);
+		EXPECT_EQ(kd->landaun_.GetMyId(), UINT_MAX);
 		EXPECT_EQ(kd->landaun_.skill_, 0);
 		EXPECT_EQ(kd->landaun_.intelegence_, 0);
 		EXPECT_EQ(kd->landaun_.spirit_, 0);
@@ -249,7 +249,7 @@ namespace GeneralNameSpace {
 	TEST_F(FixationKingdoom_defense, KingdoomGetSpeedestGeneral_RETURNLandaun) {
 		EXPECT_EQ(kd->v_general_.size(), 0);
 		General gen = kd->GetSpeedestGeneral(1); // - 1 random
-		EXPECT_EQ(gen.GetMyId(), MAXUINT);
+		EXPECT_EQ(gen.GetMyId(), UINT_MAX);
 	}
 
 	TEST_F(FixationKingdoom_defense, KingdoomGetSpeedestGeneral_RETURNSpeedest) {

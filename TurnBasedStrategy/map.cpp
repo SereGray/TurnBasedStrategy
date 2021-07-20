@@ -1,46 +1,52 @@
 // This file is part of game engine TurnBasedGame
 #include"map.h"
 
+
 // получение координат вершины по номеру
 pair<uint32_t,uint32_t> MapPoint::GetCoord(){
-	return std::make_pair(x,y);
+	return std::make_pair(x_,y_);
 }
 
 void MapPoint::SetX(uint32_t X){
-	x=X;
+	x_=X;
 }
 
 void MapPoint::SetY(uint32_t Y){
-	y=Y;
+	y_=Y;
 }
 
-KingdoomMap::KingdoomMap(uint32_t num, uint32_t my_id) :my_id_(my_id) {
+
+KingdomMap::KingdomMap(unsigned num, unsigned my_id) :my_id_(my_id) {
 	list_v.push_back(num);
 	borders.push_back(num);
 }
 
-uint32_t KingdoomMap::GetMyId(){
+unsigned KingdomMap::GetMyId(){
 	return my_id_;
 }
 
-uint32_t KingdoomMap::MyArea()
+unsigned KingdomMap::MyArea()
 {
-	return uint32_t();
+	return list_v.size();
 }
 
 MapGameObj::MapGameObj(uint32_t width, uint32_t height, uint32_t kingdoms) : width_(width), height_(height) {
 	// создаем таблицу списков смежности
 	GenerateTab();
 	// добавляю начальные точки
-	AddPoitsToMap(kingdoms);
+	AddStartPoitsToMap(kingdoms);
 	// заполняем территорию карты
 	FillMap();
 	// Выравниваю карту на 1 пиксель
 	BalanceArea();
 }
 
-uint32_t MapGameObj::GetNum(uint32_t x, uint32_t y){// получение номера вершины по координатам
+unsigned MapGameObj::GetNum(unsigned x, unsigned y){// получение номера вершины по координатам
 	return x+y*width_;
+}
+
+unsigned MapGameObj::GetNum(std::pair<unsigned, unsigned> coord) {// тоже но через пару
+	return coord.first + coord.second * width_;
 }
 
 pair<uint32_t, uint32_t> MapGameObj::GetCoord(uint32_t Num){
@@ -83,28 +89,24 @@ for(uint32_t i=0;i<max;++i){
 }
 
 // // генерация и добавление начальных точек к карте
-void MapGameObj::AddPoitsToMap( uint32_t po){ // ро - количество стартовых точек
+void MapGameObj::AddStartPoitsToMap( uint32_t po){ // ро - количество стартовых точек
 	if(po>height_*width_) return;
-	while(po>0){
+	// создаем вектор ссылок на незанятые точки 
+	vector<MapPoint*> free_points;
+	for (MapPoint mp : adjacent_list_) {
+		if (mp.N_owner == -1) free_points.push_back(&mp);
+	}
+	while(po>0 && free_points.size()>0){
 		--po;
-		uint32_t x=rand()%width_;
-		uint32_t y=rand()%height_;
-		if(adjacent_list_[x+y*width_].N_owner==-1){
-			adjacent_list_[GetNum(x,y)].N_owner=po;
-		}else{
-			while(adjacent_list_[GetNum(x,y)].N_owner!=-1){
-		x=rand()%width_;
-		y=rand()%height_;
-			}
-			adjacent_list_[GetNum(x,y)].N_owner=po;
-		}
-		KingdoomMap newKingdoom(GetNum(x,y),po);
+		unsigned number = rand() % free_points.size();
+		adjacent_list_[GetNum(free_points[number]->GetCoord())].N_owner = po;
+		KingdomMap newKingdoom(number,po);
 		list_kingdoms_.push_back(newKingdoom);
 	}
 }
 
 // обновление границ (решение влоб)
-void MapGameObj::RefreshBorders(KingdoomMap & terr){
+void MapGameObj::RefreshBorders(KingdomMap & terr){
 	terr.borders.clear();
 	for(auto numV: terr.list_v){// обходим все вершины королевства по номерам и пров
 		//  условию границы  (список точек принадлежащ соседям не пуст или соседняя 
@@ -290,10 +292,11 @@ vector<uint32_t> MapGameObj::FloydWarhsallPath(uint32_t start , uint32_t end, bo
 }
 	
 void MapGameObj::BalanceArea() {
+	if (list_kingdoms_.size() == 0) return;
 	while (TerrainsDisbalanced(1)) {
-		std::sort(list_kingdoms_.begin(), list_kingdoms_.end(), [](KingdoomMap lkdm, KingdoomMap rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
-		KingdoomMap kingdMin = *list_kingdoms_.begin();
-		KingdoomMap kingdMax = *(list_kingdoms_.end() - 1);
+		std::sort(list_kingdoms_.begin(), list_kingdoms_.end(), [](KingdomMap lkdm, KingdomMap rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
+		KingdomMap kingdMin = *list_kingdoms_.begin();
+		KingdomMap kingdMax = *(list_kingdoms_.end() - 1);
 		// ищу путь наименьшей длины с прим. Флойд-Уоршелла
 		vector<uint32_t> path;   // после должен быть наикоротким
 		uint32_t lengthMinPath = UINT32_MAX;
@@ -310,11 +313,11 @@ void MapGameObj::BalanceArea() {
 		// двигаясь по пути
 		reverse(path.begin(), path.end());
 		uint32_t prevNumPoint = 0;
-		vector<KingdoomMap>::iterator prevKingd = list_kingdoms_.end() - 1;
+		vector<KingdomMap>::iterator prevKingd = list_kingdoms_.end() - 1;
 		for(uint32_t NumPoint : path) {
 			// если текущий владелец отличается от владельца предыдущей точки меняю владельца точки
 			auto owner = adjacent_list_[NumPoint].N_owner;
-			vector<KingdoomMap>::iterator currentKingd = find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [owner](KingdoomMap& kingd) { return owner == kingd.GetMyId(); });																																						   //NumCurrentTerr = adjacent_list_[NumPoint].N_owner;
+			vector<KingdomMap>::iterator currentKingd = find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [owner](KingdomMap& kingd) { return owner == kingd.GetMyId(); });																																						   //NumCurrentTerr = adjacent_list_[NumPoint].N_owner;
 			if (currentKingd->GetMyId() != prevKingd->GetMyId()){
 				// найти предыдущ terrain и убрать у него точку из списка   find_if
 				
@@ -345,9 +348,9 @@ bool MapGameObj::TerrainsDisbalanced(uint32_t offset){ // offset - допуск 
 	return false;
 }
 		
-KingdoomMap MapGameObj::GetMinTerrain(){
+KingdomMap MapGameObj::GetMinTerrain(){
 	uint32_t min = 0 - 1;
-	KingdoomMap res = list_kingdoms_[0];
+	KingdomMap res = list_kingdoms_[0];
 	for(auto terr : list_kingdoms_){
 		if(terr.list_v.size() < min) {
 		       	min = terr.list_v.size();
@@ -366,9 +369,9 @@ void MapGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
 }
 
-uint32_t MapGameObj::AreaKingdoom(uint32_t by_id)
+uint32_t MapGameObj::AreaKingdom(uint32_t by_id)
 {
-	auto it = std::find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [by_id](KingdoomMap& kingd) {if (kingd.my_id_ == by_id)return true; return false; });
+	auto it = std::find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [by_id](KingdomMap& kingd) {if (kingd.my_id_ == by_id)return true; return false; });
 	return it->list_v.size();
 }
 
@@ -393,6 +396,7 @@ std::string MapGameObj::GetSummariesString()
 }
 
 void MapGameObj::FillMap(){
+	if (list_kingdoms_.size() == 0) return;
 	vector<uint32_t> iterOnBorders;		// список текущего положения итератора перебора 
 					//по пограничным вершинам для всех королевств ( массив итераторов по одному на королевство)
 	for(uint32_t i=0;i< list_kingdoms_.size();++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
@@ -418,20 +422,20 @@ void MapGameObj::FillMap(){
 			++iterOnBorders[kingd.GetMyId() ]; 	 // перемещаем итератор
 		}	
 		for(auto & kingd : list_kingdoms_) RefreshBorders(kingd);
-	}
-	
+	}	
 }
-		void MapGameObj::PrintTabSmej(){
-			uint32_t i=0;
-			for(MapPoint p:adjacent_list_){
-				cout << i <<" num smej:"<< p.adjacent_points.size() << endl;
-				++i;
-				for(uint32_t v: p.adjacent_points){
-				cout << v <<" " ;
-				}
-			cout << endl;
-			}
+
+void MapGameObj::PrintTabSmej(){
+	uint32_t i=0;
+	for(MapPoint p:adjacent_list_){
+		cout << i <<" num smej:"<< p.adjacent_points.size() << endl;
+		++i;
+		for(uint32_t v: p.adjacent_points){
+		cout << v <<" " ;
 		}
+	cout << endl;
+	}
+}
 
 /*
 int main(){

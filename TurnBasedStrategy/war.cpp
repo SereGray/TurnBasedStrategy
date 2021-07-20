@@ -10,7 +10,7 @@ void General::Workout()
 	action_ = 2;
 	GetMaster()->AddSolder(count_solders_);
 	count_solders_ = 0;
-	target_ = MAXUINT;
+	target_ = UINT_MAX;
 }
 
 void General::Study()
@@ -19,7 +19,7 @@ void General::Study()
 	action_ = 1;
 	GetMaster()->AddSolder(count_solders_);
 	count_solders_ = 0;
-	target_ = MAXUINT;
+	target_ = UINT_MAX;
 }
 
 void General::Defense(unsigned count_defenders)
@@ -27,7 +27,7 @@ void General::Defense(unsigned count_defenders)
 	action_ = 3;
 	count_solders_ = count_defenders;
 	GetMaster()->DecreaseSolders(count_defenders);
-	target_ = MAXUINT;
+	target_ = UINT_MAX;
 }
 
 void General::NextTurn()
@@ -121,7 +121,7 @@ unsigned General::GetNextId()
 
 General::General(Kingdoom_defense& my_master, std::string name, unsigned skill, unsigned intelegence, unsigned spirit, unsigned speed, \
 	unsigned age):my_master_(&my_master), skill_(skill), intelegence_(intelegence), spirit_(spirit), speed_(speed), age_(age), action_(0),\
-	name_(name), target_ (MAXUINT), count_solders_(0) // TODO: check err 
+	name_(name), target_ (UINT_MAX), count_solders_(0) // TODO: check err 
 {
 	skill_float_ = static_cast<float>(skill);	
 	my_id_ = next_general_id++;
@@ -146,8 +146,8 @@ spirit_=0;
 speed_=0;
 age_=0;
 name_="landaun";
-target_= MAXUINT;
-my_id_ = MAXUINT;
+target_= UINT_MAX;
+my_id_ = UINT_MAX;
 }
 
 
@@ -164,7 +164,7 @@ void General::Rest()
 	action_ = 0;
 	GetMaster()->AddSolder(count_solders_);
 	count_solders_ = 0;
-	target_ = MAXUINT;
+	target_ = UINT_MAX;
 }
 
 
@@ -196,7 +196,7 @@ unsigned Kingdoom_defense::GetIndexOfGeneral(unsigned by_id)
 	}
 	else { 
 		/*err*/ 
-		return MAXUINT; // crash . . . TODO: this
+		return UINT_MAX; // crash . . . TODO: this
 	};
 	
 }
@@ -283,7 +283,7 @@ int WarGameObj::SearchLocalWar(unsigned kingd1_number, unsigned kingd2_number) /
 		if ((lw.first == kingd1_number && lw.second == kingd2_number) || (lw.first == kingd2_number && lw.second == kingd1_number)) return count;
 		++count;
 	}
-	return MAXUINT; // error
+	return UINT_MAX; // error
 }
 std::pair<unsigned,unsigned> WarGameObj::MaxSpeedGeneral(std::pair<unsigned,unsigned> kd) {
 	std::pair<unsigned, unsigned> max_speed = std::make_pair(0,0);
@@ -306,7 +306,7 @@ void WarGameObj::SortLocalWarsByGeneralSpeed()
 
 bool WarGameObj::LocalWarNoAttackers(std::vector<std::pair<unsigned, unsigned>>::iterator it)
 {
-	if(map_obj_->AreaKingdoom(it->first)==0 || map_obj_->AreaKingdoom(it->second)==0) return true; //проверка существования гос - ва
+	if(map_obj_->AreaKingdom(it->first)==0 || map_obj_->AreaKingdom(it->second)==0) return true; //проверка существования гос - ва
 	for (General g : vkingdoom_def_[it->first].v_general_) {
 		if (g.action_ == 4 && g.count_solders_ > 0) return false;   
 	}
