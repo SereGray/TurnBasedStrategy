@@ -5,9 +5,9 @@
 Demography::Demography(): all_people_(0),increase_people_(0),maximum_people_(0),fermers_people_(0){};
 
 void Demography::NextTurn(unsigned area, unsigned increasing_lvl, unsigned densety_lvl){
-	maximum_people_ = std::round(static_cast<double>(area) * ((static_cast<double>(densety_lvl)/100.0) + 1.0));
-	increase_people_ =( all_people_ ) / 20  ; //TODO: add Population growth science_ lvl
-	increase_people_ = std::round(static_cast<double>(increase_people_) *((static_cast<double>(increasing_lvl) / 10.0) + 1.0));
+	maximum_people_ = std::llround(static_cast<double>(area) * ((static_cast<double>(densety_lvl)/100.0) + 1.0));
+	increase_people_ =static_cast<long long>(( all_people_ ) / 20 )  ; //TODO: add Population growth science_ lvl
+	increase_people_ = std::llround(static_cast<double>(increase_people_) *((static_cast<double>(increasing_lvl) / 10.0) + 1.0));
 	if(all_people_ > maximum_people_) increase_people_ = (maximum_people_ - all_people_) / -10;
 	// calculating incrase_people_
 	if(all_people_ < maximum_people_ && (increase_people_ + all_people_) > maximum_people_){
@@ -26,7 +26,7 @@ void Demography::IncreaseFermersPeople()
 void Demography::DecreaseFermersPeople(unsigned decrease_count)
 {
 	//TODO: throw decreasing > fermers_people
-	if(fermers_people_ < decrease_count) decrease_count = fermers_people_ ;
+	if(fermers_people_ < decrease_count) decrease_count = (unsigned)fermers_people_ ;
 	fermers_people_ -= decrease_count;
 }
 
@@ -51,7 +51,7 @@ bool KingdoomEconomics::SellResourse(Resource& in, int count)
 	if(in.count_ < count) return false;
 	Resource& gold = gold_;
 	Resource temporary = in;
-	temporary.count_ = count;
+	temporary.count_ = static_cast<float>(count);
 	gold = gold + temporary;
 	in = in - count;	
 	return true;
@@ -62,9 +62,9 @@ bool KingdoomEconomics::BuyResourse(Resource& in, int count)
 	if (count <= 0) return false;
 	Resource& gold = gold_;
 	Resource temporary = in;
-	in.count_ = count;
+	in.count_ = static_cast<float>(count);
 	if( (gold - temporary).count_ < 0 ) return false;
-	gold = gold - in.count_;
+	gold = gold - static_cast<int>(std::round(in.count_));
 	in = in + count;	
 	return true;
 

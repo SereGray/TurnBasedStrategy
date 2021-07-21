@@ -33,7 +33,7 @@ class General
 public:
 	unsigned skill_; // max 100
 	unsigned intelegence_; // max 100
-	unsigned spirit_; // max 100
+	int spirit_; // max 100
 	unsigned speed_; // max 100
 	unsigned age_;   // max 100
 	unsigned action_;  // 0 - rest, 1 - study,2- workout, 3- defense, 4  attack , 5 - dead TODO: action Generall enum ? union ?

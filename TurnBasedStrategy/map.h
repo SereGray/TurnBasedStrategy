@@ -69,14 +69,17 @@ class MapGameObj: public EngineGameObjInterface{
 		virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 		uint32_t width_,height_;
 	public:
-		MapGameObj(uint32_t w, uint32_t h, uint32_t p);
+		MapGameObj(unsigned width, unsigned height);
+		void AddKingdom(unsigned by_id);
 		KingdomMap* GetKingdomMap(unsigned by_id);
 		uint32_t AreaKingdom(unsigned by_id); //TODO: ?
+
 		// переход территории от одного владельца к другому
 		// return summaries
 		std::string ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders); //TODO:this
 		vector<uint32_t> GetNeighborsList(uint32_t my_id); 		// получить писок соседей 
 		uint32_t GetColor(); //  получить цвет территории color is  +8empty bits +RGB 24b ( 8-8-8 bit)
+		void FillMap();
 		void PrintTabSmej();
 #ifdef CIMG
 		void ToFile(uint8_t);
@@ -89,7 +92,7 @@ class MapGameObj: public EngineGameObjInterface{
 		void NextTurn(); // TODO:this, maybe empty?
 		std::string GetSummariesString(); // сводки за предыдущий ход // TODO:this
 		unsigned GetCountSpecialists(); // must return 0
-		void FillMap();
+
 		KingdomMap GetMinTerrain();
 		bool TerrainsDisbalanced(uint32_t offset);
 		void BalanceArea(); 

@@ -46,7 +46,7 @@ float TheScience::GetScienistForce()
 	return scienist_force_;
 }
 
-unsigned TheScience::GetCountSpecialists()
+int TheScience::GetCountSpecialists()
 {
 	return count_scienist_;
 }
@@ -166,10 +166,10 @@ void KingdoomScience::ChangeCountSpec_WarCraft(int count)
 
 void KingdoomScience::ChangeFreeSpecialists(int count)
 {
-	if (count < 0 && free_scienists_ > count) {
+	if (count < 0 && free_scienists_ - std::abs(count) > 0) {
 		free_scienists_ += count;
 	}
-	else if (count < 0 && free_scienists_ <= count) {
+	else if (count < 0 && free_scienists_ - std::abs(count) <= 0) {
 		free_scienists_ = 0;
 	}
 	else if (count >= 0) {
@@ -218,20 +218,20 @@ unsigned KingdoomScience::GetFreeSpecialist()
 
 void KingdoomScience::ChangeCountSpecialist(TheScience& sub_science, int count)
 {
-	unsigned count_scienist = sub_science.GetCountSpecialists();
-	if (count < 0 && count_scienist > count) {
+	int count_scienist = sub_science.GetCountSpecialists();
+	if (count < 0 && count_scienist - std::abs(count) > 0) {
 		sub_science.ChangeCountSpecialists(count);
 		free_scienists_ -= count;
 	}
-	else if (count < 0 && count_scienist < count) {
+	else if (count < 0 && count_scienist - std::abs(count) <=0 ){
 		sub_science.ChangeCountSpecialists( count_scienist * (-1));
 		free_scienists_ += count_scienist;
 	}
-	else if (count >= 0 && free_scienists_ > count) {
+	else if (count >= 0 && free_scienists_ - std::abs(count) > 0) {
 		sub_science.ChangeCountSpecialists(count);
 		free_scienists_ -= count;
 	}
-	else if (count >= 0 && free_scienists_ <= count) {
+	else if (count >= 0 && free_scienists_ - std::abs(count) <=0 ) {
 		sub_science.ChangeCountSpecialists(free_scienists_);
 		free_scienists_ = 0;
 	}

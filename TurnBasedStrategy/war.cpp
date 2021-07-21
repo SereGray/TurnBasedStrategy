@@ -192,7 +192,7 @@ unsigned Kingdoom_defense::GetIndexOfGeneral(unsigned by_id)
 {
 	auto it = std::find_if(v_general_.begin(), v_general_.end(), [by_id](General& gen) {if (gen.GetMyId() == by_id)return true; return false; });
 	if (it != v_general_.end()) {
-		return std::distance(v_general_.begin(), it);
+		return static_cast<unsigned>(std::distance(v_general_.begin(), it));
 	}
 	else { 
 		/*err*/ 
@@ -424,10 +424,10 @@ int WarGameObj::Battle(General& attacker, General& defender)
 			attacker.count_solders_ = attacker.count_solders_ * 70 / 100;
 			defender.count_solders_ = defender.count_solders_ * 70 / 100;
 			// усталость генералов ( чем меньше дух тем быстрее он падает)
-			attacker.spirit_ = attacker.spirit_ - static_cast<unsigned>(log(110 - attacker.spirit_)) * 3;
-			defender.spirit_ = attacker.spirit_ - static_cast<unsigned>(log(110 - attacker.spirit_)) * 3;
-			attacker.skill_ += log(defender.count_solders_ + 1);
-			defender.skill_ += log(attacker.count_solders_ + 1);
+			attacker.spirit_ = attacker.spirit_ - std::lround(log(110 - attacker.spirit_)) * 3;
+			defender.spirit_ = attacker.spirit_ - std::lround(log(110 - attacker.spirit_)) * 3;
+			attacker.skill_ += std::lround(log(defender.count_solders_ + 1));
+			defender.skill_ += std::lround(log(attacker.count_solders_ + 1));
 		}
 	}
 	return res;

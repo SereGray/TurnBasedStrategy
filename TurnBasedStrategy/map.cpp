@@ -22,9 +22,9 @@ void MapPoint::SetY(uint32_t Y){
 }
 
 
-KingdomMap::KingdomMap(unsigned num, unsigned my_id) :my_id_(my_id) {
-	list_v.push_back(num);
-	borders.push_back(num);
+KingdomMap::KingdomMap(unsigned start_PointNum, unsigned my_id) :my_id_(my_id) {
+	list_v.push_back(start_PointNum);
+	borders.push_back(start_PointNum);
 }
 
 unsigned KingdomMap::GetMyId(){
@@ -33,16 +33,11 @@ unsigned KingdomMap::GetMyId(){
 
 unsigned KingdomMap::MyArea()
 {
-	return list_v.size();
+	return static_cast<unsigned>(list_v.size());
 }
 
-MapGameObj::MapGameObj(uint32_t width, uint32_t height, uint32_t kingdoms):adjacent_list_(width,height), width_(width), height_(height) {
-	// добавляю начальные точки
-	AddStartPoitsToMap(kingdoms);
-	// заполняем территорию карты
-	FillMap();
-	// Выравниваю карту на 1 пиксель
-	BalanceArea();
+MapGameObj::MapGameObj(unsigned width, unsigned height):adjacent_list_(width,height), width_(width), height_(height) {
+
 }
 
 unsigned MapGameObj::GetNum(unsigned x, unsigned y){// получение номера вершины по координатам
@@ -236,7 +231,7 @@ void MapGameObj::FloydWarshall(vector<vector<uint32_t>> & parentsMatrix) {
 	vector<vector<uint32_t>> adjacentMatrix;
 	AdjacentMatrixFill(adjacentMatrix);
 	//createDxDTable(adjacentMatrix);
-	uint32_t n = adjacentMatrix.size();
+	unsigned n = static_cast<unsigned>(adjacentMatrix.size());
 	parentsMatrix.clear();
 	for (unsigned i = 0; i < n; ++i) {
 		vector<uint32_t> p;
@@ -271,13 +266,13 @@ void MapGameObj::BalanceArea() {
 		KingdomMap kingdMax = *(list_kingdoms_.end() - 1);
 		// ищу путь наименьшей длины с прим. Флойд-Уоршелла
 		vector<uint32_t> path;   // после должен быть наикоротким
-		uint32_t lengthMinPath = UINT32_MAX;
+		unsigned lengthMinPath = UINT32_MAX;
 		for (auto numBorderKingdMin : kingdMin.borders) {//any vertex from nim terrain
 			for (auto numBorderKingdMax : kingdMax.borders) {
 				vector<uint32_t> tempPath = FloydWarhsallPath(numBorderKingdMin, numBorderKingdMax);
 				if (tempPath.size() < lengthMinPath) {
 					path = tempPath;   // выбор наикороткого пути
-					lengthMinPath = tempPath.size();
+					lengthMinPath = static_cast<unsigned>(tempPath.size());
 				}
 			}
 		}
@@ -308,13 +303,13 @@ void MapGameObj::BalanceArea() {
 }
 
 bool MapGameObj::TerrainsDisbalanced(uint32_t offset){ // offset - допуск на равенство 
-	uint32_t max=list_kingdoms_[0].list_v.size();
+	unsigned max= static_cast<unsigned>(list_kingdoms_[0].list_v.size());
 	for(auto terr : list_kingdoms_){
-		if(max < terr.list_v.size())max=terr.list_v.size();
+		if(max < terr.list_v.size())max=static_cast<unsigned>(terr.list_v.size());
 	}
-	uint32_t min=list_kingdoms_[0].list_v.size();
+	unsigned min= static_cast<unsigned>(list_kingdoms_[0].list_v.size());
 	for(auto terr : list_kingdoms_){
-		if(min > terr.list_v.size())min=terr.list_v.size();
+		if(min > terr.list_v.size())min= static_cast<unsigned>(terr.list_v.size());
 	}
 	if((max-min)>offset) return true;
 	return false;
@@ -325,7 +320,7 @@ KingdomMap MapGameObj::GetMinTerrain(){
 	KingdomMap res = list_kingdoms_[0];
 	for(auto terr : list_kingdoms_){
 		if(terr.list_v.size() < min) {
-		       	min = terr.list_v.size();
+		       	min = static_cast<unsigned>(terr.list_v.size());
 			res = terr;
 		}
 	}
@@ -339,6 +334,20 @@ unsigned MapGameObj::GetCountSpecialists()
 
 void MapGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
+	// TODO: this
+}
+
+void MapGameObj::AddKingdom(unsigned by_id)
+{
+	vector<MapPoint*> free_points;
+	for (MapPoint &mp : adjacent_list_) {
+		if (mp.N_owner == -1) free_points.push_back(&mp);
+	}
+	if (free_points.empty()) return; // TODO: throw exception?
+	unsigned number = rand() % free_points.size();
+	unsigned kingdom_start_number = GetNum(free_points[number]->GetCoord());
+	adjacent_list_[kingdom_start_number].N_owner = by_id;
+	list_kingdoms_.push_back(KingdomMap(kingdom_start_number, by_id));
 }
 
 KingdomMap* MapGameObj::GetKingdomMap(unsigned by_id)
@@ -400,6 +409,7 @@ void MapGameObj::FillMap(){
 		}	
 		for(auto & kingd : list_kingdoms_) RefreshBorders(kingd);
 	}	
+	BalanceArea();
 }
 
 void MapGameObj::PrintTabSmej(){
@@ -430,8 +440,8 @@ AdjacentList::AdjacentList(unsigned width, unsigned height) :width_(width), heig
 	}
 	// заполняем таблицу смежности
 	for (unsigned i = 0; i < max; ++i) {
-		v_adjacent_list[i].SetX(coordY);
-		v_adjacent_list[i].SetY(coordX);
+		v_adjacent_list[i].SetX(coordX);
+		v_adjacent_list[i].SetY(coordY);
 		// просматриваю таблицу вправо вниз добавляю 
 		// к текущей точке следущую смежную и к следующей текущую
 		// проверка правой границы
@@ -460,7 +470,7 @@ MapPoint& AdjacentList::operator[](std::size_t index)
 
 unsigned AdjacentList::Size()
 {
-	return v_adjacent_list.size();
+	return static_cast<unsigned>(v_adjacent_list.size());
 }
 
 std::vector<MapPoint>::iterator AdjacentList::begin()

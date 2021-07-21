@@ -17,7 +17,7 @@ protected:
 	unsigned		progress_;			// количество работы ученых над текущим уровнем
 	unsigned		progress_limit_;	// макс прогресс для этого уровняя (если больше то повыш ур.)
 	float			scienist_force_;	// сколько прогресса добавляет один ученый
-	unsigned		count_scienist_; 
+	int		count_scienist_; 
 	unsigned		scienist_lvl_;
 public:
 	// TODO: проверить что прирост идет у предметной области науки а не у всей
@@ -26,7 +26,7 @@ public:
 	TheScience() :progress_(0),progress_limit_(100), scienist_force_(1.0), count_scienist_(0),scienist_lvl_(0), science_lvl_(0),  name_("science") {};
 	TheScience(std::string);
 	TheScience& operator()(const TheScience& other);
-	unsigned GetCountSpecialists();
+	int GetCountSpecialists();
 	void ChangeCountSpecialists(int);
 	std::pair<unsigned, unsigned> GetProgress();
 	void NextTurn(); // return scienist force_
@@ -51,7 +51,7 @@ class SubjectScience: public TheScience{
 class KingdoomScience{
 	TheScience science_;
 	SubjectScience densety_people_, increase_people_, harvesting_, selling_res_, war_craft_;
-	unsigned free_scienists_;
+	int free_scienists_;
 	unsigned my_id_;
 	public:
 		KingdoomScience(unsigned my_id):science_(TheScience()),densety_people_(SubjectScience(&science_, "densety people")),\

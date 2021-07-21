@@ -43,16 +43,32 @@ TEST(KingdomMapTesting, MyArea) {
 	EXPECT_EQ(10, kingMap.MyArea());
 }
 TEST(PapTestCreateMap, CreateMap3x3x1) {
-	MapGameObj game_map(3, 3, 1); // 3 x 3  1 kingdoom
+	MapGameObj game_map(3, 3); // 3 x 3  1 kingdoom
+	game_map.AddKingdom(0);
 	EXPECT_EQ(1, game_map.list_kingdoms_.size());
 }
 
 TEST(PapTestCreateMap, CreateMap9x9x2) {
-	MapGameObj game_map(9, 9, 2); // 9 x 9  2 kingdoom
+	MapGameObj game_map(9, 9); // 9 x 9  2 kingdoom
+	game_map.AddKingdom(0);
+	game_map.AddKingdom(1);
 	EXPECT_EQ(2, game_map.list_kingdoms_.size());
 }
 
-TEST(PapTestCreateMap, CreateMap3x3x4_) {
-	MapGameObj game_map(3, 3, 10);
-	EXPECT_EQ(0, game_map.list_kingdoms_.size());
+TEST(PapTestCreateMap, CreateMap3x3x10_) {
+	MapGameObj game_map(3, 3);
+	for (int i = 0; i < 10; ++i) {
+		game_map.AddKingdom(i);
+	}
+	EXPECT_EQ(3*3, game_map.list_kingdoms_.size());
+}
+
+TEST(MapTestCreateMap, Compare_Kingdom_StartPos_With_Its_MapPoints) {
+	MapGameObj game_map(3, 3);
+	for (int i = 0; i < 9; ++i) {
+		game_map.AddKingdom(i);
+	}
+	for (int i = 0; i < 9; ++i) {
+		EXPECT_EQ(game_map.adjacent_list_[game_map.list_kingdoms_[i].list_v[0]].N_owner, game_map.list_kingdoms_[i].GetMyId());  // ¹ owner of start point == id owner
+	}
 }

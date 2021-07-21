@@ -27,10 +27,10 @@ class EconomicsGameObj;
 //доступный максимум
 class Demography {
 public:
-	uint64_t all_people_; // общее количество людей TODO: расчитыватся ??
-	int32_t increase_people_;  
-	uint64_t maximum_people_; 
-	uint64_t fermers_people_;// общее количество людей занятых в экономике
+	unsigned long long all_people_; // общее количество людей TODO: расчитыватся ??
+	long long increase_people_;  
+	unsigned long long maximum_people_; 
+	unsigned long long fermers_people_;// общее количество людей занятых в экономике
 	Demography();
 	void NextTurn(unsigned area, unsigned increasing_lvl, unsigned densety_lvl);
 private:
