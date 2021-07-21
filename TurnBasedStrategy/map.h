@@ -19,12 +19,14 @@
 
 using namespace std;
 
-struct MapPoint{
+class MapPoint{
 	unsigned x_ ,y_; //   TODO: не инициализированны
+public:
 	vector<uint32_t> adjacent_points; // смежные точки 
 	vector<uint32_t> list_neighbor; // смежные точки принадлежащие другим игровым объектам                        NULL 
 	bool border_map;
 	int N_owner;
+
 	MapPoint();
 	pair<uint32_t,uint32_t> GetCoord();
 	void SetX(uint32_t X);
@@ -54,7 +56,7 @@ class KingdomMap{ //  клас предсавляющий изображение
 		vector<unsigned> list_v; // список вершин
 		vector<unsigned> borders; // список границ 
 		// создание экземпляра из первой точки
-		KingdomMap(uint32_t num, uint32_t my_id);
+		KingdomMap(unsigned num, unsigned my_id);
 		unsigned GetMyId();
 		unsigned MyArea(); // TODO:this
 };

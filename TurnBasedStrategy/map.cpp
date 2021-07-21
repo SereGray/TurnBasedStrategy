@@ -321,7 +321,7 @@ bool MapGameObj::TerrainsDisbalanced(uint32_t offset){ // offset - допуск 
 }
 		
 KingdomMap MapGameObj::GetMinTerrain(){
-	uint32_t min = 0 - 1;
+	unsigned min = UINT_MAX;
 	KingdomMap res = list_kingdoms_[0];
 	for(auto terr : list_kingdoms_){
 		if(terr.list_v.size() < min) {
@@ -422,14 +422,14 @@ int main(){
 //	m.PrintTabSmej();
 }*/
 
-AdjacentList::AdjacentList(unsigned width, unsigned height) :width_(width), height_(height), max(width* height)
+AdjacentList::AdjacentList(unsigned width, unsigned height) :width_(width), height_(height), max((unsigned long long)width * height)
 {
 	unsigned coordX = 0, coordY = 0;
 	for (uint32_t i = 0; i < max; ++i) {
 		v_adjacent_list.push_back(MapPoint());
 	}
 	// заполняем таблицу смежности
-	for (uint32_t i = 0; i < max; ++i) {
+	for (unsigned i = 0; i < max; ++i) {
 		v_adjacent_list[i].SetX(coordY);
 		v_adjacent_list[i].SetY(coordX);
 		// просматриваю таблицу вправо вниз добавляю 
@@ -437,12 +437,12 @@ AdjacentList::AdjacentList(unsigned width, unsigned height) :width_(width), heig
 		// проверка правой границы
 		if (coordX < width_ - 1) {
 			v_adjacent_list[i].adjacent_points.push_back(i + 1);
-			v_adjacent_list[i + 1].adjacent_points.push_back(i);
+			v_adjacent_list[(unsigned long long)i + 1].adjacent_points.push_back(i);
 		}
 		// нижней границы
 		if (coordY < height_ - 1) {
 			v_adjacent_list[i].adjacent_points.push_back(i + width_);
-			v_adjacent_list[i + width_].adjacent_points.push_back(i);
+			v_adjacent_list[(unsigned long long)i + width_].adjacent_points.push_back(i);
 		}
 		// опредление координаты на карте
 		++coordX;
