@@ -2,6 +2,12 @@
 #include"map.h"
 
 
+MapPoint::MapPoint() :x_(0), y_(0)
+{
+	border_map = false;
+	N_owner = -1; // -1  point is free		
+}
+
 // получение координат вершины по номеру
 pair<uint32_t,uint32_t> MapPoint::GetCoord(){
 	return std::make_pair(x_,y_);
@@ -30,9 +36,7 @@ unsigned KingdomMap::MyArea()
 	return list_v.size();
 }
 
-MapGameObj::MapGameObj(uint32_t width, uint32_t height, uint32_t kingdoms) : width_(width), height_(height) {
-	// создаем таблицу списков смежности
-	GenerateTab();
+MapGameObj::MapGameObj(uint32_t width, uint32_t height, uint32_t kingdoms):adjacent_list_(width,height), width_(width), height_(height) {
 	// добавляю начальные точки
 	AddStartPoitsToMap(kingdoms);
 	// заполняем территорию карты
@@ -55,38 +59,6 @@ pair<uint32_t, uint32_t> MapGameObj::GetCoord(uint32_t Num){
 	return make_pair(x ,y);
 }
 
-void MapGameObj::GenerateTab(){
-	unsigned long long max=height_*width_; // maby uint64_t
-	unsigned width=0,heigth=0;
-	MapPoint pNull;
-	// заполняем таблицу нулевыми точками
-	for(uint32_t i=0;i<max;++i){
-		adjacent_list_.push_back(pNull);
-	}
-	// заполняем таблицу смежности
-for(uint32_t i=0;i<max;++i){
-	adjacent_list_[i].SetX(heigth);
-	adjacent_list_[i].SetY(width);	
-	// просматриваю таблицу вправо вниз добавляю 
-	// к текущей точке следущую смежную и к следующей текущую
-	// проверка правой границы
-	if(width<width_-1){
-		adjacent_list_[i].adjacent_points.push_back(i+1);
-		adjacent_list_[i+1].adjacent_points.push_back(i); 
-	}
-	// нижней границы
-	if(heigth<height_-1){
-		adjacent_list_[i].adjacent_points.push_back(i+width_);
-		adjacent_list_[i+width_].adjacent_points.push_back(i);
-	}
-	// опредление координаты на карте
-	++width;
-	if(width==width_){
-	width=0;
-	++heigth;
-	}
-	}
-}
 
 // // генерация и добавление начальных точек к карте
 void MapGameObj::AddStartPoitsToMap( uint32_t po){ // ро - количество стартовых точек
@@ -176,7 +148,7 @@ bool MapGameObj::FreeSpace(){
 
 void MapGameObj::DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path){
 	//считается что все вершины доступны иначе добавить вес ребра = бесконечности или др. промеж. варианты
-uint32_t n=adjacent_list_.size();
+uint32_t n=adjacent_list_.Size();
 vector<uint32_t> dist(n, UINT32_MAX/2), parent(n);
 dist[numBorderV] = 0; // // стартовая вершина
 vector<bool> used(n);
@@ -231,7 +203,7 @@ void MapGameObj::CreateDxDTable( vector<vector<uint32_t>> & inDxD){
 void MapGameObj::AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 	inMatrix.clear();
 	const uint32_t cost = 1; // default cost to move between two adjacent vertex
-	uint32_t n = adjacent_list_.size();
+	uint32_t n = adjacent_list_.Size();
 	vector<uint32_t> v;
 	for (uint32_t j = 0; j < n; ++j) {
 		v.push_back(UINT32_MAX/2);
@@ -369,10 +341,15 @@ void MapGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 {
 }
 
-uint32_t MapGameObj::AreaKingdom(uint32_t by_id)
+KingdomMap* MapGameObj::GetKingdomMap(unsigned by_id)
 {
-	auto it = std::find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [by_id](KingdomMap& kingd) {if (kingd.my_id_ == by_id)return true; return false; });
-	return it->list_v.size();
+	return GetObjFromVectorUt(by_id, list_kingdoms_);
+}
+
+uint32_t MapGameObj::AreaKingdom(unsigned by_id)
+{
+	KingdomMap* it = GetObjFromVectorUt(by_id, list_kingdoms_);
+	return it->MyArea();
 }
 
 std::string MapGameObj::ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders)
@@ -444,3 +421,74 @@ int main(){
 	m.toFile(10);
 //	m.PrintTabSmej();
 }*/
+
+AdjacentList::AdjacentList(unsigned width, unsigned height) :width_(width), height_(height), max(width* height)
+{
+	unsigned coordX = 0, coordY = 0;
+	for (uint32_t i = 0; i < max; ++i) {
+		v_adjacent_list.push_back(MapPoint());
+	}
+	// заполняем таблицу смежности
+	for (uint32_t i = 0; i < max; ++i) {
+		v_adjacent_list[i].SetX(coordY);
+		v_adjacent_list[i].SetY(coordX);
+		// просматриваю таблицу вправо вниз добавляю 
+		// к текущей точке следущую смежную и к следующей текущую
+		// проверка правой границы
+		if (coordX < width_ - 1) {
+			v_adjacent_list[i].adjacent_points.push_back(i + 1);
+			v_adjacent_list[i + 1].adjacent_points.push_back(i);
+		}
+		// нижней границы
+		if (coordY < height_ - 1) {
+			v_adjacent_list[i].adjacent_points.push_back(i + width_);
+			v_adjacent_list[i + width_].adjacent_points.push_back(i);
+		}
+		// опредление координаты на карте
+		++coordX;
+		if (coordX == width_) {
+			coordX = 0;
+			++coordY;
+		}
+	}
+}
+
+MapPoint& AdjacentList::operator[](std::size_t index)
+{
+	return v_adjacent_list[index];
+}
+
+unsigned AdjacentList::Size()
+{
+	return v_adjacent_list.size();
+}
+
+std::vector<MapPoint>::iterator AdjacentList::begin()
+{
+	return v_adjacent_list.begin();
+}
+
+std::vector<MapPoint>::const_iterator AdjacentList::begin() const
+{
+	return v_adjacent_list.begin();
+}
+
+std::vector<MapPoint>::const_iterator AdjacentList::cbegin() const
+{
+	return begin();
+}
+
+std::vector<MapPoint>::iterator AdjacentList::end()
+{
+	return v_adjacent_list.end();
+}
+
+std::vector<MapPoint>::const_iterator AdjacentList::end() const
+{
+	return v_adjacent_list.end();
+}
+
+std::vector<MapPoint>::const_iterator AdjacentList::cend() const
+{
+	return end();
+}

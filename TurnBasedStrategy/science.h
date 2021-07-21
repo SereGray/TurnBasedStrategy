@@ -62,7 +62,6 @@ class KingdoomScience{
 		//std::vector<std::unique_ptr<TheScience>> science_list_vector; // список наук
 		//SubjectScience densety_people_(&science, "densety people"), increase_people(&science, "increase people"), harvesting(&science, "harvesting"), selling_res(&science, "selling"), war_craft(&science, "war craft");
 		
-
 		unsigned GetScienceLvl();
 		unsigned GetHarvestingLvl();
 		unsigned GetSellingResLvl();
