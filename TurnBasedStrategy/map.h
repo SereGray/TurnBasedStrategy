@@ -51,14 +51,15 @@ public:
 };
 
 class KingdomMap{ //  клас предсавляющий изображение на карте территорию королевства и методы работы:
+	unsigned my_id_; // TODO: SET ID
 	public:
-		unsigned my_id_; // TODO: SET ID
 		vector<unsigned> list_v; // список вершин
 		vector<unsigned> borders; // список границ 
 		// создание экземпляра из первой точки
 		KingdomMap(unsigned num, unsigned my_id);
 		unsigned GetMyId();
 		unsigned MyArea(); // TODO:this
+		void RefreshBorders( AdjacentList &  adjacent_list);
 };
 
 class MapGameObj: public EngineGameObjInterface{
@@ -93,7 +94,7 @@ class MapGameObj: public EngineGameObjInterface{
 		std::string GetSummariesString(); // сводки за предыдущий ход // TODO:this
 		unsigned GetCountSpecialists(); // must return 0
 
-		KingdomMap GetMinTerrain();
+		KingdomMap* GetMinTerrain();
 		bool TerrainsDisbalanced(uint32_t offset);
 		void BalanceArea(); 
 		vector<uint32_t> FloydWarhsallPath(uint32_t start , uint32_t end, bool restart ); 
@@ -103,7 +104,6 @@ class MapGameObj: public EngineGameObjInterface{
 		void CreateDxDTable( vector<vector<uint32_t>> & inDxD);
 		void DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path);
 		bool FreeSpace();
-		void RefreshBorders(KingdomMap & terr);
 		void AddStartPoitsToMap( uint32_t po);
 		pair<uint32_t, uint32_t> GetCoord(uint32_t Num);
 		unsigned GetNum(unsigned x, unsigned y);

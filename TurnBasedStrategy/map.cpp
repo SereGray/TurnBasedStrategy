@@ -27,6 +27,7 @@ KingdomMap::KingdomMap(unsigned start_PointNum, unsigned my_id) :my_id_(my_id) {
 	borders.push_back(start_PointNum);
 }
 
+
 unsigned KingdomMap::GetMyId(){
 	return my_id_;
 }
@@ -34,6 +35,24 @@ unsigned KingdomMap::GetMyId(){
 unsigned KingdomMap::MyArea()
 {
 	return static_cast<unsigned>(list_v.size());
+}
+
+// обновление границ (решение влоб)
+void KingdomMap::RefreshBorders(AdjacentList & adjacent_list) {
+	borders.clear();
+	for (auto numV : list_v) {// обходим все вершины королевства по номерам и пров
+		//  условию границы  (  соседняя 
+		//  точка мне не принадлежит )
+
+	//  получаю вершину смотрю список смежных  и владельца
+		// цикл проверяет соседние точки если соседняя точка не моя то значит проверяемая точка - гранинкая
+		for (auto smej_V : adjacent_list[numV].adjacent_points) {
+			if (adjacent_list[smej_V].N_owner != GetMyId()) {
+				borders.push_back(numV);
+				break; //  эта вершина граничная  выходим
+			}
+		}
+	}
 }
 
 MapGameObj::MapGameObj(unsigned width, unsigned height):adjacent_list_(width,height), width_(width), height_(height) {
@@ -72,23 +91,6 @@ void MapGameObj::AddStartPoitsToMap( uint32_t po){ // ро - количеств�
 	}
 }
 
-// обновление границ (решение влоб)
-void MapGameObj::RefreshBorders(KingdomMap & terr){
-	terr.borders.clear();
-	for(auto numV: terr.list_v){// обходим все вершины королевства по номерам и пров
-		//  условию границы  (список точек принадлежащ соседям не пуст или соседняя 
-		//  точка никому не принадлежит 
-
-	//  получаю вершину смотрю список смежных  и владельца
-		// цикл проверяет соседние точки если соседняя точка не моя то значит проверяемая точка - гранинкая
-		for (auto smej_V : adjacent_list_[numV].adjacent_points) {
-			if (adjacent_list_[smej_V].N_owner != terr.GetMyId()) {
-				terr.borders.push_back(numV);
-				break; //  эта вершина граничная  выходим
-			}
-		}
-	}
-}
 
 // вывод на экран карты
 void MapGameObj::MapToScreen(){
@@ -298,7 +300,7 @@ void MapGameObj::BalanceArea() {
 			}
 			prevNumPoint = NumPoint;
 		}
-		for(auto & kingd : list_kingdoms_) RefreshBorders(kingd);
+		for(auto & kingd : list_kingdoms_)kingd.RefreshBorders(adjacent_list_);
 	}
 }
 
@@ -315,13 +317,13 @@ bool MapGameObj::TerrainsDisbalanced(uint32_t offset){ // offset - допуск 
 	return false;
 }
 		
-KingdomMap MapGameObj::GetMinTerrain(){
+KingdomMap* MapGameObj::GetMinTerrain(){
 	unsigned min = UINT_MAX;
-	KingdomMap res = list_kingdoms_[0];
-	for(auto terr : list_kingdoms_){
+	KingdomMap* res = &list_kingdoms_[0];
+	for(auto &terr : list_kingdoms_){
 		if(terr.list_v.size() < min) {
 		       	min = static_cast<unsigned>(terr.list_v.size());
-			res = terr;
+			res = &terr;
 		}
 	}
 	return res;
@@ -407,7 +409,7 @@ void MapGameObj::FillMap(){
 			}
 			++iterOnBorders[kingd.GetMyId() ]; 	 // перемещаем итератор
 		}	
-		for(auto & kingd : list_kingdoms_) RefreshBorders(kingd);
+		for(auto & kingd : list_kingdoms_) kingd.RefreshBorders(adjacent_list_);
 	}	
 	BalanceArea();
 }

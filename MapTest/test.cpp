@@ -42,20 +42,76 @@ TEST(KingdomMapTesting, MyArea) {
 	}
 	EXPECT_EQ(10, kingMap.MyArea());
 }
-TEST(PapTestCreateMap, CreateMap3x3x1) {
+
+TEST(KingdomMapTesting, RefreshBorders_1point) {
+	AdjacentList adj(3, 3);
+	adj[0].N_owner = 0;
+	KingdomMap kingd(0, 0);
+	kingd.RefreshBorders(adj);
+	EXPECT_EQ(1, kingd.borders.size());
+	EXPECT_EQ(0, kingd.borders[0]);
+}
+
+TEST(KingdomMapTesting, RefreshBorders_2points_in_borders) {
+	AdjacentList adj(3, 3);
+	adj[0].N_owner = 0;
+	adj[1].N_owner = 0;
+	adj[3].N_owner = 0;
+	KingdomMap kingd(0, 0);
+	kingd.list_v.push_back(1);
+	kingd.list_v.push_back(3);
+	kingd.RefreshBorders(adj);
+	EXPECT_EQ(2, kingd.borders.size());
+	EXPECT_EQ(1, kingd.borders[0]);
+	EXPECT_EQ(3, kingd.borders[1]);
+}
+
+TEST(KingdomMapTesting, RefreshBorders_3points_in_borders) {
+	AdjacentList adj(3, 3);
+	adj[0].N_owner = 0;
+	adj[3].N_owner = 0;
+	adj[6].N_owner = 0;
+	KingdomMap kingd(0, 0);
+	kingd.list_v.push_back(3);
+	kingd.list_v.push_back(6);
+	kingd.RefreshBorders(adj);
+	EXPECT_EQ(3, kingd.borders.size());
+	EXPECT_EQ(0, kingd.borders[0]);
+	EXPECT_EQ(3, kingd.borders[1]);
+	EXPECT_EQ(6, kingd.borders[2]);
+}
+
+TEST(KingdomMapTesting, RefreshBorders_4points_in_borders) {
+	AdjacentList adj(9, 9);
+	adj[50].N_owner = 0;
+	adj[51].N_owner = 0;
+	adj[49].N_owner = 0;
+	adj[59].N_owner = 0;
+	KingdomMap kingd(50, 0);
+	kingd.list_v.push_back(51);
+	kingd.list_v.push_back(49);
+	kingd.list_v.push_back(59);
+	kingd.RefreshBorders(adj);
+	EXPECT_EQ(4, kingd.borders.size());
+	EXPECT_EQ(50, kingd.borders[0]);
+	EXPECT_EQ(51, kingd.borders[1]);
+	EXPECT_EQ(49, kingd.borders[2]);
+	EXPECT_EQ(59, kingd.borders[3]);
+}
+TEST(MapTestCreateMap, CreateMap3x3x1) {
 	MapGameObj game_map(3, 3); // 3 x 3  1 kingdoom
 	game_map.AddKingdom(0);
 	EXPECT_EQ(1, game_map.list_kingdoms_.size());
 }
 
-TEST(PapTestCreateMap, CreateMap9x9x2) {
+TEST(MapTestCreateMap, CreateMap9x9x2) {
 	MapGameObj game_map(9, 9); // 9 x 9  2 kingdoom
 	game_map.AddKingdom(0);
 	game_map.AddKingdom(1);
 	EXPECT_EQ(2, game_map.list_kingdoms_.size());
 }
 
-TEST(PapTestCreateMap, CreateMap3x3x10_) {
+TEST(MapTestCreateMap, CreateMap3x3x10_) {
 	MapGameObj game_map(3, 3);
 	for (int i = 0; i < 10; ++i) {
 		game_map.AddKingdom(i);
