@@ -5,12 +5,6 @@
 #ifndef MAP
 #define MAP
 
-//#define CIMG
-
-#ifndef CIMG
-//#include "CImg.h" deleted
-#endif // CIMG
-
 #include <iostream>
 #include <vector>
 #include <algorithm>

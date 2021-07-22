@@ -74,37 +74,6 @@ pair<uint32_t, uint32_t> MapGameObj::GetCoord(uint32_t Num){
 }
 
 
-
-
-#ifdef CIMG
-// функц вывода карты в графический файл с помощью CImg.h
-void MapGameObj::ToFile(uint8_t point_size=10) {
-	if(point_size < 10) point_size = 10;
-	using namespace cimg_library;
-	// генерация цветов областей
-	vector<vector<unsigned char>> colors;
-	for(uint32_t i=0; i <= list_kingdoms_.size(); ++i){ //TODO: check list size and N_owner 
-		unsigned char r,g,b;
-		r = rand() % UINT8_MAX;
-		g = rand() % UINT8_MAX;
-		b = rand() % UINT8_MAX;
-		vector<unsigned char> temp = { r, g, b};
-		colors.push_back(temp);
-	}
-	CImg<uint8_t> img(width_ * point_size, height_ * point_size, 1, 3); 
-	// двигаюсь по списку вершин и окрашиваю каждую точку в свой цвет области
-	uint32_t counter = 0;
-	for(MapPoint kingdoms: adjacent_list_){
-		uint32_t country = kingdoms.N_owner;
-		const unsigned char color[]={ colors[country][0],colors[country][1],colors[country][2]};
-		pair<uint32_t,uint32_t> coord = GetCoord(counter);
-		img.draw_rectangle((coord.first * point_size),(coord.second * point_size),( coord.first * point_size + point_size),( coord.second * point_size + point_size), color);
-		++counter;
-	}
-	img.save_bmp("map.bmp");
-}
-#endif //CIMG
-
 bool MapGameObj::FreeSpace(){
 	static uint32_t maxIteration=100;
 	if(--maxIteration==0)return false;
