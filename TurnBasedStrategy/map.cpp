@@ -74,22 +74,6 @@ pair<uint32_t, uint32_t> MapGameObj::GetCoord(uint32_t Num){
 }
 
 
-// // генерация и добавление начальных точек к карте
-void MapGameObj::AddStartPoitsToMap( uint32_t po){ // ро - количество стартовых точек
-	if(po>height_*width_) return;
-	// создаем вектор ссылок на незанятые точки 
-	vector<MapPoint*> free_points;
-	for (MapPoint mp : adjacent_list_) {
-		if (mp.N_owner == -1) free_points.push_back(&mp);
-	}
-	while(po>0 && free_points.size()>0){
-		--po;
-		unsigned number = rand() % free_points.size();
-		adjacent_list_[GetNum(free_points[number]->GetCoord())].N_owner = po;
-		KingdomMap newKingdoom(number,po);
-		list_kingdoms_.push_back(newKingdoom);
-	}
-}
 
 
 // вывод на экран карты
@@ -143,11 +127,11 @@ bool MapGameObj::FreeSpace(){
 	return false;
 }
 
-void MapGameObj::DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path){
+void MapGameObj::DjekstraPath(uint32_t start_vertex,uint32_t end_vertex, vector<uint32_t> &path){
 	//считается что все вершины доступны иначе добавить вес ребра = бесконечности или др. промеж. варианты
 uint32_t n=adjacent_list_.Size();
 vector<uint32_t> dist(n, UINT32_MAX/2), parent(n);
-dist[numBorderV] = 0; // // стартовая вершина
+dist[start_vertex] = 0; // start vertex
 vector<bool> used(n);
 for (uint32_t i = 0; i < n; ++i) {
 	int32_t vertex = -1;
@@ -159,7 +143,7 @@ for (uint32_t i = 0; i < n; ++i) {
 		used[vertex] = true;
 		for (size_t j = 0; j < adjacent_list_[vertex].adjacent_points.size(); ++j) {
 			uint32_t to = adjacent_list_[vertex].adjacent_points[j];
-			const uint32_t len =1; // вес ребра
+			const uint32_t len =1; // weigth edge
 			if (dist[vertex] + len < dist[to]) {
 				dist[to] = dist[vertex] + len;
 				parent[to] = vertex;
@@ -168,15 +152,15 @@ for (uint32_t i = 0; i < n; ++i) {
 	}
 	//recover path to target from parent vector
 	vector<uint32_t> tempPath;
-	uint32_t currV=numTargetV;
-	//пока не достигнем стартовой вершины 
-	while(parent[currV]!=numBorderV){
-		//восстанавливаем предка
+	uint32_t currV=end_vertex;
+	// until we reach starting vertex
+	while(parent[currV]!=start_vertex){
+		// recover parent
 		tempPath.push_back(currV);
 		currV = parent[currV];
 	}
-	// add start vertex
-	tempPath.push_back(numBorderV);
+	// add starting vertex
+	tempPath.push_back(start_vertex);
 	for(uint32_t i=0;i<tempPath.size();++i){
 		uint32_t temp= tempPath.back();
 		path.push_back(temp);
@@ -196,6 +180,7 @@ void MapGameObj::CreateDxDTable( vector<vector<uint32_t>> & inDxD){
 	++i;	
 	}
 }
+
 
 void MapGameObj::AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 	inMatrix.clear();
@@ -219,13 +204,13 @@ void MapGameObj::AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 
 }
 
-void MapGameObj::RecoveryPath(uint32_t a, uint32_t b, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path) {
-	if (parent[a][b] == a) {   
-		path.push_back(a);
+void MapGameObj::RecoveryPath(uint32_t start_vertex, uint32_t end_vertex, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path) {
+	if (parent[start_vertex][end_vertex] == start_vertex) {   
+		path.push_back(start_vertex);
 	}
 	else {
-		RecoveryPath(a, parent[a][b], parent, path);
-		RecoveryPath(parent[a][b], b, parent, path);
+		RecoveryPath(start_vertex, parent[start_vertex][end_vertex], parent, path);
+		RecoveryPath(parent[start_vertex][end_vertex], end_vertex, parent, path);
 	}
 }
 

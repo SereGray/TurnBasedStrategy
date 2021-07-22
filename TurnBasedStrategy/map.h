@@ -51,7 +51,7 @@ public:
 };
 
 class KingdomMap{ //  клас предсавляющий изображение на карте территорию королевства и методы работы:
-	unsigned my_id_; // TODO: SET ID
+	unsigned my_id_;
 	public:
 		vector<unsigned> list_v; // список вершин
 		vector<unsigned> borders; // список границ 
@@ -59,7 +59,7 @@ class KingdomMap{ //  клас предсавляющий изображение
 		KingdomMap(unsigned num, unsigned my_id);
 		unsigned GetMyId();
 		unsigned MyArea(); // TODO:this
-		void RefreshBorders( AdjacentList &  adjacent_list);
+		void RefreshBorders(AdjacentList &  adjacent_list);
 };
 
 class MapGameObj: public EngineGameObjInterface{
@@ -81,12 +81,8 @@ class MapGameObj: public EngineGameObjInterface{
 		vector<uint32_t> GetNeighborsList(uint32_t my_id); 		// получить писок соседей 
 		uint32_t GetColor(); //  получить цвет территории color is  +8empty bits +RGB 24b ( 8-8-8 bit)
 		void FillMap();
-		void PrintTabSmej();
-#ifdef CIMG
-		void ToFile(uint8_t);
-#endif // CIMG
-		void MapToScreen();
-	private:
+
+
 		void SaveState();
 		void LoadState();
 		void CreateState();
@@ -94,20 +90,37 @@ class MapGameObj: public EngineGameObjInterface{
 		std::string GetSummariesString(); // сводки за предыдущий ход // TODO:this
 		unsigned GetCountSpecialists(); // must return 0
 
-		KingdomMap* GetMinTerrain();
-		bool TerrainsDisbalanced(uint32_t offset);
-		void BalanceArea(); 
-		vector<uint32_t> FloydWarhsallPath(uint32_t start , uint32_t end, bool restart ); 
-		void FloydWarshall(vector<vector<uint32_t>> & parentsMatrix);
-		void RecoveryPath(uint32_t a, uint32_t b, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path);
-		void AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix);
-		void CreateDxDTable( vector<vector<uint32_t>> & inDxD);
-		void DjekstraPath(uint32_t numBorderV,uint32_t numTargetV, vector<uint32_t> &path);
-		bool FreeSpace();
-		void AddStartPoitsToMap( uint32_t po);
-		pair<uint32_t, uint32_t> GetCoord(uint32_t Num);
-		unsigned GetNum(unsigned x, unsigned y);
-		unsigned GetNum(std::pair<unsigned, unsigned> coord);
+private:
+	// return path from start vertex to end vertex
+	// if restart=true - reset parent matrix (need time)
+	vector<uint32_t> FloydWarhsallPath(uint32_t start, uint32_t end, bool restart); 
+
+	// return path from start vertex to end vertex  NOT USED NOW !!
+	void DjekstraPath(uint32_t start, uint32_t end, vector<uint32_t>& path);
+
+	// true if there is free space on the map
+	bool FreeSpace();
+
+	pair<uint32_t, uint32_t> GetCoord(uint32_t Num);
+	unsigned GetNum(unsigned x, unsigned y);
+	unsigned GetNum(std::pair<unsigned, unsigned> coord);
+
+
+	bool TerrainsDisbalanced(uint32_t offset);
+	void BalanceArea(); 
+	void FloydWarshall(vector<vector<uint32_t>> & parentsMatrix); 
+	void RecoveryPath(uint32_t start_vertex, uint32_t end_vertex, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path);
+	void AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix);
+
+	// NOT USED NOW !!
+	void CreateDxDTable( vector<vector<uint32_t>> & inDxD);
+	KingdomMap* GetMinTerrain();
+public:
+	void PrintTabSmej();
+#ifdef CIMG
+	void ToFile(uint8_t);
+#endif // CIMG
+	void MapToScreen();
 };
 
 #endif
