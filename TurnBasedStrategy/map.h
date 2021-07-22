@@ -68,10 +68,12 @@ class MapGameObj: public EngineGameObjInterface{
 		vector<KingdomMap> list_kingdoms_;
 	private:
 		virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
-		uint32_t width_,height_;
+		unsigned width_,height_;
+		unsigned seed_; // necessary to repeat the result of Map generation
 	public:
-		MapGameObj(unsigned width, unsigned height);
+		MapGameObj(unsigned width, unsigned height, unsigned seed);
 		void AddKingdom(unsigned by_id);
+		void GenerateMap();
 		KingdomMap* GetKingdomMap(unsigned by_id);
 		uint32_t AreaKingdom(unsigned by_id); //TODO: ?
 
@@ -80,8 +82,6 @@ class MapGameObj: public EngineGameObjInterface{
 		std::string ExchangeArea(int balance, unsigned first_kd_id, unsigned first_count_solders, unsigned second_kd_id, unsigned second_count_solders); //TODO:this
 		vector<uint32_t> GetNeighborsList(uint32_t my_id); 		// получить писок соседей 
 		uint32_t GetColor(); //  получить цвет территории color is  +8empty bits +RGB 24b ( 8-8-8 bit)
-		void FillMap();
-
 
 		void SaveState();
 		void LoadState();

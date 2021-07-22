@@ -55,8 +55,8 @@ void KingdomMap::RefreshBorders(AdjacentList & adjacent_list) {
 	}
 }
 
-MapGameObj::MapGameObj(unsigned width, unsigned height):adjacent_list_(width,height), width_(width), height_(height) {
-
+MapGameObj::MapGameObj(unsigned width, unsigned height, unsigned seed):adjacent_list_(width,height), width_(width), height_(height), seed_(seed) {
+	srand(seed_);
 }
 
 unsigned MapGameObj::GetNum(unsigned x, unsigned y){// получение номера вершины по координатам
@@ -332,7 +332,7 @@ std::string MapGameObj::GetSummariesString()
 	return std::string();
 }
 
-void MapGameObj::FillMap(){
+void MapGameObj::GenerateMap(){
 	if (list_kingdoms_.size() == 0) return;
 	vector<uint32_t> iterOnBorders;		// список текущего положения итератора перебора 
 					//по пограничным вершинам для всех королевств ( массив итераторов по одному на королевство)
