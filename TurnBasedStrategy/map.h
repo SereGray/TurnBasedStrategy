@@ -112,15 +112,6 @@ private:
 	void RecoveryPath(uint32_t start_vertex, uint32_t end_vertex, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path);
 	void AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix);
 
-	// NOT USED NOW !!
-	void CreateDxDTable( vector<vector<uint32_t>> & inDxD);
-	KingdomMap* GetMinTerrain();
-public:
-	void PrintTabSmej();
-#ifdef CIMG
-	void ToFile(uint8_t);
-#endif // CIMG
-	void MapToScreen();
 };
 
 #endif

@@ -76,19 +76,6 @@ pair<uint32_t, uint32_t> MapGameObj::GetCoord(uint32_t Num){
 
 
 
-// вывод на экран карты
-void MapGameObj::MapToScreen(){
-		// проходим по всем вершинам и форматируем в виде таблицы heigth x width_
-uint32_t k=0;
-	for(uint32_t j=0;j<height_;++j){
-		for(uint32_t i=0;i<width_;++i){
-			cout << adjacent_list_[k].N_owner<<" . ";
-			++k;
-		}
-		cout<<endl;
-	}
-}
-
 #ifdef CIMG
 // функц вывода карты в графический файл с помощью CImg.h
 void MapGameObj::ToFile(uint8_t point_size=10) {
@@ -167,18 +154,6 @@ for (uint32_t i = 0; i < n; ++i) {
 		tempPath.pop_back();
 	}
 
-}
-
-void MapGameObj::CreateDxDTable( vector<vector<uint32_t>> & inDxD){  
-	uint32_t i=0;
-	inDxD.clear(); // 
-	for(MapPoint p : adjacent_list_){
-		for( uint32_t j: p.adjacent_points){
-			inDxD[i][j] = 1;  // set 1 to contiguous(smej) vertex
-			inDxD[j][i] = 1;
-		}
-	++i;	
-	}
 }
 
 
@@ -302,17 +277,6 @@ bool MapGameObj::TerrainsDisbalanced(uint32_t offset){ // offset - допуск 
 	return false;
 }
 		
-KingdomMap* MapGameObj::GetMinTerrain(){
-	unsigned min = UINT_MAX;
-	KingdomMap* res = &list_kingdoms_[0];
-	for(auto &terr : list_kingdoms_){
-		if(terr.list_v.size() < min) {
-		       	min = static_cast<unsigned>(terr.list_v.size());
-			res = &terr;
-		}
-	}
-	return res;
-}
 
 unsigned MapGameObj::GetCountSpecialists()
 {
@@ -399,25 +363,6 @@ void MapGameObj::FillMap(){
 	BalanceArea();
 }
 
-void MapGameObj::PrintTabSmej(){
-	uint32_t i=0;
-	for(MapPoint p:adjacent_list_){
-		cout << i <<" num smej:"<< p.adjacent_points.size() << endl;
-		++i;
-		for(uint32_t v: p.adjacent_points){
-		cout << v <<" " ;
-		}
-	cout << endl;
-	}
-}
-
-/*
-int main(){
-	cout<< " test "<< endl;
-	map m(10,10,7);
-	m.toFile(10);
-//	m.PrintTabSmej();
-}*/
 
 AdjacentList::AdjacentList(unsigned width, unsigned height) :width_(width), height_(height), max((unsigned long long)width * height)
 {
