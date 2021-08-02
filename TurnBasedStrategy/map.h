@@ -13,13 +13,39 @@
 
 using namespace std;
 
+class AdjacentList;
+class KingdomMap;
+
+struct LineParameter {
+	// y = x * k + b
+	float k_;  // to RIGTH line increase, to LEFT decrease
+	float b_;	// to DOWN line increase, or to UP line decrease
+	LineParameter(float k, float b) :k_(k), b_(b) {};
+	unsigned GetCoordinateY(unsigned x);
+};
+
+struct FigureCenter {
+	float x_;
+	float y_;
+	FigureCenter(float x, float y) :x_(x), y_(y) {};
+};
+
+// finds the Line parameters k and b  (y=x*k + b)
+LineParameter  GetLineParameters(int& Point1_x, int& Point1_y, int& Point2_x, int& Point2_y);
+LineParameter  GetLineParameters(float& Point1_x, float& Point1_y, float& Point2_x, float& Point2_y);
+
+// finds the center of mass of a figure on the map
+FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd);
+
+// return path (vertex sequence) betsween, allow vertex not own start or target kingdom, except first and last vertex
+std::vector<unsigned> GetPathBetweenKingdomsByLine(LineParameter line,unsigned firts_id, unsigned second_id, AdjacentList& adj);
+
 class MapPoint{
 	unsigned x_ ,y_; //   TODO: не инициализированны
 public:
 	vector<uint32_t> adjacent_points; // смежные точки 
-	vector<uint32_t> list_neighbor; // смежные точки принадлежащие другим игровым объектам                        NULL 
 	bool border_map;
-	int N_owner;
+	int owner_id_;
 
 	MapPoint();
 	pair<uint32_t,uint32_t> GetCoord();
@@ -27,34 +53,61 @@ public:
 	void SetY(uint32_t Y);
 };
 
+
+
 class AdjacentList {
 	vector<MapPoint> v_adjacent_list;
-	unsigned width_, height_;
+	unsigned width_, height_; // 1000000000 max ?
 	unsigned long long max;
 
 public:
 	AdjacentList(unsigned width, unsigned height);
 	MapPoint& operator[](std::size_t index);
 	unsigned Size();
-	std::vector<MapPoint>::iterator begin();
-	std::vector<MapPoint>::const_iterator begin() const;
-	std::vector<MapPoint>::const_iterator cbegin() const;
-	std::vector<MapPoint>::iterator end();
-	std::vector<MapPoint>::const_iterator end() const;
-	std::vector<MapPoint>::const_iterator cend() const;
+	unsigned GetWidth();
+	unsigned GetHeight();
+	pair<uint32_t, uint32_t> GetCoord(uint32_t Num);
+	unsigned GetNum(unsigned x, unsigned y);
+	unsigned GetNum(std::pair<unsigned, unsigned> coord);
+
+	std::vector<MapPoint>::iterator begin() ;
+	std::vector<MapPoint>::const_iterator begin() const ;
+	std::vector<MapPoint>::const_iterator cbegin() const ;
+	std::vector<MapPoint>::iterator end() ;
+	std::vector<MapPoint>::const_iterator end() const ;
+	std::vector<MapPoint>::const_iterator cend() const ;
 };
+
+// структура для учета и поиска соседей
+struct KingdomMapNeighbor {
+	unsigned neighbor_id_, count_points_;
+	std::vector<unsigned> v_viewed_points_; // просмотренные точки
+	KingdomMapNeighbor(unsigned id, unsigned viewed_vertex) :neighbor_id_(id), count_points_(1), v_viewed_points_({ viewed_vertex }) {};
+	KingdomMapNeighbor() = delete;
+	bool VertexExist(unsigned vertex)
+	{
+		return v_viewed_points_.end() != find(v_viewed_points_.begin(), v_viewed_points_.end(), vertex);
+	}
+};
+
 
 class KingdomMap{ //  клас предсавляющий изображение на карте территорию королевства и методы работы:
 	unsigned my_id_;
 	public:
 		vector<unsigned> list_v; // список вершин
 		vector<unsigned> borders; // список границ 
+		vector<KingdomMapNeighbor> v_neighbors_; // список id сосдей и количества контактирующих вершин
 		// создание экземпляра из первой точки
 		KingdomMap(unsigned num, unsigned my_id);
-		unsigned GetMyId();
+		unsigned  GetMyId();
 		unsigned MyArea(); // TODO:this
 		void RefreshBorders(AdjacentList &  adjacent_list);
+	private:
+		void RefreshNeighbors(AdjacentList& adjacent_list);
+
 };
+
+
 
 class MapGameObj: public EngineGameObjInterface{
 	public:
@@ -95,13 +148,10 @@ private:
 	// true if there is free space on the map
 	bool FreeSpace();
 
-	pair<uint32_t, uint32_t> GetCoord(uint32_t Num);
-	unsigned GetNum(unsigned x, unsigned y);
-	unsigned GetNum(std::pair<unsigned, unsigned> coord);
-
-
 	bool TerrainsDisbalanced(uint32_t offset);
 	void BalanceArea(); 
+	void HeuristicBalanceArea();
+	void SpeedBalanceArea();
 	void FloydWarshall(vector<vector<uint32_t>> & parentsMatrix); 
 	void RecoveryPath(uint32_t start_vertex, uint32_t end_vertex, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path);
 	void AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix);

@@ -2,10 +2,8 @@
 #include"map.h"
 
 
-MapPoint::MapPoint() :x_(0), y_(0)
-{
-	border_map = false;
-	N_owner = -1; // -1  point is free		
+MapPoint::MapPoint() :x_(0), y_(0), border_map(false), owner_id_(-1)// -1  point is free	
+{ 	
 }
 
 // получение координат вершины по номеру
@@ -28,7 +26,7 @@ KingdomMap::KingdomMap(unsigned start_PointNum, unsigned my_id) :my_id_(my_id) {
 }
 
 
-unsigned KingdomMap::GetMyId(){
+unsigned  KingdomMap::GetMyId(){
 	return my_id_;
 }
 
@@ -47,9 +45,51 @@ void KingdomMap::RefreshBorders(AdjacentList & adjacent_list) {
 	//  получаю вершину смотрю список смежных  и владельца
 		// цикл проверяет соседние точки если соседняя точка не моя то значит проверяемая точка - гранинкая
 		for (auto smej_V : adjacent_list[numV].adjacent_points) {
-			if (adjacent_list[smej_V].N_owner != GetMyId()) {
+			if (adjacent_list[smej_V].owner_id_ != GetMyId()) {
 				borders.push_back(numV);
 				break; //  эта вершина граничная  выходим
+			}
+		}
+	}
+	RefreshNeighbors(adjacent_list);
+}
+
+void KingdomMap::RefreshNeighbors(AdjacentList& adjacent_list)
+{
+	// обнуляю счетчики вершин соседей
+	for (auto &id_count : v_neighbors_) { id_count.count_points_ = 0; }
+	// просматриваю пограничные вершины
+	for (auto border_point: borders)
+	{
+		// просматриваю все соседние вершины
+		for (auto point : adjacent_list[border_point].adjacent_points)
+		{
+			if (adjacent_list[point].owner_id_ == my_id_) continue;
+
+			auto it = find_if(v_neighbors_.begin(),\
+				v_neighbors_.end(), [&adjacent_list, &point](KingdomMapNeighbor& neighbor)->bool \
+			{
+				if (adjacent_list[point].owner_id_ == neighbor.neighbor_id_) // если сосед уже есть в списке
+				{
+					// проверяю есть ли вершина в списке рассмотренных 
+					if (!neighbor.VertexExist(point))
+					{
+						// если не рассматривал эту вершину увеличиваю счетчик вершин соседей
+						++neighbor.count_points_;
+						// и добавляю в список рассмотренных
+						neighbor.v_viewed_points_.push_back(point);
+					}
+					return true;
+				}
+				return false;
+			}
+			);
+			// сравниваю владельца вершины со списком соседей
+			if(it==v_neighbors_.end())
+			{
+				// если не найден то добваляю в список
+				KingdomMapNeighbor kmn(adjacent_list[point].owner_id_, point);
+				v_neighbors_.push_back(kmn);
 			}
 		}
 	}
@@ -59,26 +99,13 @@ MapGameObj::MapGameObj(unsigned width, unsigned height, unsigned seed):adjacent_
 	srand(seed_);
 }
 
-unsigned MapGameObj::GetNum(unsigned x, unsigned y){// получение номера вершины по координатам
-	return x+y*width_;
-}
-
-unsigned MapGameObj::GetNum(std::pair<unsigned, unsigned> coord) {// тоже но через пару
-	return coord.first + coord.second * width_;
-}
-
-pair<uint32_t, uint32_t> MapGameObj::GetCoord(uint32_t Num){
-	uint32_t x = Num - (Num / width_) * width_ ;
-	uint32_t y = Num / width_ ;
-	return make_pair(x ,y);
-}
 
 
 bool MapGameObj::FreeSpace(){
 	static uint32_t maxIteration=100;
 	if(--maxIteration==0)return false;
 	for(MapPoint p: adjacent_list_){
-		if(p.N_owner==-1) return true;
+		if(p.owner_id_==-1) return true;
 	}
 	return false;
 }
@@ -125,7 +152,6 @@ for (uint32_t i = 0; i < n; ++i) {
 
 }
 
-
 void MapGameObj::AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix) {
 	inMatrix.clear();
 	const uint32_t cost = 1; // default cost to move between two adjacent vertex
@@ -156,6 +182,49 @@ void MapGameObj::RecoveryPath(uint32_t start_vertex, uint32_t end_vertex, vector
 		RecoveryPath(start_vertex, parent[start_vertex][end_vertex], parent, path);
 		RecoveryPath(parent[start_vertex][end_vertex], end_vertex, parent, path);
 	}
+}
+
+void MapGameObj::SpeedBalanceArea()
+{
+	int delta = 0;
+	if (list_kingdoms_.size() == 0) return;
+	while(TerrainsDisbalanced(1)) {
+		// сортирую список королевств по возрастанию количества вершин
+		std::sort(list_kingdoms_.begin(), list_kingdoms_.end(), [](KingdomMap lkdm, KingdomMap rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
+		vector<KingdomMap>::iterator kingdMin = list_kingdoms_.begin();
+		auto kingdMax = list_kingdoms_.end() - 1; // самое большое королевство
+
+
+
+
+
+
+		// просматриваю пограничные клетки
+		for(auto border_point: kingdMin->borders)
+		{
+			// просматриваю все соседние клетки
+			for (auto point : adjacent_list_[border_point].adjacent_points)
+			{
+				// TODO: точка будет переходить туда - сюда ? 
+				// проще создать список соседей 1 раз и по нему опр у кого забрать
+				// 
+				// если у владельца сосоедней точки больше или равна территория чем у меня
+				KingdomMap* neighbor_kingd = GetKingdomMap(adjacent_list_[point].owner_id_);
+				if (neighbor_kingd->list_v.size() - kingdMin->list_v.size() > delta) {
+					// забираю эту точку
+					adjacent_list_[point].owner_id_ = kingdMin->GetMyId();
+					kingdMin->list_v.push_back(point);
+
+					// удалаю эту точку
+					vector<uint32_t>::iterator iterator_list_v = find_if(neighbor_kingd->list_v.begin(), neighbor_kingd->list_v.end(),\
+						[point](uint32_t& pnt) { return point == pnt; });
+					neighbor_kingd->list_v.erase(iterator_list_v);
+
+				}
+			}
+		}
+	}
+	for (auto& kingd : list_kingdoms_)kingd.RefreshBorders(adjacent_list_);
 }
 
 void MapGameObj::FloydWarshall(vector<vector<uint32_t>> & parentsMatrix) {
@@ -198,6 +267,8 @@ void MapGameObj::BalanceArea() {
 		// ищу путь наименьшей длины с прим. Флойд-Уоршелла
 		vector<uint32_t> path;   // после должен быть наикоротким
 		unsigned lengthMinPath = UINT32_MAX;
+		// first start FloydWarhsalPath with reset true to reset parentsMatrixs 
+		FloydWarhsallPath(kingdMin.borders[0], kingdMax.borders[0], true);
 		for (auto numBorderKingdMin : kingdMin.borders) {//any vertex from nim terrain
 			for (auto numBorderKingdMax : kingdMax.borders) {
 				vector<uint32_t> tempPath = FloydWarhsallPath(numBorderKingdMin, numBorderKingdMax);
@@ -214,18 +285,18 @@ void MapGameObj::BalanceArea() {
 		vector<KingdomMap>::iterator prevKingd = list_kingdoms_.end() - 1;
 		for(uint32_t NumPoint : path) {
 			// если текущий владелец отличается от владельца предыдущей точки меняю владельца точки
-			auto owner = adjacent_list_[NumPoint].N_owner;
-			vector<KingdomMap>::iterator currentKingd = find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [owner](KingdomMap& kingd) { return owner == kingd.GetMyId(); });																																						   //NumCurrentTerr = adjacent_list_[NumPoint].N_owner;
+			auto owner = adjacent_list_[NumPoint].owner_id_;
+			vector<KingdomMap>::iterator currentKingd = find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [owner](KingdomMap& kingd) { return owner == kingd.GetMyId(); });																																						   //NumCurrentTerr = adjacent_list_[NumPoint].owner_id_;
 			if (currentKingd->GetMyId() != prevKingd->GetMyId()){
 				// найти предыдущ terrain и убрать у него точку из списка   find_if
 				
 				// нахожу текущую точку(указатель на нее) у предыдущего королевства
 				
-				vector<uint32_t>::iterator prevPointIt = find_if(prevKingd->list_v.begin(), prevKingd->list_v.end(), [prevNumPoint](uint32_t& pnt) { return prevNumPoint == pnt; }); //and there
+				vector<uint32_t>::iterator prevPointIt = find_if(prevKingd->list_v.begin(), prevKingd->list_v.end(), [prevNumPoint](uint32_t& pnt) { return prevNumPoint == pnt; }); 
 				prevKingd->list_v.erase(prevPointIt); // удалил вершину из пред списка
 				currentKingd->list_v.push_back(prevNumPoint); // добавил вершину в текущ список 
 				prevKingd = currentKingd; 
-				adjacent_list_[prevNumPoint].N_owner = currentKingd->GetMyId(); // присвоил вершину окончательно в списке смежности
+				adjacent_list_[prevNumPoint].owner_id_ = currentKingd->GetMyId(); // присвоил вершину окончательно в списке смежности
 			}
 			prevNumPoint = NumPoint;
 		}
@@ -261,12 +332,12 @@ void MapGameObj::AddKingdom(unsigned by_id)
 {
 	vector<MapPoint*> free_points;
 	for (MapPoint &mp : adjacent_list_) {
-		if (mp.N_owner == -1) free_points.push_back(&mp);
+		if (mp.owner_id_ == -1) free_points.push_back(&mp);
 	}
 	if (free_points.empty()) return; // TODO: throw exception?
 	unsigned number = rand() % free_points.size();
-	unsigned kingdom_start_number = GetNum(free_points[number]->GetCoord());
-	adjacent_list_[kingdom_start_number].N_owner = by_id;
+	unsigned kingdom_start_number = adjacent_list_.GetNum(free_points[number]->GetCoord());
+	adjacent_list_[kingdom_start_number].owner_id_ = by_id;
 	list_kingdoms_.push_back(KingdomMap(kingdom_start_number, by_id));
 }
 
@@ -319,8 +390,8 @@ void MapGameObj::GenerateMap(){
 			//  далее прохожу по границе numV - номер заграничной вершины(точки)
 			// двигаюсь по списку смежности - по смежным вершинам вершины "tabSmej[kingd.borders[iterOnBorders[i]]]"
 			for(uint32_t numV: adjacent_list_[kingd.borders[iterOnBorders[kingd.GetMyId()]]].adjacent_points){
-				if(adjacent_list_[numV].N_owner==-1){
-					adjacent_list_[numV].N_owner=kingd.GetMyId();
+				if(adjacent_list_[numV].owner_id_==-1){
+					adjacent_list_[numV].owner_id_=kingd.GetMyId();
 					kingd.list_v.push_back(numV);
 					break; // quit if ok
 				}
@@ -374,6 +445,31 @@ unsigned AdjacentList::Size()
 	return static_cast<unsigned>(v_adjacent_list.size());
 }
 
+unsigned AdjacentList::GetWidth()
+{
+	return width_;
+}
+
+unsigned AdjacentList::GetHeight()
+{
+	return height_;
+}
+
+unsigned AdjacentList::GetNum(unsigned x, unsigned y) {// получение номера вершины по координатам
+	return x + y * width_;
+}
+
+unsigned AdjacentList::GetNum(std::pair<unsigned, unsigned> coord) {// тоже но через пару
+	return coord.first + coord.second * width_;
+}
+
+
+pair<uint32_t, uint32_t> AdjacentList::GetCoord(uint32_t Num) {
+	uint32_t x = Num - (Num / width_) * width_;
+	uint32_t y = Num / width_;
+	return make_pair(x, y);
+}
+
 std::vector<MapPoint>::iterator AdjacentList::begin()
 {
 	return v_adjacent_list.begin();
@@ -402,4 +498,82 @@ std::vector<MapPoint>::const_iterator AdjacentList::end() const
 std::vector<MapPoint>::const_iterator AdjacentList::cend() const
 {
 	return end();
+}
+
+LineParameter GetLineParameters(int& Point1_x, int& Point1_y, int& Point2_x, int& Point2_y)
+{
+	float k = (float)(Point1_y - Point2_y) / (Point1_x - Point2_x);
+	float b = Point1_y - Point1_x * k;
+	return LineParameter(k,b); // TODO: MOVE
+}
+
+LineParameter GetLineParameters(float& Point1_x, float& Point1_y, float& Point2_x, float& Point2_y)
+{
+	float k = (Point1_y - Point2_y) / (Point1_x - Point2_x);
+	float b = Point1_y - Point1_x * k;
+	return LineParameter(k, b); // TODO: MOVE
+}
+
+FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd)
+{
+	// Xc and Yc are the coordinates of the center of mass of the figure
+	// Xc=(x1*S1 + x2*S2 + ... +xn*Sn)/(S1+S2+...Sn) where x1 - is X coordinate 
+	// and S1 - square of figure (always S1=1, S2=1, ... Sn=1)
+	// 	  so Xc=(x1*1 + x2*2 + ... xn*1)/ n = sum of coord x / count vertex
+	// similarly, we find Yc coord
+	unsigned Sum_of_coord_x = 0, Sum_of_coord_y = 0;
+	for (auto vertex : kingd->list_v) {
+		Sum_of_coord_x += adjlist[vertex].GetCoord().first; // add x coord to summ
+		Sum_of_coord_y += adjlist[vertex].GetCoord().second; // add y coord to summ
+	}
+	float Xc = (float)Sum_of_coord_x / kingd->list_v.size();
+	float Yc = (float)Sum_of_coord_y / kingd->list_v.size();
+	return FigureCenter(Xc, Yc);
+}
+
+// начинаю движение по прямой слева на право , тогда как имеются конкретные начальные и конечный ИД
+std::vector<unsigned> GetPathBetweenKingdomsByLine(LineParameter line,unsigned first_id,unsigned second_id, AdjacentList& adj)
+{
+	vector<unsigned> path;
+	unsigned max_x = adj.GetWidth();
+	unsigned current_id = UINT_MAX, last_id = UINT_MAX, y=UINT_MAX;
+	// moving coordiantes x from 0 to max_x
+	for (unsigned x = 0; x < max_x; ++x){ // ищу начало пути если найду запускаю цикл записи пути и выхожу из всех циклов
+		last_id = current_id;
+		// если текущий ид не равен предыдущему, и предыдущий равен стартовому добавляю точки пока текущий не станет целевым
+		unsigned last_y = y;
+		y = line.GetCoordinateY(x);
+		unsigned current_vertex_number = adj.GetNum(x,y);
+		current_id = adj[current_vertex_number].owner_id_;
+		if (last_id != current_id && ((last_id == first_id && last_id != second_id) || ( last_id == second_id && last_id != first_id ))) {
+			// цикл записи пути 
+			unsigned target_id = UINT_MAX;
+			last_id == first_id ? target_id = second_id : target_id = first_id; // set target kingdom by ID
+			path.push_back(adj.GetNum(x-1,last_y)); // push kingdom last_id vertex number
+			if (y != last_y) { // detecting diagonal moving
+				path.push_back(adj.GetNum(x - 1, y)); // add additionals points in path
+				last_y = y;
+			}
+			path.push_back(current_vertex_number);
+			while (current_id != target_id)
+			{
+				++x;
+				y = line.GetCoordinateY(x);
+				if (y != last_y) { // detecting diagonal moving
+					path.push_back(adj.GetNum(x - 1, y)); // add additionals points in path
+				}
+				current_vertex_number = adj.GetNum(x, y);
+				current_id = adj[current_vertex_number].owner_id_;
+				path.push_back(current_vertex_number);
+				last_y = y;
+			}
+			break;
+		}
+	}
+	return path;
+}
+
+unsigned LineParameter::GetCoordinateY(unsigned x)
+{
+	return static_cast<unsigned>(round(x * k_ + b_));
 }
