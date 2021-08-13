@@ -7,6 +7,14 @@ TEST(GetLineParametersFunction, FixTest) {
 	EXPECT_FLOAT_EQ(-0.25, line1.b_);
 }
 
+TEST(LineParametersStruct, FixTest1) {
+	int Ax = 2, Ay = 0, Bx = 7, By = 8;
+	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	EXPECT_FLOAT_EQ(1.6, line1.k_);
+	EXPECT_FLOAT_EQ(-3.2, line1.b_);
+//	EXPECT_FLOAT_EQ(1.6, line1.k_);
+	EXPECT_FLOAT_EQ(1.6959968, line1.radius_);
+}
 TEST(LineParameterGetCoordianteY, test_2x2)
 {
 	int Ax = 0, Ay = 0, Bx = 1, By = 1;
@@ -111,6 +119,57 @@ TEST(GetFigureCenterFuncion, Four_points_center) {
 	EXPECT_FLOAT_EQ(0.5, GetFigureCenterOfMass(adj, &king).y_);
 }
 
+TEST(GetPathByLineFunction, BigDiagonalTest) {
+	AdjacentList adj(6, 6);
+	int x1 = 0, y1 = 0, x2 = 5, y2 = 5;
+	LineParameter line = GetLineParameters(x1,y1,x2,y2);
+	vector<unsigned> path01 = GetPathByLine(line, adj);
+	EXPECT_EQ(0, path01[0]);
+	EXPECT_EQ(6, path01[1]);
+	EXPECT_EQ(7, path01[2]);
+	EXPECT_EQ(13, path01[3]);
+	EXPECT_EQ(14, path01[4]);
+	EXPECT_EQ(20, path01[5]);
+	EXPECT_EQ(21, path01[6]);
+	EXPECT_EQ(27, path01[7]);
+	EXPECT_EQ(28, path01[8]);
+	EXPECT_EQ(34, path01[9]);
+	EXPECT_EQ(35, path01[10]);
+}
+
+TEST(GetPathByLineFunction, BigHorizontalLine) {
+	AdjacentList adj(10, 1);
+	int x1 = 0, y1 = 0, x2 = 10, y2 = 0;
+	LineParameter line = GetLineParameters(x1, y1, x2, y2);
+	vector<unsigned> path01 = GetPathByLine(line, adj);
+	EXPECT_EQ(0, path01[0]);
+	EXPECT_EQ(1, path01[1]);
+	EXPECT_EQ(2, path01[2]);
+	EXPECT_EQ(3, path01[3]);
+	EXPECT_EQ(4, path01[4]);
+	EXPECT_EQ(5, path01[5]);
+	EXPECT_EQ(6, path01[6]);
+	EXPECT_EQ(7, path01[7]);
+	EXPECT_EQ(8, path01[8]);
+	EXPECT_EQ(9, path01[9]);
+}
+
+TEST(GetPathByLineFunction, BigVerticalLine) {
+	AdjacentList adj(1, 10);
+	int x1 = 0, y1 = 0, x2 = 0, y2 = 10;
+	LineParameter line = GetLineParameters(x1, y1, x2, y2);
+	vector<unsigned> path01 = GetPathByLine(line, adj);
+	EXPECT_EQ(0, path01[0]);
+	EXPECT_EQ(1, path01[1]);
+	EXPECT_EQ(2, path01[2]);
+	EXPECT_EQ(3, path01[3]);
+	EXPECT_EQ(4, path01[4]);
+	EXPECT_EQ(5, path01[5]);
+	EXPECT_EQ(6, path01[6]);
+	EXPECT_EQ(7, path01[7]);
+	EXPECT_EQ(8, path01[8]);
+	EXPECT_EQ(9, path01[9]);
+}
 TEST(GetPathBetweenKingdoomsByLineFunction, Simple6x2Map) {
 	AdjacentList adj(6, 2);
 	adj[0].owner_id_ = 1;
@@ -129,7 +188,8 @@ TEST(GetPathBetweenKingdoomsByLineFunction, Simple6x2Map) {
 	FigureCenter king0ctr = GetFigureCenterOfMass(adj, &king0);
 	FigureCenter king1ctr = GetFigureCenterOfMass(adj, &king1);
 	LineParameter line = GetLineParameters(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
-	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(line, king0.GetMyId(), king1.GetMyId(), adj);
+	vector<unsigned> path_by_line = GetPathByLine(line, adj);
+	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(path_by_line, king0.GetMyId(), king1.GetMyId(), adj);
 	EXPECT_EQ(0, path01[0]);
 	EXPECT_EQ(1, path01[1]);
 	EXPECT_EQ(2, path01[2]);
@@ -157,7 +217,8 @@ TEST(GetPathBetweenKingdoomsByLineFunction, Simple4x3Map) {
 	FigureCenter king0ctr = GetFigureCenterOfMass(adj, &king0);
 	FigureCenter king1ctr = GetFigureCenterOfMass(adj, &king1);
 	LineParameter line = GetLineParameters(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
-	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(line, king0.GetMyId(), king1.GetMyId(), adj);
+	vector<unsigned> path_by_line = GetPathByLine(line, adj);
+	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(path_by_line, king0.GetMyId(), king1.GetMyId(), adj);
 	EXPECT_EQ(0, path01[0]);
 	EXPECT_EQ(4, path01[1]);
 	EXPECT_EQ(5, path01[2]);
@@ -177,7 +238,9 @@ TEST(GetPathBetweenKingdoomsByLineFunction, Simple2x2Map) {
 	FigureCenter king0ctr = GetFigureCenterOfMass(adj, &king0);
 	FigureCenter king1ctr = GetFigureCenterOfMass(adj, &king1);
 	LineParameter line = GetLineParameters(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
-	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(line,king0.GetMyId(),king1.GetMyId(),adj);
+	vector<unsigned> path_by_line = GetPathByLine(line, adj);
+	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(path_by_line,king0.GetMyId(),king1.GetMyId(),adj);
+	//EXPECT_TRUE(false);
 	EXPECT_EQ(0, path01[0]);
 	EXPECT_EQ(1, path01[1]);
 }

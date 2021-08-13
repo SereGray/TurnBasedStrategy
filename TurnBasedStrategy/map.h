@@ -20,7 +20,10 @@ struct LineParameter {
 	// y = x * k + b
 	float k_;  // to RIGTH line increase, to LEFT decrease
 	float b_;	// to DOWN line increase, or to UP line decrease
-	LineParameter(float k, float b) :k_(k), b_(b) {};
+	// radial coordinat system
+	float angle_;
+	float radius_;
+	LineParameter(float k, float b);
 	unsigned GetCoordinateY(unsigned x);
 };
 
@@ -37,8 +40,11 @@ LineParameter  GetLineParameters(float& Point1_x, float& Point1_y, float& Point2
 // finds the center of mass of a figure on the map
 FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd);
 
-// return path (vertex sequence) betsween, allow vertex not own start or target kingdom, except first and last vertex
-std::vector<unsigned> GetPathBetweenKingdomsByLine(LineParameter line,unsigned firts_id, unsigned second_id, AdjacentList& adj);
+// return path (vertex numbers sequence) by line
+std::vector<unsigned> GetPathByLine(LineParameter& line, AdjacentList& adj);
+
+std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_by_line,const unsigned firts_id, const unsigned second_id, AdjacentList adj);
+// return path (vertex numbers sequence) betsween, allow vertex not own start or target kingdom, except first and last vertex
 
 class MapPoint{
 	unsigned x_ ,y_; //   TODO: не инициализированны

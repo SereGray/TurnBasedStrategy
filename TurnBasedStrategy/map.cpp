@@ -531,46 +531,72 @@ FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd)
 	return FigureCenter(Xc, Yc);
 }
 
-// начинаю движение по прямой слева на право , тогда как имеются конкретные начальные и конечный ИД
-std::vector<unsigned> GetPathBetweenKingdomsByLine(LineParameter line,unsigned first_id,unsigned second_id, AdjacentList& adj)
+std::vector<unsigned> GetPathByLine(LineParameter& line, AdjacentList& adj)
 {
 	vector<unsigned> path;
 	unsigned max_x = adj.GetWidth();
-	unsigned current_id = UINT_MAX, last_id = UINT_MAX, y=UINT_MAX;
+	unsigned y = 0, y_old = line.GetCoordinateY(0);
 	// moving coordiantes x from 0 to max_x
-	for (unsigned x = 0; x < max_x; ++x){ // ищу начало пути если найду запускаю цикл записи пути и выхожу из всех циклов
-		last_id = current_id;
-		// если текущий ид не равен предыдущему, и предыдущий равен стартовому добавляю точки пока текущий не станет целевым
-		unsigned last_y = y;
+	for (unsigned x = 0; x < max_x; ++x) {
 		y = line.GetCoordinateY(x);
-		unsigned current_vertex_number = adj.GetNum(x,y);
-		current_id = adj[current_vertex_number].owner_id_;
-		if (last_id != current_id && ((last_id == first_id && last_id != second_id) || ( last_id == second_id && last_id != first_id ))) {
-			// цикл записи пути 
-			unsigned target_id = UINT_MAX;
-			last_id == first_id ? target_id = second_id : target_id = first_id; // set target kingdom by ID
-			path.push_back(adj.GetNum(x-1,last_y)); // push kingdom last_id vertex number
-			if (y != last_y) { // detecting diagonal moving
-				path.push_back(adj.GetNum(x - 1, y)); // add additionals points in path
-				last_y = y;
-			}
-			path.push_back(current_vertex_number);
-			while (current_id != target_id)
+		if (y != y_old) { // detecting diagonal and vertical  moving
+			while (y != y_old)
 			{
-				++x;
-				y = line.GetCoordinateY(x);
-				if (y != last_y) { // detecting diagonal moving
-					path.push_back(adj.GetNum(x - 1, y)); // add additionals points in path
+				if (y_old < y)
+				{
+					++y_old;
 				}
-				current_vertex_number = adj.GetNum(x, y);
-				current_id = adj[current_vertex_number].owner_id_;
-				path.push_back(current_vertex_number);
-				last_y = y;
+				else
+				{
+					--y_old;
+				}
+				path.push_back(adj.GetNum(x - 1, y_old)); // add additionals points in path
+				
 			}
-			break;
 		}
+		path.push_back(adj.GetNum(x, y));
+		y_old = y;
 	}
 	return path;
+}
+
+std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_by_line, const unsigned first_id, const unsigned second_id, AdjacentList adj)
+{
+	if (first_id == second_id) return std::vector<unsigned>();
+	std::vector<unsigned> path;
+	unsigned previous_owner_id = UINT_MAX, previous_vertex =0;
+	for (int i=0; i<path_by_line.size(); ++i)	// find start 
+	{
+		unsigned vertex = path_by_line[i]; 
+		unsigned current_id = adj[vertex].owner_id_;
+		if (previous_owner_id != current_id && ((previous_owner_id == first_id && previous_owner_id != second_id) || (previous_owner_id == second_id && previous_owner_id != first_id)))
+		{
+			path.push_back(previous_vertex);
+			path.push_back(vertex);
+			unsigned target = UINT_MAX;
+			previous_owner_id == first_id ? target = second_id : target = first_id;
+			while (adj[vertex].owner_id_ != target)
+			{
+				++i;
+				vertex = path_by_line[i];
+				path.push_back(vertex);
+			}
+			break; // out of cicle for
+		}
+		previous_owner_id = adj[vertex].owner_id_;
+		previous_vertex = vertex;
+	}
+	return path;
+}
+
+LineParameter::LineParameter(float k, float b) :k_(k), b_(b)
+{
+	float k2 = (-1.0) / k_; // find perpendicular(from point with coord (0,0)) line parametr y2 = x * k + b
+							// by formula y-y1 = -1/a * (x - x1), where x1,y1 - point coord 
+	float x = b_ / (k2 - k_); // crossing coordiantes
+	float y = k2 * x;
+	angle_ = atan2f(y,x); // return angle in [-Pi;+Pi]
+	radius_ = sqrtf(x * x + y * y);
 }
 
 unsigned LineParameter::GetCoordinateY(unsigned x)
