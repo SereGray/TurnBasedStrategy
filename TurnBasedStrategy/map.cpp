@@ -514,6 +514,23 @@ LineParameter GetLineParameters(float& Point1_x, float& Point1_y, float& Point2_
 	return LineParameter(k, b); // TODO: MOVE
 }
 
+PointParametr GetPointOnLine(LineParameter &line, float &angle)
+{
+	float B = abs(line.angle_ - angle);
+	float radius = line.radius_ / cosf(B);
+	// float angle = GetAngleCoordOfPoint(line, radius); oh no no no !
+	return PointParametr(angle,radius);
+}
+
+std::pair<float, float> GetAngleCoordOfPoint(LineParameter &line, float &radius)
+{
+	float first = acosf(line.radius_ / radius) + line.angle_;
+	first > 3.14f ? first -= 2 * 3.14: 1;
+	float second = acosf(line.radius_ / radius) - line.angle_;
+	second < 3.14f ? second += 2 * 3.14 : 1;
+	return std::pair<float,float>(first,second);
+}
+
 FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd)
 {
 	// Xc and Yc are the coordinates of the center of mass of the figure

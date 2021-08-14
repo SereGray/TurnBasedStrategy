@@ -12,8 +12,33 @@ TEST(LineParametersStruct, FixTest1) {
 	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
 	EXPECT_FLOAT_EQ(1.6, line1.k_);
 	EXPECT_FLOAT_EQ(-3.2, line1.b_);
-//	EXPECT_FLOAT_EQ(1.6, line1.k_);
+	EXPECT_FLOAT_EQ(-0.55859929f, line1.angle_);
 	EXPECT_FLOAT_EQ(1.6959968, line1.radius_);
+}
+
+TEST(LineParametersStruct, FixTest2) {
+	int Ax = 3, Ay = 1, Bx = -8, By = -4;
+	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	EXPECT_FLOAT_EQ(0.45454547, line1.k_);
+	EXPECT_FLOAT_EQ(-0.36363637, line1.b_);
+	EXPECT_FLOAT_EQ(-1.1441689f, line1.angle_);
+	EXPECT_FLOAT_EQ(0.33104238, line1.radius_);
+}
+TEST(PointParametrStruct, GetPointOnLine_Equal_GetAngleOfPoint1) {
+	int Ax = 2, Ay = 0, Bx = 7, By = 8;
+	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	float angle = 0.3f;
+	PointParametr po = GetPointOnLine(line1, angle);
+	EXPECT_FLOAT_EQ(angle, GetAngleCoordOfPoint(line1, po.radius_).first);
+}
+
+TEST(PointParametrStruct, GetPointOnLine_Equal_GetAngleOfPoint2) {
+	int Ax = 3, Ay = 1, Bx = -8, By = -4;
+	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	float angle = 0.3f;
+	PointParametr po = GetPointOnLine(line1, angle);
+	EXPECT_FLOAT_EQ(angle, GetAngleCoordOfPoint(line1, po.radius_).first);
+	EXPECT_FLOAT_EQ(2.6213002, po.radius_);
 }
 TEST(LineParameterGetCoordianteY, test_2x2)
 {

@@ -8,6 +8,7 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
+//#include <cmath>
 #include "engine.h"
 #include "utility.h"
 
@@ -15,6 +16,14 @@ using namespace std;
 
 class AdjacentList;
 class KingdomMap;
+
+struct PointParametr {
+	//int x_, y_;
+	// radial coordinat system
+	float angle_;
+	float radius_;
+	PointParametr(float angle, float radius) :angle_(angle), radius_(radius) {};
+};
 
 struct LineParameter {
 	// y = x * k + b
@@ -36,6 +45,14 @@ struct FigureCenter {
 // finds the Line parameters k and b  (y=x*k + b)
 LineParameter  GetLineParameters(int& Point1_x, int& Point1_y, int& Point2_x, int& Point2_y);
 LineParameter  GetLineParameters(float& Point1_x, float& Point1_y, float& Point2_x, float& Point2_y);
+
+// finds point coord by LineParameters in radial coord sys 
+// by angle
+PointParametr GetPointOnLine(LineParameter &line, float &angle);
+
+// finds point angle coord by LineParameters in radial coord sys 
+// by radius
+std::pair<float,float> GetAngleCoordOfPoint(LineParameter &line, float &radius);
 
 // finds the center of mass of a figure on the map
 FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd);
