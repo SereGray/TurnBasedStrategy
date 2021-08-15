@@ -8,9 +8,10 @@
 #include <iostream>
 #include <vector>
 #include <algorithm>
-//#include <cmath>
+#include <cmath>
 #include "engine.h"
 #include "utility.h"
+
 
 using namespace std;
 
@@ -18,11 +19,13 @@ class AdjacentList;
 class KingdomMap;
 
 struct PointParametr {
-	//int x_, y_;
+	// decart coordinat system
+	int x_, y_;
 	// radial coordinat system
-	float angle_;
-	float radius_;
-	PointParametr(float angle, float radius) :angle_(angle), radius_(radius) {};
+	double angle_;
+	double radius_;
+	PointParametr(double angle, double radius);
+	PointParametr(int x, int y);
 };
 
 struct LineParameter {
@@ -30,8 +33,8 @@ struct LineParameter {
 	float k_;  // to RIGTH line increase, to LEFT decrease
 	float b_;	// to DOWN line increase, or to UP line decrease
 	// radial coordinat system
-	float angle_;
-	float radius_;
+	double angle_;
+	double radius_;
 	LineParameter(float k, float b);
 	unsigned GetCoordinateY(unsigned x);
 };
@@ -46,19 +49,25 @@ struct FigureCenter {
 LineParameter  GetLineParameters(int& Point1_x, int& Point1_y, int& Point2_x, int& Point2_y);
 LineParameter  GetLineParameters(float& Point1_x, float& Point1_y, float& Point2_x, float& Point2_y);
 
+// get step angle between points
+double GetStepAngle(LineParameter &line,double angle, double radius);
+
 // finds point coord by LineParameters in radial coord sys 
 // by angle
-PointParametr GetPointOnLine(LineParameter &line, float &angle);
+PointParametr GetPointOnLine(LineParameter &line, double &angle);
 
 // finds point angle coord by LineParameters in radial coord sys 
 // by radius
-std::pair<float,float> GetAngleCoordOfPoint(LineParameter &line, float &radius);
+std::pair<double, double> GetAngleCoordOfPointOnLine(LineParameter &line, double &radius);
 
 // finds the center of mass of a figure on the map
 FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd);
 
 // return path (vertex numbers sequence) by line
 std::vector<unsigned> GetPathByLine(LineParameter& line, AdjacentList& adj);
+
+// return path as vector of vertex number
+std::vector<unsigned> GetPathByPolarLine(LineParameter& line, AdjacentList& adj, PointParametr pfirts, PointParametr psecond);
 
 std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_by_line,const unsigned firts_id, const unsigned second_id, AdjacentList adj);
 // return path (vertex numbers sequence) betsween, allow vertex not own start or target kingdom, except first and last vertex

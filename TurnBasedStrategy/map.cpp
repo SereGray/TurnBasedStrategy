@@ -514,21 +514,29 @@ LineParameter GetLineParameters(float& Point1_x, float& Point1_y, float& Point2_
 	return LineParameter(k, b); // TODO: MOVE
 }
 
-PointParametr GetPointOnLine(LineParameter &line, float &angle)
+double GetStepAngle(LineParameter& line, double angle, double radius)
 {
-	float B = abs(line.angle_ - angle);
-	float radius = line.radius_ / cosf(B);
-	// float angle = GetAngleCoordOfPoint(line, radius); oh no no no !
+	const double PI = 3.141592653589793238463;
+	double betta = angle - line.angle_ ; // angle betven radius coord of line and radius coord of point + 90 degres
+	double angle_max = acos((radius - cos(0.5 * PI + betta))/sqrt(1 + radius * radius - 2 * radius * cos(0.5 * PI + betta)));
+	double angle_min = acos((radius - cos(0.5 * PI - betta)) / sqrt(1 + radius * radius - 2 * radius * cos(0.5 * PI - betta)));
+	return (angle_max + angle_min) / 2;
+}
+
+PointParametr GetPointOnLine(LineParameter &line, double &angle)
+{
+	double B = abs(line.angle_ - angle);
+	double radius = line.radius_ / cosf(B);
 	return PointParametr(angle,radius);
 }
 
-std::pair<float, float> GetAngleCoordOfPoint(LineParameter &line, float &radius)
+std::pair<double, double> GetAngleCoordOfPointOnLine(LineParameter &line, double &radius)
 {
-	float first = acosf(line.radius_ / radius) + line.angle_;
+	double first = acosf(line.radius_ / radius) + line.angle_;
 	first > 3.14f ? first -= 2 * 3.14: 1;
-	float second = acosf(line.radius_ / radius) - line.angle_;
+	double second = acosf(line.radius_ / radius) - line.angle_;
 	second < 3.14f ? second += 2 * 3.14 : 1;
-	return std::pair<float,float>(first,second);
+	return std::pair<double, double>(first,second);
 }
 
 FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd)
@@ -577,6 +585,12 @@ std::vector<unsigned> GetPathByLine(LineParameter& line, AdjacentList& adj)
 	return path;
 }
 
+std::vector<unsigned> GetPathByPolarLine(LineParameter& line, AdjacentList& adj, PointParametr pfirts, PointParametr psecond)
+{
+
+	return std::vector<unsigned>();
+}
+
 std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_by_line, const unsigned first_id, const unsigned second_id, AdjacentList adj)
 {
 	if (first_id == second_id) return std::vector<unsigned>();
@@ -619,4 +633,16 @@ LineParameter::LineParameter(float k, float b) :k_(k), b_(b)
 unsigned LineParameter::GetCoordinateY(unsigned x)
 {
 	return static_cast<unsigned>(round(x * k_ + b_));
+}
+
+PointParametr::PointParametr(double angle, double radius) :angle_(angle), radius_(radius),x_(0),y_(0)
+{
+	x_ = roundf(cos(angle_) * radius_);
+	y_ = roundf(sin(angle_) * radius_);
+}
+
+PointParametr::PointParametr(int x, int y): x_(x), y_(y), angle_(0.0), radius_(0.0)
+{
+	radius_ = sqrtf(x_ * x_ + y_ * y_);
+	angle_ = atan2f(y_, x_);
 }

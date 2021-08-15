@@ -1,44 +1,77 @@
 #include "pch.h"
 
+TEST(PointParametrStruct, FixTest1) {
+	PointParametr point1(1.0441691, 99.478641);
+	EXPECT_EQ(50, point1.x_);
+	EXPECT_EQ(86, point1.y_); 
+	PointParametr point2(0.7853981634, 70.710678);
+	EXPECT_EQ(50, point2.x_);
+	EXPECT_EQ(50, point2.y_);
+	PointParametr point3(-0.23554497582, 51.419841);
+	EXPECT_EQ(50, point3.x_);
+	EXPECT_EQ(-12, point3.y_);
+	PointParametr point4(2.8198420961, 158.113883);
+	EXPECT_EQ(-150, point4.x_);
+	EXPECT_EQ(50, point4.y_);
+	PointParametr point5(-150, 50);
+	EXPECT_DOUBLE_EQ(2.8198421001434326, point5.angle_);
+	EXPECT_DOUBLE_EQ(158.11387634277344, point5.radius_);
+	PointParametr point6(50, 86);
+	EXPECT_DOUBLE_EQ(1.0441690683364868, point6.angle_);
+	EXPECT_DOUBLE_EQ(99.4786376953125, point6.radius_);
+	PointParametr point7(50, -12);
+	EXPECT_DOUBLE_EQ(-0.23554497957229614, point7.angle_);
+	EXPECT_DOUBLE_EQ(51.419841766357422, point7.radius_);
+}
 TEST(GetLineParametersFunction, FixTest) {
 	int Ax = 3, Ay = 2, Bx = -1, By = -1;
 	LineParameter line1 = GetLineParameters(Ax,Ay,Bx,By);
-	EXPECT_FLOAT_EQ(0.75, line1.k_);
-	EXPECT_FLOAT_EQ(-0.25, line1.b_);
+	EXPECT_DOUBLE_EQ(0.75, line1.k_);
+	EXPECT_DOUBLE_EQ(-0.25, line1.b_);
 }
 
 TEST(LineParametersStruct, FixTest1) {
 	int Ax = 2, Ay = 0, Bx = 7, By = 8;
 	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
-	EXPECT_FLOAT_EQ(1.6, line1.k_);
-	EXPECT_FLOAT_EQ(-3.2, line1.b_);
-	EXPECT_FLOAT_EQ(-0.55859929f, line1.angle_);
-	EXPECT_FLOAT_EQ(1.6959968, line1.radius_);
+	EXPECT_DOUBLE_EQ(1.6000000238418579, line1.k_);
+	EXPECT_DOUBLE_EQ(-3.2000000476837158, line1.b_);
+	EXPECT_DOUBLE_EQ(-0.55859929323196411, line1.angle_);
+	EXPECT_DOUBLE_EQ(1.6959967613220215, line1.radius_);
 }
 
 TEST(LineParametersStruct, FixTest2) {
 	int Ax = 3, Ay = 1, Bx = -8, By = -4;
 	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
-	EXPECT_FLOAT_EQ(0.45454547, line1.k_);
-	EXPECT_FLOAT_EQ(-0.36363637, line1.b_);
-	EXPECT_FLOAT_EQ(-1.1441689f, line1.angle_);
-	EXPECT_FLOAT_EQ(0.33104238, line1.radius_);
+	EXPECT_DOUBLE_EQ(0.45454546809196472, line1.k_);
+	EXPECT_DOUBLE_EQ(-0.36363637447357178, line1.b_);
+	EXPECT_DOUBLE_EQ(-1.1441688537597656, line1.angle_);
+	EXPECT_DOUBLE_EQ(0.33104237914085388, line1.radius_);
 }
 TEST(PointParametrStruct, GetPointOnLine_Equal_GetAngleOfPoint1) {
 	int Ax = 2, Ay = 0, Bx = 7, By = 8;
 	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
-	float angle = 0.3f;
+	double angle = 0.30000001192092896;
 	PointParametr po = GetPointOnLine(line1, angle);
-	EXPECT_FLOAT_EQ(angle, GetAngleCoordOfPoint(line1, po.radius_).first);
+	EXPECT_DOUBLE_EQ(angle, GetAngleCoordOfPointOnLine(line1, po.radius_).first);
 }
 
 TEST(PointParametrStruct, GetPointOnLine_Equal_GetAngleOfPoint2) {
 	int Ax = 3, Ay = 1, Bx = -8, By = -4;
 	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
-	float angle = 0.3f;
+	double angle = 0.29999995231628418;
 	PointParametr po = GetPointOnLine(line1, angle);
-	EXPECT_FLOAT_EQ(angle, GetAngleCoordOfPoint(line1, po.radius_).first);
-	EXPECT_FLOAT_EQ(2.6213002, po.radius_);
+	EXPECT_DOUBLE_EQ(angle, GetAngleCoordOfPointOnLine(line1, po.radius_).first);
+	EXPECT_DOUBLE_EQ(2.6213001630534114, po.radius_);
+}
+
+TEST(PointParametrStruct, GetPointOnLine_wiht_line_across_zero) {
+	int Ax = 0, Ay = 0, Bx = 34, By = 147;
+	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	double angle = 77.0 / 180 * 3.141592653589793238463;
+	PointParametr point1 = GetPointOnLine(line1, angle); // TODO: Angle with no points on line
+	EXPECT_DOUBLE_EQ(angle, point1.angle_);
+	EXPECT_DOUBLE_EQ(0.0, point1.radius_);
+	EXPECT_DOUBLE_EQ(0.0, line1.radius_);
 }
 TEST(LineParameterGetCoordianteY, test_2x2)
 {
@@ -110,6 +143,16 @@ TEST(LineParameterGetCoordianteY, test_4x10)
 	EXPECT_EQ(4, line1.GetCoordinateY(10));
 }
 
+TEST(StepAngleBetweenPointsOnLineFunc, FixTest1) {
+	int Ax = 0, Ay = 0, Bx = 34, By = 147;
+	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	double angle = 77.0 / 180 * 3.141592653589793238463;
+	PointParametr point1(angle, 151.14399);
+	EXPECT_DOUBLE_EQ(angle,point1.angle_);
+	EXPECT_DOUBLE_EQ(0.0, line1.radius_);
+	EXPECT_DOUBLE_EQ(151.14399,point1.radius_);
+	EXPECT_DOUBLE_EQ(0.0014883841728690207, GetStepAngle(line1,point1.angle_,point1.radius_));
+}
 TEST(GetFigureCenterFuncion, Two_points_horiz_center) {
 	AdjacentList adj(2, 2);
 	adj[0].owner_id_ = 0;
