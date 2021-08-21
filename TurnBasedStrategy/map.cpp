@@ -500,55 +500,8 @@ std::vector<MapPoint>::const_iterator AdjacentList::cend() const
 	return end();
 }
 
-LineParameter GetLineParameters(int& Point1_x, int& Point1_y, int& Point2_x, int& Point2_y)
-{
-	
-	float k = (float)(Point1_y - Point2_y) / (Point1_x - Point2_x);
-	float b = Point1_y - Point1_x * k;
-	if (std::abs(k) == INFINITY) b = Point1_y;
-	return LineParameter(k,b); // TODO: MOVE
-}
-
-LineParameter GetLineParameters(float& Point1_x, float& Point1_y, float& Point2_x, float& Point2_y)
-{
-	float k = (Point1_y - Point2_y) / (Point1_x - Point2_x);
-	float b = Point1_y - Point1_x * k;
-	return LineParameter(k, b); // TODO: MOVE
-}
-
-double GetStepAngle(LineParameter& line, double angle, double radius)
-{
-	if (abs(line.radius_) == 0.0) return line.angle_;
-	double betta = angle - line.angle_ ; // angle betven radius coord of line and radius coord of point + 90 degres
-	double angle_max = acos((radius - cos(0.5 * PI + betta))/sqrt(1 + radius * radius - 2 * radius * cos(0.5 * PI + betta)));
-	double angle_min = acos((radius - cos(0.5 * PI - betta)) / sqrt(1 + radius * radius - 2 * radius * cos(0.5 * PI - betta)));
-	return (angle_max + angle_min) / 2;
-}
-
-PointParametr GetPointOnLineByAngle(LineParameter &line, double &angle)
-{
-	double B = abs(line.angle_ - angle);
-	double radius = line.radius_ / cosf(B);
-	return PointParametr(angle,radius);
-}
 
 
-std::pair<double, double> GetAngleCoordOfPointOnLine(LineParameter &line, double &radius)
-{
-	double first, second;
-	if (line.radius_ != 0.0) {
-		first = line.angle_ + acosf(line.radius_ / radius);
-		first > (PI - 0.000000000000000000003) ? first -= 2 * PI : 1;
-		second = line.angle_ - acosf(line.radius_ / radius);
-		second < (-1.0)* (PI - 0.000000000000000000003) ? second += 2 * PI : 1; // TODO:test
-	}
-	else
-	{
-		first = line.angle_ + PI / 2;
-		second = line.angle_ - PI / 2;
-	}
-	return std::pair<double, double>(first,second);
-}
 
 FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd)
 {
@@ -604,145 +557,6 @@ std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj)
 	return path;
 }
 
-std::vector<unsigned> GetPathByLine(LineParameter& line, AdjacentList& adj)
-{
-	vector<unsigned> path;
-	unsigned max_x = adj.GetWidth();
-	unsigned y = 0, y_old = line.GetCoordinateY(0);
-	//if(std::abs(line.k_) == INFINITY)
-	//	{
-	//	//unsigned max_y = adj.GetHeight();
-	//	//for (unsigned y = 0; y < max_y; ++y) {
-	//	//	path.push_back(adj.GetNum(line.b_,))
-	//	//}
-	//	}
-	// moving coordiantes x from 0 to max_x
-	for (unsigned x = 0; x < max_x; ++x) {
-		y = line.GetCoordinateY(x);
-		if (y != y_old) { // detecting diagonal and vertical  moving
-			while (y != y_old)
-			{
-				if (y_old < y)
-				{
-					++y_old;
-				}
-				else
-				{
-					--y_old;
-				}
-				path.push_back(adj.GetNum(x - 1, y_old)); // add additionals points in path
-				
-			}
-		}
-		path.push_back(adj.GetNum(x, y));
-		y_old = y;
-	}
-	return path;
-}
-
-
-
-// TODO: add 2 and 3 quarters
-// the function is correct if the points are in the 1st and 4th quarters
-std::vector<unsigned> GetPathByPolarLine(LineParameter& line, AdjacentList& adj, PointParametr& pfirts, PointParametr& psecond)
-{ // the movement along the line always occurs in the direction of increasing the coordinate angle
-	std::vector<unsigned> path;
-	if (line.radius_ != 0.0)  // if the line does not intersect the zeroing
-	{
-		PointParametr pcurrent = pfirts, pend = pfirts;
-		if (pfirts.angle_ < psecond.angle_) {
-			pend = psecond;
-		}
-		else {
-			pcurrent = psecond;
-			pend = pfirts;
-		}
-		// moving with increment angle
-		path.push_back(adj.GetNum(pcurrent.x_, pcurrent.y_)); // add start point to path
-		while (!(pcurrent.x_ == pend.x_ && pcurrent.y_ == pend.y_)) 
-		{
-			double angle = GetStepAngle(line, pcurrent.angle_, pcurrent.radius_);
-			if( angle > 0.0000000001)
-			{
-				angle += pcurrent.angle_;
-				pcurrent = GetPointOnLineByAngle(line, angle);
-				path.push_back(adj.GetNum(pcurrent.x_, pcurrent.y_));
-			}
-			else
-			{
-				double direction = 0.0;
-				if (pend.radius_ > pcurrent.radius_) direction = -0.0; // reverse drection TODO: TEST edge
-				// moving with increment radius
-				double increment = 0.0;  // max increment 1.4... in angle = 45 degres
-				sin(line.angle_) > cos(line.angle_) ? increment = 1 / sin(line.angle_) : increment = 1 / cos(line.angle_);
-				double radius = pcurrent.radius_ + direction * increment; 
-				std::pair<double, double> angles = GetAngleCoordOfPointOnLine(line, radius);
-				if (angles.second < pcurrent.angle_)
-				{
-					pcurrent = PointParametr(angles.first, radius);
-				}
-				else
-				{
-					pcurrent = PointParametr(angles.second, radius);
-				}
-				pcurrent.updateXY();
-				path.push_back(adj.GetNum(pcurrent.x_, pcurrent.y_));
-			}
-		}
-	}
-	else
-	{
-		// moving with increment radius
-		PointParametr pcurrent = pfirts, pend = pfirts;
-		if (pfirts.radius_ < psecond.radius_) {
-			pend = psecond;
-		}
-		else
-		{
-			pcurrent = psecond;
-			pend = pfirts;
-		}
-		path.push_back(adj.GetNum(pcurrent.x_, pcurrent.y_)); // add start point to path
-		pcurrent.angle_ = pend.angle_;
-		double increment = 0.0;  // max increment 1.4... in angle = 45 degres
-		//TODO: if angle = 0.0
-		if (std::abs(line.angle_) == 0.0 || std::abs(line.angle_) == 0.5 * PI)
-		{
-			increment = 1.0;
-		}
-		else
-		{
-			sin(pend.angle_) < cos(pend.angle_) ? increment = 1.0 / sin(pend.angle_) : increment = 1.0 / cos(pend.angle_);
-		}
-		while (!(pcurrent.x_ == pend.x_ && pcurrent.y_ == pend.y_))
-		{
-			pcurrent.radius_ = pcurrent.radius_ + increment;
-			pcurrent.updateXY();
-			path.push_back(adj.GetNum(pcurrent.x_, pcurrent.y_));
-		}
-
-	}
-	// search for missing points ( diagonal moving)
-	std::vector<unsigned> res_path;
-	unsigned x = UINT_MAX, y = UINT_MAX; // previous coordinates
-	for (unsigned vertex : path) {
-		
-		std::pair<unsigned, unsigned> coord = adj[vertex].GetCoord();
-		if (x == UINT_MAX && y == UINT_MAX)
-		{
-			x = coord.first;
-			y = coord.second;
-		}
-		if (coord.first != x && coord.second != y) // detect diagonal moving
-		{
-			res_path.push_back(adj.GetNum(x,coord.second));
-		}
-		res_path.push_back(vertex);
-		x = coord.first;
-		y = coord.second;
-	}
-	return res_path;
-}
 
 std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_by_line, const unsigned first_id, const unsigned second_id, AdjacentList adj)
 {
@@ -773,57 +587,6 @@ std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_b
 	return path;
 }
 
-LineParameter::LineParameter(float k, float b) :k_(k), b_(b)
-{
-	if (std::abs(k_) == INFINITY) {
-		angle_ = 0.0;
-		radius_ = b_;
-		return;
-	}
-	if (std::abs(b_) != 0.0) { // не проходит через 0
-		if (std::abs(k_) != 0) // не паралельна ОХ
-		{
-			float k2 = (-1.0) / k_; // find perpendicular(from point with coord (0,0)) line parametr y2 = x * k + b
-								// by formula y-y1 = -1/a * (x - x1), where x1,y1 - point coord 
-
-			float x = b_ / (k2 - k_); // crossing coordiantes
-			if (x == -0.0) x = 0.0;
-			float y = k2 * x;
-			if (y == -0.0) y = 0.0;
-			angle_ = atan2f(y, x); // return angle in [-Pi;+Pi]
-			radius_ = sqrtf(x * x + y * y);
-		}
-		else  // паралельна ОХ
-		{
-			if (b_ >= 0)
-			{
-				angle_ = 0.5 * PI;
-				radius_ = b_;
-			}
-			else
-			{
-				angle_ = -0.5 * PI;
-				radius_ = std::abs(b_);
-			}
-		}
-	}
-	else if ( std::abs(k_) < INFINITY ) // проходит через ОХ но не вертикальная 
-	{
-		
-			float y = k * 5;
-			angle_ = atan2f(y, 5); // return angle in [-Pi;+Pi]
-			if(angle_ < 0) 
-			{
-				angle_ -= PI / 2;
-			}
-			else
-			{
-				angle_ += PI / 2;
-			}
-			radius_ = 0.0;
-		
-	}
-}
 
 LineParam::LineParam(int x1, int y1, int x2, int y2)
 {
@@ -839,24 +602,8 @@ unsigned LineParam::GetCoordinateY(unsigned x)
 	return static_cast<unsigned>(round(x * k_ + b_));
 }
 
-unsigned LineParameter::GetCoordinateY(unsigned x)
+PointParametr::PointParametr(int x, int y): x_(x), y_(y)
 {
-	return static_cast<unsigned>(round(x * k_ + b_));
+
 }
 
-PointParametr::PointParametr(double angle, double radius) :angle_(angle), radius_(radius),x_(0),y_(0)
-{
-	updateXY();
-}
-
-PointParametr::PointParametr(int x, int y): x_(x), y_(y), angle_(0.0), radius_(0.0)
-{
-	radius_ = sqrtf(x_ * x_ + y_ * y_);
-	angle_ = atan2f(y_, x_);
-}
-
-void PointParametr::updateXY()
-{
-	x_ = roundf(cos(angle_) * radius_);
-	y_ = roundf(sin(angle_) * radius_);
-}

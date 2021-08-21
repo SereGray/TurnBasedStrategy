@@ -23,13 +23,7 @@ class KingdomMap;
 struct PointParametr {
 	// decart coordinat system
 	int x_, y_;
-	// radial coordinat system
-	double angle_;
-	double radius_;
-	PointParametr(double angle, double radius);
 	PointParametr(int x, int y);
-
-	void updateXY();
 };
 
 struct LineParam {
@@ -41,18 +35,6 @@ struct LineParam {
 	unsigned GetCoordinateY(unsigned x);
 };
 
-struct LineParameter {
-	// y = x * k + b
-	float k_;  // to RIGTH line increase, to LEFT decrease
-	float b_;	// to DOWN line increase, or to UP line decrease
-	
-	// radial coordinat system
-	double angle_;
-	double radius_;
-	LineParameter(float k, float b);
-
-	unsigned GetCoordinateY(unsigned x);
-};
 
 struct FigureCenter {
 	float x_;
@@ -60,29 +42,16 @@ struct FigureCenter {
 	FigureCenter(float x, float y) :x_(x), y_(y) {};
 };
 
-// finds the Line parameters k and b  (y=x*k + b)
-LineParameter  GetLineParameters(int& Point1_x, int& Point1_y, int& Point2_x, int& Point2_y);
-LineParameter  GetLineParameters(float& Point1_x, float& Point1_y, float& Point2_x, float& Point2_y);
-
-// get step angle between points
-double GetStepAngle(LineParameter &line,double angle, double radius);
 
 // finds point coord by LineParameters in radial coord sys 
 // by angle
-PointParametr GetPointOnLineByAngle(LineParameter &line, double &angle);
-
-// finds point angle coord by LineParameters in radial coord sys 
-// by radius
-std::pair<double, double> GetAngleCoordOfPointOnLine(LineParameter &line, double &radius);
+PointParametr GetPointOnLineByAngle(LineParam &line, double &angle);
 
 // finds the center of mass of a figure on the map
 FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd);
 
-// return path (vertex numbers sequence) by line
-std::vector<unsigned> GetPathByLine(LineParameter& line, AdjacentList& adj);
 std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj);
 // return path as vector of vertex number
-std::vector<unsigned> GetPathByPolarLine(LineParameter& line, AdjacentList& adj, PointParametr& pfirts, PointParametr& psecond);
 
 std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_by_line,const unsigned firts_id, const unsigned second_id, AdjacentList adj);
 // return path (vertex numbers sequence) betsween, allow vertex not own start or target kingdom, except first and last vertex

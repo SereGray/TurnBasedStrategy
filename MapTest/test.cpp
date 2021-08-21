@@ -9,111 +9,60 @@ TEST(LineParamStruct, FixTest1) {
 	EXPECT_FLOAT_EQ(5.6666667f, line.b_);
 }
 
-TEST(PointParametrStruct, FixTest1) {
-	PointParametr point1(1.0441691, 99.478641);
-	EXPECT_EQ(50, point1.x_);
-	EXPECT_EQ(86, point1.y_); 
-	PointParametr point2(0.7853981634, 70.710678);
-	EXPECT_EQ(50, point2.x_);
-	EXPECT_EQ(50, point2.y_);
-	PointParametr point3(-0.23554497582, 51.419841);
-	EXPECT_EQ(50, point3.x_);
-	EXPECT_EQ(-12, point3.y_);
-	PointParametr point4(2.8198420961, 158.113883);
-	EXPECT_EQ(-150, point4.x_);
-	EXPECT_EQ(50, point4.y_);
-	PointParametr point5(-150, 50);
-	EXPECT_DOUBLE_EQ(2.8198421001434326, point5.angle_);
-	EXPECT_DOUBLE_EQ(158.11387634277344, point5.radius_);
-	PointParametr point6(50, 86);
-	EXPECT_DOUBLE_EQ(1.0441690683364868, point6.angle_);
-	EXPECT_DOUBLE_EQ(99.4786376953125, point6.radius_);
-	PointParametr point7(50, -12);
-	EXPECT_DOUBLE_EQ(-0.23554497957229614, point7.angle_);
-	EXPECT_DOUBLE_EQ(51.419841766357422, point7.radius_);
-}
-TEST(GetLineParametersFunction, FixTest) {
+
+TEST(LineParamStruct, FixTest) {
 	int Ax = 3, Ay = 2, Bx = -1, By = -1;
-	LineParameter line1 = GetLineParameters(Ax,Ay,Bx,By);
+	LineParam line1(Ax,Ay,Bx,By);
 	EXPECT_DOUBLE_EQ(0.75, line1.k_);
 	EXPECT_DOUBLE_EQ(-0.25, line1.b_);
 }
 
-TEST(LineParametersStruct, FixTest1) {
+TEST(LineParamStruct, FixTest3) {
 	int Ax = 2, Ay = 0, Bx = 7, By = 8;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	LineParam line1(Ax, Ay, Bx, By);
 	EXPECT_DOUBLE_EQ(1.6000000238418579, line1.k_);
 	EXPECT_DOUBLE_EQ(-3.2000000476837158, line1.b_);
-	EXPECT_DOUBLE_EQ(-0.55859929323196411, line1.angle_);
-	EXPECT_DOUBLE_EQ(1.6959967613220215, line1.radius_);
 }
 
-TEST(LineParametersStruct, FixTest2) {
+TEST(LineParamStruct, FixTest2) {
 	int Ax = 3, Ay = 1, Bx = -8, By = -4;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	LineParam line1(Ax, Ay, Bx, By);
 	EXPECT_DOUBLE_EQ(0.45454546809196472, line1.k_);
 	EXPECT_DOUBLE_EQ(-0.36363637447357178, line1.b_);
-	EXPECT_DOUBLE_EQ(-1.1441688537597656, line1.angle_);
-	EXPECT_DOUBLE_EQ(0.33104237914085388, line1.radius_);
-}
-TEST(PointParametrStruct, GetPointOnLine_Equal_GetAngleOfPoint1) {
-	int Ax = 2, Ay = 0, Bx = 7, By = 8;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
-	double angle = 0.30000001192092896;
-	PointParametr po = GetPointOnLineByAngle(line1, angle);
-	EXPECT_DOUBLE_EQ(angle, GetAngleCoordOfPointOnLine(line1, po.radius_).first);
+
 }
 
-TEST(PointParametrStruct, GetPointOnLine_Equal_GetAngleOfPoint2) {
-	int Ax = 3, Ay = 1, Bx = -8, By = -4;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
-	double angle = 0.29999995231628418;
-	PointParametr po = GetPointOnLineByAngle(line1, angle);
-	EXPECT_DOUBLE_EQ(angle, GetAngleCoordOfPointOnLine(line1, po.radius_).first);
-	EXPECT_DOUBLE_EQ(2.6213001630534114, po.radius_);
-}
-
-//TODO: GetAngleCoord point on line intersect the zeroing
-TEST(PointParametrStruct, GetPointOnLine_wiht_line_across_zero) {
-	int Ax = 0, Ay = 0, Bx = 34, By = 147;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
-	double angle = 77.0 / 180 * 3.141592653589793238463;
-	PointParametr point1 = GetPointOnLineByAngle(line1, angle); // TODO: Angle with no points on line
-	EXPECT_DOUBLE_EQ(angle, point1.angle_);
-	EXPECT_DOUBLE_EQ(0.0, point1.radius_);
-	EXPECT_DOUBLE_EQ(0.0, line1.radius_);
-}
-TEST(LineParameterGetCoordianteY, test_2x2)
+TEST(LineParamGetCoordianteY, test_2x2)
 {
 	int Ax = 0, Ay = 0, Bx = 1, By = 1;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	LineParam line1(Ax, Ay, Bx, By);
 	EXPECT_EQ(0, line1.GetCoordinateY(0));
 	EXPECT_EQ(1, line1.GetCoordinateY(1));
 }
 
-TEST(LineParameterGetCoordianteY, test_3x2)
+TEST(LineParamGetCoordianteY, test_3x2)
 {
 	int Ax = 0, Ay = 0, Bx = 2, By = 1;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	LineParam line1(Ax, Ay, Bx, By);
 	EXPECT_EQ(0, line1.GetCoordinateY(0));
 	EXPECT_EQ(1, line1.GetCoordinateY(1));
 	EXPECT_EQ(1, line1.GetCoordinateY(2));
 }
 
-TEST(LineParameterGetCoordianteY, test_4x3)
+TEST(LineParamGetCoordianteY, test_4x3)
 {
 	int Ax = 0, Ay = 0, Bx = 4, By = 3;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	LineParam line1(Ax, Ay, Bx, By);
 	EXPECT_EQ(0, line1.GetCoordinateY(0));
 	EXPECT_EQ(1, line1.GetCoordinateY(1));
 	EXPECT_EQ(2, line1.GetCoordinateY(3));
 	EXPECT_EQ(3, line1.GetCoordinateY(4));
 }
 
-TEST(LineParameterGetCoordianteY, test_9x2)
+TEST(LineParametGetCoordianteY, test_9x2)
 {
 	int Ax = 0, Ay = 0, Bx = 9, By = 1;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	LineParam line1(Ax, Ay, Bx, By);
 	EXPECT_EQ(0, line1.GetCoordinateY(0));
 	EXPECT_EQ(0, line1.GetCoordinateY(1));
 	EXPECT_EQ(0, line1.GetCoordinateY(2));
@@ -126,10 +75,10 @@ TEST(LineParameterGetCoordianteY, test_9x2)
 	EXPECT_EQ(1, line1.GetCoordinateY(9));
 }
 
-TEST(LineParameterGetCoordianteY, test_10x2)
+TEST(LineParamGetCoordianteY, test_10x2)
 {
 	int Ax = 0, Ay = 0, Bx = 10, By = 1;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	LineParam line1(Ax, Ay, Bx, By);
 	EXPECT_EQ(0, line1.GetCoordinateY(0));
 	EXPECT_EQ(0, line1.GetCoordinateY(1));
 	EXPECT_EQ(0, line1.GetCoordinateY(2));
@@ -142,10 +91,10 @@ TEST(LineParameterGetCoordianteY, test_10x2)
 	EXPECT_EQ(1, line1.GetCoordinateY(9));
 	EXPECT_EQ(1, line1.GetCoordinateY(10));
 }
-TEST(LineParameterGetCoordianteY, test_4x10)
+TEST(LineParamGetCoordianteY, test_4x10)
 {
 	int Ax = 0, Ay = 0, Bx = 10, By = 4;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	LineParam line1(Ax, Ay, Bx, By);
 	EXPECT_EQ(1, line1.GetCoordinateY(3));
 	EXPECT_EQ(2, line1.GetCoordinateY(5));
 	EXPECT_EQ(0, line1.GetCoordinateY(0));
@@ -153,27 +102,6 @@ TEST(LineParameterGetCoordianteY, test_4x10)
 	EXPECT_EQ(4, line1.GetCoordinateY(10));
 }
 
-TEST(StepAngleBetweenPointsOnLineFunc, FixTest1) {
-	int Ax = 0, Ay = 0, Bx = 34, By = 147;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
-	double angle = 77.0 / 180 * 3.141592653589793238463;
-	PointParametr point1(angle, 151.14399);
-	EXPECT_DOUBLE_EQ(angle,point1.angle_);
-	EXPECT_DOUBLE_EQ(0.0, line1.radius_);
-	EXPECT_DOUBLE_EQ(151.14399,point1.radius_);
-	EXPECT_DOUBLE_EQ(line1.angle_, GetStepAngle(line1,point1.angle_,point1.radius_));
-}
-
-TEST(StepAngleBetweenPointsOnLineFunc, FixTest2) {
-	int Ax = 0, Ay = 10, Bx = 147, By = 34;
-	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
-	double angle = 13.023080 / 180 * PI;
-	PointParametr point1(angle, 150.88074800000001);
-	EXPECT_DOUBLE_EQ(9.869328498840332, line1.radius_);
-	EXPECT_DOUBLE_EQ(1.7326337099075317, line1.angle_);
-	EXPECT_DOUBLE_EQ(150.88074800000001, point1.radius_);
-	EXPECT_DOUBLE_EQ(0.00043355009749998692, GetStepAngle(line1, point1.angle_, point1.radius_));
-}
 TEST(GetFigureCenterFuncion, Two_points_horiz_center) {
 	AdjacentList adj(2, 2);
 	adj[0].owner_id_ = 0;
@@ -211,28 +139,8 @@ TEST(GetFigureCenterFuncion, Four_points_center) {
 TEST(GetPathByLineFunction, BigDiagonalTest) {
 	AdjacentList adj(6, 6);
 	int x1 = 0, y1 = 0, x2 = 5, y2 = 5;
-	LineParameter line = GetLineParameters(x1,y1,x2,y2);
+	LineParam line(x1,y1,x2,y2);
 	vector<unsigned> path01 = GetPathByLine(line, adj);
-	EXPECT_EQ(0, path01[0]);
-	EXPECT_EQ(6, path01[1]);
-	EXPECT_EQ(7, path01[2]);
-	EXPECT_EQ(13, path01[3]);
-	EXPECT_EQ(14, path01[4]);
-	EXPECT_EQ(20, path01[5]);
-	EXPECT_EQ(21, path01[6]);
-	EXPECT_EQ(27, path01[7]);
-	EXPECT_EQ(28, path01[8]);
-	EXPECT_EQ(34, path01[9]);
-	EXPECT_EQ(35, path01[10]);
-}
-
-TEST(GetPathByPolarLineFunction, BigDiagonalTest) {
-	AdjacentList adj(6, 6);
-	int x1 = 0, y1 = 0, x2 = 5, y2 = 5;
-	LineParameter line = GetLineParameters(x1, y1, x2, y2);
-	PointParametr pfirst(x1, y1);
-	PointParametr psecond(x2, y2);
-	vector<unsigned> path01 = GetPathByPolarLine(line, adj,pfirst,psecond);
 	EXPECT_EQ(0, path01[0]);
 	EXPECT_EQ(6, path01[1]);
 	EXPECT_EQ(7, path01[2]);
@@ -249,65 +157,8 @@ TEST(GetPathByPolarLineFunction, BigDiagonalTest) {
 TEST(GetPathByLineFunction, BigHorizontalLine) {
 	AdjacentList adj(10, 1);
 	int x1 = 0, y1 = 0, x2 = 10, y2 = 0;
-	LineParameter line = GetLineParameters(x1, y1, x2, y2);
+	LineParam line(x1, y1, x2, y2);
 	vector<unsigned> path01 = GetPathByLine(line, adj);
-	EXPECT_EQ(0, path01[0]);
-	EXPECT_EQ(1, path01[1]);
-	EXPECT_EQ(2, path01[2]);
-	EXPECT_EQ(3, path01[3]);
-	EXPECT_EQ(4, path01[4]);
-	EXPECT_EQ(5, path01[5]);
-	EXPECT_EQ(6, path01[6]);
-	EXPECT_EQ(7, path01[7]);
-	EXPECT_EQ(8, path01[8]);
-	EXPECT_EQ(9, path01[9]);
-}
-
-TEST(GetPathByPolarLineFunction, BigHorizontalLine2) {
-	AdjacentList adj(11, 11);
-	int x1 = 0, y1 = 10, x2 = 10, y2 = 10;
-	PointParametr pfirst(x1, y1);
-	PointParametr psecond(x2, y2);
-	LineParameter line = GetLineParameters(x1, y1, x2, y2);
-	vector<unsigned> path01 = GetPathByPolarLine(line, adj, pfirst, psecond);
-	EXPECT_EQ(120, path01[0]);
-	EXPECT_EQ(119, path01[1]);
-	EXPECT_EQ(118, path01[2]);
-	EXPECT_EQ(117, path01[3]);
-	EXPECT_EQ(116, path01[4]);
-	EXPECT_EQ(115, path01[5]);
-	EXPECT_EQ(114, path01[6]);
-	EXPECT_EQ(113, path01[7]);
-	EXPECT_EQ(112, path01[8]);
-	EXPECT_EQ(111, path01[9]);
-}
-
-TEST(GetPathByPolarLineFunction, BigHorizontalLine1) {
-	AdjacentList adj(10, 1);
-	int x1 = 0, y1 = 0, x2 = 9, y2 = 0;
-	PointParametr pfirst(x1, y1);
-	PointParametr psecond(x2, y2);
-	LineParameter line = GetLineParameters(x1, y1, x2, y2);
-	vector<unsigned> path01 = GetPathByPolarLine(line, adj,pfirst,psecond);
-	EXPECT_EQ(0, path01[0]);
-	EXPECT_EQ(1, path01[1]);
-	EXPECT_EQ(2, path01[2]);
-	EXPECT_EQ(3, path01[3]);
-	EXPECT_EQ(4, path01[4]);
-	EXPECT_EQ(5, path01[5]);
-	EXPECT_EQ(6, path01[6]);
-	EXPECT_EQ(7, path01[7]);
-	EXPECT_EQ(8, path01[8]);
-	EXPECT_EQ(9, path01[9]);
-}
-
-TEST(GetPathByPolarLineFunction, BigVerticalLine) {
-	AdjacentList adj(1, 11);
-	int x1 = 0, y1 = 0, x2 = 0, y2 = 10;
-	PointParametr pfirst(x1, y1);
-	PointParametr psecond(x2, y2);
-	LineParameter line = GetLineParameters(x1, y1, x2, y2);
-	vector<unsigned> path01 = GetPathByPolarLine(line, adj, pfirst, psecond);
 	EXPECT_EQ(0, path01[0]);
 	EXPECT_EQ(1, path01[1]);
 	EXPECT_EQ(2, path01[2]);
@@ -355,7 +206,7 @@ TEST(GetPathBetweenKingdoomsByLineFunction, Simple6x2Map) {
 	KingdomMap king1(11, 2);
 	FigureCenter king0ctr = GetFigureCenterOfMass(adj, &king0);
 	FigureCenter king1ctr = GetFigureCenterOfMass(adj, &king1);
-	LineParameter line = GetLineParameters(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
+	LineParam line(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
 	vector<unsigned> path_by_line = GetPathByLine(line, adj);
 	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(path_by_line, king0.GetMyId(), king1.GetMyId(), adj);
 	EXPECT_EQ(0, path01[0]);
@@ -384,7 +235,7 @@ TEST(GetPathBetweenKingdoomsByLineFunction, Simple4x3Map) {
 	KingdomMap king1(11, 2);
 	FigureCenter king0ctr = GetFigureCenterOfMass(adj, &king0);
 	FigureCenter king1ctr = GetFigureCenterOfMass(adj, &king1);
-	LineParameter line = GetLineParameters(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
+	LineParam line(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
 	vector<unsigned> path_by_line = GetPathByLine(line, adj);
 	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(path_by_line, king0.GetMyId(), king1.GetMyId(), adj);
 	EXPECT_EQ(0, path01[0]);
@@ -405,7 +256,7 @@ TEST(GetPathBetweenKingdoomsByLineFunction, Simple2x2Map) {
 	KingdomMap king1(1, 1);
 	FigureCenter king0ctr = GetFigureCenterOfMass(adj, &king0);
 	FigureCenter king1ctr = GetFigureCenterOfMass(adj, &king1);
-	LineParameter line = GetLineParameters(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
+	LineParam line(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
 	vector<unsigned> path_by_line = GetPathByLine(line, adj);
 	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(path_by_line,king0.GetMyId(),king1.GetMyId(),adj);
 	//EXPECT_TRUE(false);
