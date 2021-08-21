@@ -15,6 +15,8 @@
 
 using namespace std;
 
+const double PI = 3.141592653589793238463;
+
 class AdjacentList;
 class KingdomMap;
 
@@ -26,16 +28,29 @@ struct PointParametr {
 	double radius_;
 	PointParametr(double angle, double radius);
 	PointParametr(int x, int y);
+
+	void updateXY();
+};
+
+struct LineParam {
+	int A_, B_, C_;    // line form Ax+By+C=0
+	// y = x * k + b
+	float k_;  // to RIGTH line increase, to LEFT decrease
+	float b_;	// to DOWN line increase, or to UP line decrease
+	LineParam(int x1, int y1, int x2, int y2);
+	unsigned GetCoordinateY(unsigned x);
 };
 
 struct LineParameter {
 	// y = x * k + b
 	float k_;  // to RIGTH line increase, to LEFT decrease
 	float b_;	// to DOWN line increase, or to UP line decrease
+	
 	// radial coordinat system
 	double angle_;
 	double radius_;
 	LineParameter(float k, float b);
+
 	unsigned GetCoordinateY(unsigned x);
 };
 
@@ -54,7 +69,7 @@ double GetStepAngle(LineParameter &line,double angle, double radius);
 
 // finds point coord by LineParameters in radial coord sys 
 // by angle
-PointParametr GetPointOnLine(LineParameter &line, double &angle);
+PointParametr GetPointOnLineByAngle(LineParameter &line, double &angle);
 
 // finds point angle coord by LineParameters in radial coord sys 
 // by radius
@@ -65,9 +80,9 @@ FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd);
 
 // return path (vertex numbers sequence) by line
 std::vector<unsigned> GetPathByLine(LineParameter& line, AdjacentList& adj);
-
+std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj);
 // return path as vector of vertex number
-std::vector<unsigned> GetPathByPolarLine(LineParameter& line, AdjacentList& adj, PointParametr pfirts, PointParametr psecond);
+std::vector<unsigned> GetPathByPolarLine(LineParameter& line, AdjacentList& adj, PointParametr& pfirts, PointParametr& psecond);
 
 std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_by_line,const unsigned firts_id, const unsigned second_id, AdjacentList adj);
 // return path (vertex numbers sequence) betsween, allow vertex not own start or target kingdom, except first and last vertex

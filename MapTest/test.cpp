@@ -1,5 +1,14 @@
 #include "pch.h"
 
+TEST(LineParamStruct, FixTest1) {
+	LineParam line(-4, 3, 2, 7);
+	EXPECT_EQ(4, line.A_);
+	EXPECT_EQ(6, line.B_);
+	EXPECT_EQ(34, line.C_);
+	EXPECT_FLOAT_EQ(0.66666669f, line.k_);
+	EXPECT_FLOAT_EQ(5.6666667f, line.b_);
+}
+
 TEST(PointParametrStruct, FixTest1) {
 	PointParametr point1(1.0441691, 99.478641);
 	EXPECT_EQ(50, point1.x_);
@@ -51,7 +60,7 @@ TEST(PointParametrStruct, GetPointOnLine_Equal_GetAngleOfPoint1) {
 	int Ax = 2, Ay = 0, Bx = 7, By = 8;
 	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
 	double angle = 0.30000001192092896;
-	PointParametr po = GetPointOnLine(line1, angle);
+	PointParametr po = GetPointOnLineByAngle(line1, angle);
 	EXPECT_DOUBLE_EQ(angle, GetAngleCoordOfPointOnLine(line1, po.radius_).first);
 }
 
@@ -59,16 +68,17 @@ TEST(PointParametrStruct, GetPointOnLine_Equal_GetAngleOfPoint2) {
 	int Ax = 3, Ay = 1, Bx = -8, By = -4;
 	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
 	double angle = 0.29999995231628418;
-	PointParametr po = GetPointOnLine(line1, angle);
+	PointParametr po = GetPointOnLineByAngle(line1, angle);
 	EXPECT_DOUBLE_EQ(angle, GetAngleCoordOfPointOnLine(line1, po.radius_).first);
 	EXPECT_DOUBLE_EQ(2.6213001630534114, po.radius_);
 }
 
+//TODO: GetAngleCoord point on line intersect the zeroing
 TEST(PointParametrStruct, GetPointOnLine_wiht_line_across_zero) {
 	int Ax = 0, Ay = 0, Bx = 34, By = 147;
 	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
 	double angle = 77.0 / 180 * 3.141592653589793238463;
-	PointParametr point1 = GetPointOnLine(line1, angle); // TODO: Angle with no points on line
+	PointParametr point1 = GetPointOnLineByAngle(line1, angle); // TODO: Angle with no points on line
 	EXPECT_DOUBLE_EQ(angle, point1.angle_);
 	EXPECT_DOUBLE_EQ(0.0, point1.radius_);
 	EXPECT_DOUBLE_EQ(0.0, line1.radius_);
@@ -151,7 +161,18 @@ TEST(StepAngleBetweenPointsOnLineFunc, FixTest1) {
 	EXPECT_DOUBLE_EQ(angle,point1.angle_);
 	EXPECT_DOUBLE_EQ(0.0, line1.radius_);
 	EXPECT_DOUBLE_EQ(151.14399,point1.radius_);
-	EXPECT_DOUBLE_EQ(0.0014883841728690207, GetStepAngle(line1,point1.angle_,point1.radius_));
+	EXPECT_DOUBLE_EQ(line1.angle_, GetStepAngle(line1,point1.angle_,point1.radius_));
+}
+
+TEST(StepAngleBetweenPointsOnLineFunc, FixTest2) {
+	int Ax = 0, Ay = 10, Bx = 147, By = 34;
+	LineParameter line1 = GetLineParameters(Ax, Ay, Bx, By);
+	double angle = 13.023080 / 180 * PI;
+	PointParametr point1(angle, 150.88074800000001);
+	EXPECT_DOUBLE_EQ(9.869328498840332, line1.radius_);
+	EXPECT_DOUBLE_EQ(1.7326337099075317, line1.angle_);
+	EXPECT_DOUBLE_EQ(150.88074800000001, point1.radius_);
+	EXPECT_DOUBLE_EQ(0.00043355009749998692, GetStepAngle(line1, point1.angle_, point1.radius_));
 }
 TEST(GetFigureCenterFuncion, Two_points_horiz_center) {
 	AdjacentList adj(2, 2);
@@ -205,6 +226,26 @@ TEST(GetPathByLineFunction, BigDiagonalTest) {
 	EXPECT_EQ(35, path01[10]);
 }
 
+TEST(GetPathByPolarLineFunction, BigDiagonalTest) {
+	AdjacentList adj(6, 6);
+	int x1 = 0, y1 = 0, x2 = 5, y2 = 5;
+	LineParameter line = GetLineParameters(x1, y1, x2, y2);
+	PointParametr pfirst(x1, y1);
+	PointParametr psecond(x2, y2);
+	vector<unsigned> path01 = GetPathByPolarLine(line, adj,pfirst,psecond);
+	EXPECT_EQ(0, path01[0]);
+	EXPECT_EQ(6, path01[1]);
+	EXPECT_EQ(7, path01[2]);
+	EXPECT_EQ(13, path01[3]);
+	EXPECT_EQ(14, path01[4]);
+	EXPECT_EQ(20, path01[5]);
+	EXPECT_EQ(21, path01[6]);
+	EXPECT_EQ(27, path01[7]);
+	EXPECT_EQ(28, path01[8]);
+	EXPECT_EQ(34, path01[9]);
+	EXPECT_EQ(35, path01[10]);
+}
+
 TEST(GetPathByLineFunction, BigHorizontalLine) {
 	AdjacentList adj(10, 1);
 	int x1 = 0, y1 = 0, x2 = 10, y2 = 0;
@@ -222,10 +263,68 @@ TEST(GetPathByLineFunction, BigHorizontalLine) {
 	EXPECT_EQ(9, path01[9]);
 }
 
+TEST(GetPathByPolarLineFunction, BigHorizontalLine2) {
+	AdjacentList adj(11, 11);
+	int x1 = 0, y1 = 10, x2 = 10, y2 = 10;
+	PointParametr pfirst(x1, y1);
+	PointParametr psecond(x2, y2);
+	LineParameter line = GetLineParameters(x1, y1, x2, y2);
+	vector<unsigned> path01 = GetPathByPolarLine(line, adj, pfirst, psecond);
+	EXPECT_EQ(120, path01[0]);
+	EXPECT_EQ(119, path01[1]);
+	EXPECT_EQ(118, path01[2]);
+	EXPECT_EQ(117, path01[3]);
+	EXPECT_EQ(116, path01[4]);
+	EXPECT_EQ(115, path01[5]);
+	EXPECT_EQ(114, path01[6]);
+	EXPECT_EQ(113, path01[7]);
+	EXPECT_EQ(112, path01[8]);
+	EXPECT_EQ(111, path01[9]);
+}
+
+TEST(GetPathByPolarLineFunction, BigHorizontalLine1) {
+	AdjacentList adj(10, 1);
+	int x1 = 0, y1 = 0, x2 = 9, y2 = 0;
+	PointParametr pfirst(x1, y1);
+	PointParametr psecond(x2, y2);
+	LineParameter line = GetLineParameters(x1, y1, x2, y2);
+	vector<unsigned> path01 = GetPathByPolarLine(line, adj,pfirst,psecond);
+	EXPECT_EQ(0, path01[0]);
+	EXPECT_EQ(1, path01[1]);
+	EXPECT_EQ(2, path01[2]);
+	EXPECT_EQ(3, path01[3]);
+	EXPECT_EQ(4, path01[4]);
+	EXPECT_EQ(5, path01[5]);
+	EXPECT_EQ(6, path01[6]);
+	EXPECT_EQ(7, path01[7]);
+	EXPECT_EQ(8, path01[8]);
+	EXPECT_EQ(9, path01[9]);
+}
+
+TEST(GetPathByPolarLineFunction, BigVerticalLine) {
+	AdjacentList adj(1, 11);
+	int x1 = 0, y1 = 0, x2 = 0, y2 = 10;
+	PointParametr pfirst(x1, y1);
+	PointParametr psecond(x2, y2);
+	LineParameter line = GetLineParameters(x1, y1, x2, y2);
+	vector<unsigned> path01 = GetPathByPolarLine(line, adj, pfirst, psecond);
+	EXPECT_EQ(0, path01[0]);
+	EXPECT_EQ(1, path01[1]);
+	EXPECT_EQ(2, path01[2]);
+	EXPECT_EQ(3, path01[3]);
+	EXPECT_EQ(4, path01[4]);
+	EXPECT_EQ(5, path01[5]);
+	EXPECT_EQ(6, path01[6]);
+	EXPECT_EQ(7, path01[7]);
+	EXPECT_EQ(8, path01[8]);
+	EXPECT_EQ(9, path01[9]);
+}
+
+
 TEST(GetPathByLineFunction, BigVerticalLine) {
 	AdjacentList adj(1, 10);
 	int x1 = 0, y1 = 0, x2 = 0, y2 = 10;
-	LineParameter line = GetLineParameters(x1, y1, x2, y2);
+	LineParam line(x1, y1, x2, y2);
 	vector<unsigned> path01 = GetPathByLine(line, adj);
 	EXPECT_EQ(0, path01[0]);
 	EXPECT_EQ(1, path01[1]);
@@ -238,6 +337,7 @@ TEST(GetPathByLineFunction, BigVerticalLine) {
 	EXPECT_EQ(8, path01[8]);
 	EXPECT_EQ(9, path01[9]);
 }
+
 TEST(GetPathBetweenKingdoomsByLineFunction, Simple6x2Map) {
 	AdjacentList adj(6, 2);
 	adj[0].owner_id_ = 1;
