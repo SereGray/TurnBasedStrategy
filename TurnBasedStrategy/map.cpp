@@ -188,41 +188,37 @@ void MapGameObj::SpeedBalanceArea()
 {
 	int delta = 0;
 	if (list_kingdoms_.size() == 0) return;
+	unsigned average_count = std::round(float(adjacent_list_.Size()) / list_kingdoms_.size()); // average count of points;
+	// сортирую список королевств по возрастанию количества вершин
+	std::sort(list_kingdoms_.begin(), list_kingdoms_.end(), [](KingdomMap lkdm, KingdomMap rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
+	vector<KingdomMap>::iterator kingdMin = list_kingdoms_.begin();
+	auto kingdMax = list_kingdoms_.end() - 1; // самое большое королевство
+	auto kingCurrent = list_kingdoms_.begin(); // самое маленькое королевство
+	unsigned line_moving_coord = 0;
 	while(TerrainsDisbalanced(1)) {
-		// сортирую список королевств по возрастанию количества вершин
-		std::sort(list_kingdoms_.begin(), list_kingdoms_.end(), [](KingdomMap lkdm, KingdomMap rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
-		vector<KingdomMap>::iterator kingdMin = list_kingdoms_.begin();
-		auto kingdMax = list_kingdoms_.end() - 1; // самое большое королевство
-
-
-
-
-
-
-		// просматриваю пограничные клетки
-		for(auto border_point: kingdMin->borders)
+		//   у кингМакс болшье сред точек ? 
+		if (kingdMax->list_v.size() <= average_count && kingdMax != list_kingdoms_.begin())
 		{
-			// просматриваю все соседние клетки
-			for (auto point : adjacent_list_[border_point].adjacent_points)
-			{
-				// TODO: точка будет переходить туда - сюда ? 
-				// проще создать список соседей 1 раз и по нему опр у кого забрать
-				// 
-				// если у владельца сосоедней точки больше или равна территория чем у меня
-				KingdomMap* neighbor_kingd = GetKingdomMap(adjacent_list_[point].owner_id_);
-				if (neighbor_kingd->list_v.size() - kingdMin->list_v.size() > delta) {
-					// забираю эту точку
-					adjacent_list_[point].owner_id_ = kingdMin->GetMyId();
-					kingdMin->list_v.push_back(point);
-
-					// удалаю эту точку
-					vector<uint32_t>::iterator iterator_list_v = find_if(neighbor_kingd->list_v.begin(), neighbor_kingd->list_v.end(),\
-						[point](uint32_t& pnt) { return point == pnt; });
-					neighbor_kingd->list_v.erase(iterator_list_v);
-
-				}
-			}
+			--kingdMax;
+			line_moving_coord = 0;
 		}
+		if (kingCurrent->list_v.size() >= average_count && kingCurrent != list_kingdoms_.end() - 1)
+		{
+			++kingCurrent;
+			line_moving_coord = 0;
+		}
+		// начало цикла:
+		FigureCenter minCoord = GetFigureCenterOfMass(adjacent_list_, &(*kingCurrent));
+		FigureCenter maxCoord = GetFigureCenterOfMass(adjacent_list_, &(*kingdMax));
+		//   строю линию из центров королевств 
+		LineParam line(minCoord.x_, minCoord.y_, maxCoord.x_, maxCoord.y_);
+		//	 смещаю линию почти перпендикулярно в одну из сторон и сохраняю количество смещений 
+		// если в оба направелние смещение лини неудается то уст количество перемещений в 0 и опять пробоую тянуть точку
+		// или в линии нет точек обоих гос-в
+		line = line + line_moving_coord;
+		// если переместить в одном из направлении не удается перемещаю только в другом
+		//	 перемещаю точку если в линии есть точки обоих гос-в, 
+		//   количество точек равно сред ? ...
 	}
 	for (auto& kingd : list_kingdoms_)kingd.RefreshBorders(adjacent_list_);
 }
@@ -520,6 +516,7 @@ FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd)
 	return FigureCenter(Xc, Yc);
 }
 
+
 std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj)
 {
 	vector<unsigned> path;
@@ -532,6 +529,7 @@ std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj)
 		for (unsigned y = 0; y < max_y; ++y) {
 			path.push_back(adj.GetNum(x, y));
 		}
+		return path;
 	}
 	// moving coordiantes x from 0 to max_x
 	for (unsigned x = 0; x < max_x; ++x) {
@@ -578,6 +576,10 @@ std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_b
 				++i;
 				vertex = path_by_line[i];
 				path.push_back(vertex);
+				if (i >= path_by_line.size()) { // if target not found  function return empty vector<>()
+					path.clear();
+					break;
+				}
 			}
 			break; // out of cicle for
 		}
@@ -591,15 +593,64 @@ std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_b
 LineParam::LineParam(int x1, int y1, int x2, int y2)
 {
 	A_ = y2 - y1;
-	B_ = x2 - x1;
-	C_ = (-1) * x1 * A_ + y1 * B_;
-	k_ = float(A_) / B_;
-	b_ = float(C_) / B_;
+	B_ = x1 - x2;
+	C_ = (-1) * x1 * A_ + y1 * (x2 - x1);
+	k_ = float(A_) / B_ * (-1.0);
+	b_ = C_ / B_ * (-1.0);
+	l_ = float(B_) / A_ * (-1.0);
+	c_ = C_ / A_ * (-1.0);
+}
+
+LineParam::LineParam():A_(0),B_(0),C_(0.0),k_(0.0),b_(0.0),l_(0.0),c_(0)
+{
+	
 }
 
 unsigned LineParam::GetCoordinateY(unsigned x)
 {
 	return static_cast<unsigned>(round(x * k_ + b_));
+}
+
+// TODO: return new LineParam !!!
+void LineParam::Move(unsigned line_moving_coord)
+{ // if line_moving_coord =0 // no moving if even + direction, odd -direction
+	if (line_moving_coord != 0)
+	{
+		if (k_ <= 1.0)
+		{
+			// moving by change Y coord
+			b_ += line_moving_coord;
+			C_ = B_ * b_ * (-1.0);
+			c_ = C_ / A_ * (-1.0);
+		}
+		else
+		{
+			// moving by change X coord
+			c_ += line_moving_coord ;
+			// calculation other param k_, b_
+			C_ = c_ * A_ * (-1.0);
+			b_ = C_ / B_ * (-1.0);
+		}
+	}
+}
+
+LineParam LineParam::operator+(const int count)
+{
+	LineParam line = *this;
+	line.Move(count);
+	return line;
+}
+
+LineParam& LineParam::operator=(const LineParam& other)
+{
+	this->A_ = other.A_;
+	this->B_ = other.B_;
+	this->C_ = other.C_;
+	this->c_ = other.c_;
+	this->l_ = other.l_;
+	this->k_ = other.k_;
+	this->b_ = other.b_;
+	return *this;
 }
 
 PointParametr::PointParametr(int x, int y): x_(x), y_(y)

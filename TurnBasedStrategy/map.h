@@ -27,12 +27,28 @@ struct PointParametr {
 };
 
 struct LineParam {
-	int A_, B_, C_;    // line form Ax+By+C=0
+	int A_, B_;
+	float C_;    // line form Ax+By+C=0
 	// y = x * k + b
+	
 	float k_;  // to RIGTH line increase, to LEFT decrease
 	float b_;	// to DOWN line increase, or to UP line decrease
+
 	LineParam(int x1, int y1, int x2, int y2);
+	LineParam();
 	unsigned GetCoordinateY(unsigned x);
+	// offset the line in both directions alternately
+	// line_moving_coord: 0 - no moving; even +direction , odd -direction,
+	// return true if offset done, false if offset unavailable
+	LineParam operator+(const int count);
+	LineParam& operator=(const LineParam& other);
+private:
+	// additional param
+	// x = y * l + c
+	float l_; 
+	float c_;
+
+	void Move(unsigned line_moving_coord);
 };
 
 
@@ -43,12 +59,9 @@ struct FigureCenter {
 };
 
 
-// finds point coord by LineParameters in radial coord sys 
-// by angle
-PointParametr GetPointOnLineByAngle(LineParam &line, double &angle);
-
 // finds the center of mass of a figure on the map
 FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd);
+
 
 std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj);
 // return path as vector of vertex number

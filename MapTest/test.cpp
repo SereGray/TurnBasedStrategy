@@ -3,7 +3,7 @@
 TEST(LineParamStruct, FixTest1) {
 	LineParam line(-4, 3, 2, 7);
 	EXPECT_EQ(4, line.A_);
-	EXPECT_EQ(6, line.B_);
+	EXPECT_EQ(-6, line.B_);
 	EXPECT_EQ(34, line.C_);
 	EXPECT_FLOAT_EQ(0.66666669f, line.k_);
 	EXPECT_FLOAT_EQ(5.6666667f, line.b_);
@@ -32,6 +32,39 @@ TEST(LineParamStruct, FixTest2) {
 
 }
 
+TEST(LineParamStruct, MoveLine1) {
+	int Ax = 2, Ay = 0, Bx = 7, By = 8;
+	LineParam line1(Ax, Ay, Bx, By);
+	LineParam new_line = line1 + 1;
+	EXPECT_EQ(8,line1.A_);
+	EXPECT_EQ(-5, line1.B_);
+	EXPECT_EQ(-16, line1.C_);
+	EXPECT_DOUBLE_EQ(1.6000000238418579, line1.k_);
+	EXPECT_DOUBLE_EQ(-3.2000000476837158, line1.b_);
+	//TODO: this
+	EXPECT_EQ(8, new_line.A_);
+	EXPECT_EQ(-5, new_line.B_);
+	EXPECT_EQ(-24, new_line.C_);
+	EXPECT_DOUBLE_EQ(1.6000000238418579, new_line.k_);
+	EXPECT_DOUBLE_EQ(-4.8000001907348633, new_line.b_);
+}
+
+TEST(LineParamStruct, MoveLine2) {
+	int Ax = 3, Ay = 1, Bx = -8, By = -4;
+	LineParam line1(Ax, Ay, Bx, By);
+	LineParam new_line = line1 + 1;
+	EXPECT_EQ(-5, line1.A_);
+	EXPECT_EQ(11, line1.B_);
+	EXPECT_EQ(4, line1.C_);
+	EXPECT_DOUBLE_EQ(0.45454546809196472, line1.k_);
+	EXPECT_DOUBLE_EQ(-0.36363637447357178, line1.b_);
+	//TODO: this
+	EXPECT_EQ(-5, new_line.A_);
+	EXPECT_EQ(11, new_line.B_);
+	EXPECT_EQ(-7, new_line.C_);
+	EXPECT_DOUBLE_EQ(0.45454546809196472, new_line.k_);
+	EXPECT_DOUBLE_EQ(0.63636362552642822, new_line.b_);
+}
 TEST(LineParamGetCoordianteY, test_2x2)
 {
 	int Ax = 0, Ay = 0, Bx = 1, By = 1;
