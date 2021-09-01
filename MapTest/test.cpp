@@ -24,6 +24,12 @@ TEST(LineParamStruct, FixTest3) {
 	EXPECT_DOUBLE_EQ(-3.2000000476837158, line1.b_);
 }
 
+TEST(LineParamStruct, FixTest4) {
+	LineParam line1(3,0,-12.0);
+	AdjacentList adj(11,22);
+	std::vector<unsigned> line_path = GetPathByLine(line1, adj);
+	EXPECT_FALSE(line_path.empty());
+}
 TEST(LineParamStruct, FixTest2) {
 	int Ax = 3, Ay = 1, Bx = -8, By = -4;
 	LineParam line1(Ax, Ay, Bx, By);
@@ -297,6 +303,31 @@ TEST(GetPathBetweenKingdoomsByLineFunction, Simple2x2Map) {
 	EXPECT_EQ(1, path01[1]);
 }
 
+TEST(GetPathBetweenKingdoomsByLineFunction, Simple4x3MapNoPath) {
+	AdjacentList adj(4, 3);
+	adj[0].owner_id_ = 1;
+	adj[2].owner_id_ = 0;
+	adj[1].owner_id_ = 0;
+	adj[4].owner_id_ = 0;
+	adj[5].owner_id_ = 0;
+	adj[6].owner_id_ = 0;
+	adj[7].owner_id_ = 0;
+	adj[8].owner_id_ = 0;
+	adj[9].owner_id_ = 0;
+	adj[10].owner_id_ = 0;
+	adj[11].owner_id_ = 2;
+	KingdomMap king0(0, 1);
+	KingdomMap king1(11, 2);
+	FigureCenter king0ctr = GetFigureCenterOfMass(adj, &king0);
+	FigureCenter king1ctr = GetFigureCenterOfMass(adj, &king1);
+	LineParam line(king0ctr.x_, king0ctr.y_, king1ctr.x_, king1ctr.y_);
+	line = line + 5;
+	vector<unsigned> path_by_line = GetPathByLine(line, adj);
+	vector<unsigned> path01 = GetPathBetweenKingdomsByLine(path_by_line, king0.GetMyId(), king1.GetMyId(), adj);
+	EXPECT_TRUE(path01.empty());
+	vector<unsigned>().empty();
+
+}
 TEST(AdjacentListTesting, OnePoint) 
 {
 	AdjacentList adj(1, 1);
@@ -449,10 +480,10 @@ TEST(MapGameObjCreateMap, CreateMap9x9x2)
 	EXPECT_EQ(2, game_map.list_kingdoms_.size());
 }
 
-TEST(MapGameObjCreateMap, CreateMap3x3x10_) 
+TEST(MapGameObjCreateMap, CreateMap3x3x9) 
 {
 	MapGameObj game_map(3, 3, 1);
-	for (int i = 0; i < 10; ++i) {
+	for (int i = 0; i < 9; ++i) {
 		game_map.AddKingdom(i);
 	}
 	EXPECT_EQ(3*3, game_map.list_kingdoms_.size());
@@ -488,6 +519,14 @@ TEST(MapGameObjGenerateMap, full_balance_check_with_even_points_count) {
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(1)->list_v.size());
 }
 
+TEST(MapGameObjGenerateMap, full_balance_check_with_even_points_count_byLineGeneration) {
+	MapGameObj game_map(4, 4, 1);
+	game_map.AddKingdom(0);
+	game_map.AddKingdom(1);
+	game_map.GenerateMapByLine();
+	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(1)->list_v.size());
+}
+
 TEST(MapGameObjGenerateMap, full_balance_check_with_odd_points_count) {
 	MapGameObj game_map(3, 3, 1);
 	game_map.AddKingdom(0);
@@ -498,6 +537,15 @@ TEST(MapGameObjGenerateMap, full_balance_check_with_odd_points_count) {
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(2)->list_v.size());
 }
 
+TEST(MapGameObjGenerateMap, full_balance_check_with_odd_points_count_byLineGeneration) {
+	MapGameObj game_map(3, 3, 1);
+	game_map.AddKingdom(0);
+	game_map.AddKingdom(1);
+	game_map.AddKingdom(2);
+	game_map.GenerateMapByLine();
+	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(1)->list_v.size());
+	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(2)->list_v.size());
+}
 TEST(MapGameObjGenerateMap, balance_check_with_odd_points_count_and_2kingdom) {
 	MapGameObj game_map(3, 3, 1);
 	game_map.AddKingdom(0);
@@ -507,6 +555,15 @@ TEST(MapGameObjGenerateMap, balance_check_with_odd_points_count_and_2kingdom) {
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() - game_map.GetKingdomMap(1)->list_v.size() == 1); // KingdomMap with id=0 +1 point disbalanced
 }
 
+TEST(MapGameObjGenerateMap, balance_check_with_odd_points_count_and_2kingdom_byLineGeneration) {
+	MapGameObj game_map(3, 3, 1);
+	game_map.AddKingdom(0);
+	game_map.AddKingdom(1);
+	game_map.GenerateMapByLine();
+	EXPECT_FALSE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(1)->list_v.size());
+	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() - game_map.GetKingdomMap(1)->list_v.size() == 1); // KingdomMap with id=0 +1 point disbalanced
+}
+/*
 TEST(MapGameObjGenerateMap, generate_33x33_map)
 {
 	MapGameObj game_map(11, 22, 1);
@@ -518,6 +575,78 @@ TEST(MapGameObjGenerateMap, generate_33x33_map)
 	game_map.GenerateMap();
 	EXPECT_TRUE(true);
 }
+*/
+
+TEST(MapGameObjGenerateMap, generate_11x22_map_byLineGeneration)
+{
+	MapGameObj game_map(11, 22, 1);
+	game_map.AddKingdom(0);
+	game_map.AddKingdom(1);
+	game_map.AddKingdom(2);
+	//	game_map.AddKingdom(3);
+	//	game_map.AddKingdom(4);
+	game_map.GenerateMapByLine();
+	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() >= 80);
+	EXPECT_TRUE(game_map.GetKingdomMap(1)->list_v.size() >= 80);
+	EXPECT_TRUE(game_map.GetKingdomMap(2)->list_v.size() >= 80);
+}
+
+TEST(MapGameObjGenerateMap, generate_33x33_map_byLineGeneration)
+{
+	MapGameObj game_map(33, 33, 1);
+	game_map.AddKingdom(0);
+	game_map.AddKingdom(1);
+	game_map.AddKingdom(2);
+	game_map.AddKingdom(3);
+	game_map.AddKingdom(4);
+	game_map.GenerateMapByLine();
+	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() >= 217);
+	EXPECT_TRUE(game_map.GetKingdomMap(1)->list_v.size() >= 217);
+	EXPECT_TRUE(game_map.GetKingdomMap(2)->list_v.size() >= 217);
+	EXPECT_TRUE(game_map.GetKingdomMap(3)->list_v.size() >= 217);
+	EXPECT_TRUE(game_map.GetKingdomMap(4)->list_v.size() >= 217);
+}
+
+TEST(MapGameObjGenerateMap, generate_100x100_map_byLineGeneration)
+{
+	MapGameObj game_map(100, 100, 1);
+	game_map.AddKingdom(0);
+	game_map.AddKingdom(1);
+	game_map.AddKingdom(2);
+	game_map.AddKingdom(3);
+	game_map.AddKingdom(4);
+	game_map.AddKingdom(5);
+	game_map.AddKingdom(6);
+	game_map.AddKingdom(7);
+	game_map.AddKingdom(8);
+	game_map.AddKingdom(9);
+	game_map.AddKingdom(10);
+	game_map.AddKingdom(11);
+	game_map.AddKingdom(12);
+	game_map.AddKingdom(13);
+	game_map.AddKingdom(14);
+	game_map.AddKingdom(15);
+	game_map.AddKingdom(16);
+	game_map.GenerateMapByLine();
+	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(1)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(2)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(3)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(4)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(5)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(6)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(7)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(8)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(9)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(10)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(11)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(12)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(13)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(14)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(15)->list_v.size() >= 588);
+	EXPECT_TRUE(game_map.GetKingdomMap(16)->list_v.size() >= 588);
+
+}
 
 /*
 TEST(MapGameObjGenerateMap, generate_large_map)
@@ -525,6 +654,7 @@ TEST(MapGameObjGenerateMap, generate_large_map)
 	MapGameObj game_map(1000000000, 1000000000, 1);
 	EXPECT_TRUE(true);
 }
+*/
 
 TEST(MapGameObjGenerateMap, balance_check_with_odd_points_and_even_count_kingdoms)
 {
@@ -532,12 +662,11 @@ TEST(MapGameObjGenerateMap, balance_check_with_odd_points_and_even_count_kingdom
 	for (int i = 0; i < 10; ++i) {
 		game_map.AddKingdom(i);
 	}
-	game_map.GenerateMap();
+	game_map.GenerateMapByLine();
 	for (int i = 1; i < 9; ++i) {
 		EXPECT_TRUE(game_map.GetKingdomMap(i)->list_v.size() == game_map.GetKingdomMap(i + 1)->list_v.size());
 	}
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() - game_map.GetKingdomMap(1)->list_v.size() == 1); // KingdomMap with id=0 +1 point disbalanced
 }
 
-*/
 

@@ -97,13 +97,16 @@ void KingdomMap::RefreshNeighbors(AdjacentList& adjacent_list)
 
 MapGameObj::MapGameObj(unsigned width, unsigned height, unsigned seed):adjacent_list_(width,height), width_(width), height_(height), seed_(seed) {
 	srand(seed_);
+	for (MapPoint& mp : adjacent_list_) {
+		free_points.push_back(&mp);
+	}
 }
 
 
 
 bool MapGameObj::FreeSpace(){
-	static uint32_t maxIteration=100;
-	if(--maxIteration==0)return false;
+//	static uint32_t maxIteration=100;
+//	if(--maxIteration==0)return false;
 	for(MapPoint p: adjacent_list_){
 		if(p.owner_id_==-1) return true;
 	}
@@ -184,41 +187,113 @@ void MapGameObj::RecoveryPath(uint32_t start_vertex, uint32_t end_vertex, vector
 	}
 }
 
-void MapGameObj::SpeedBalanceArea()
+void MapGameObj::BalanceAreaByLine()
 {
-	int delta = 0;
 	if (list_kingdoms_.size() == 0) return;
 	unsigned average_count = std::round(float(adjacent_list_.Size()) / list_kingdoms_.size()); // average count of points;
 	// сортирую список королевств по возрастанию количества вершин
 	std::sort(list_kingdoms_.begin(), list_kingdoms_.end(), [](KingdomMap lkdm, KingdomMap rkdm) { return lkdm.list_v.size() < rkdm.list_v.size(); });
-	vector<KingdomMap>::iterator kingdMin = list_kingdoms_.begin();
 	auto kingdMax = list_kingdoms_.end() - 1; // самое большое королевство
 	auto kingCurrent = list_kingdoms_.begin(); // самое маленькое королевство
-	unsigned line_moving_coord = 0;
-	while(TerrainsDisbalanced(1)) {
+	int positive_line_moving_count = 0;
+	int negative_line_moving_count = 0;
+	int direction_line_moving = 1; // 1 or -1
+	FigureCenter minCoord;
+	FigureCenter maxCoord;
+	LineParam line;
+	std::vector<unsigned> path;
+	std::vector<unsigned> line_path;
+	unsigned count = 0;
+	while (TerrainsDisbalanced(1)) {
+		++count;
 		//   у кингМакс болшье сред точек ? 
 		if (kingdMax->list_v.size() <= average_count && kingdMax != list_kingdoms_.begin())
 		{
 			--kingdMax;
-			line_moving_coord = 0;
+			positive_line_moving_count = 0;
+			negative_line_moving_count = 0;
 		}
 		if (kingCurrent->list_v.size() >= average_count && kingCurrent != list_kingdoms_.end() - 1)
 		{
 			++kingCurrent;
-			line_moving_coord = 0;
+			positive_line_moving_count = 0;
+			negative_line_moving_count = 0;
 		}
 		// начало цикла:
-		FigureCenter minCoord = GetFigureCenterOfMass(adjacent_list_, &(*kingCurrent));
-		FigureCenter maxCoord = GetFigureCenterOfMass(adjacent_list_, &(*kingdMax));
+		minCoord = GetFigureCenterOfMass(adjacent_list_, &(*kingCurrent));
+		maxCoord = GetFigureCenterOfMass(adjacent_list_, &(*kingdMax));
 		//   строю линию из центров королевств 
-		LineParam line(minCoord.x_, minCoord.y_, maxCoord.x_, maxCoord.y_);
+		line = LineParam(minCoord.x_, minCoord.y_, maxCoord.x_, maxCoord.y_);
 		//	 смещаю линию почти перпендикулярно в одну из сторон и сохраняю количество смещений 
-		// если в оба направелние смещение лини неудается то уст количество перемещений в 0 и опять пробоую тянуть точку
-		// или в линии нет точек обоих гос-в
-		line = line + line_moving_coord;
-		// если переместить в одном из направлении не удается перемещаю только в другом
-		//	 перемещаю точку если в линии есть точки обоих гос-в, 
-		//   количество точек равно сред ? ...
+
+		if (direction_line_moving > 0 && positive_line_moving_count >= 0)
+		{ // positive moving
+			++positive_line_moving_count;
+			LineParam new_line = line + positive_line_moving_count;
+			line_path = GetPathByLine(new_line, adjacent_list_);
+			path.clear();
+			path = GetPathBetweenKingdomsByLine(line_path, kingCurrent->GetMyId(), kingdMax->GetMyId(), adjacent_list_);
+			if (path.empty())
+			{
+				positive_line_moving_count = -1; // no path
+				direction_line_moving = -1; // reverse direction
+			}
+		}
+
+		if (direction_line_moving < 0 && negative_line_moving_count <= 0) 
+		{
+			--negative_line_moving_count;
+			LineParam new_line = line + negative_line_moving_count;
+			path.clear();
+			line_path = GetPathByLine(new_line, adjacent_list_);
+			path = GetPathBetweenKingdomsByLine(line_path, kingCurrent->GetMyId(), kingdMax->GetMyId(), adjacent_list_);
+			if (path.empty())
+			{
+				negative_line_moving_count = 1; // no path
+				direction_line_moving = 1; // reverse direction
+			}
+
+
+		}
+
+		if (negative_line_moving_count > 0 && positive_line_moving_count < 0)
+		{
+			line_path = GetPathByLine(line, adjacent_list_);
+			path.clear();
+			path = GetPathBetweenKingdomsByLine(line_path, kingCurrent->GetMyId(), kingdMax->GetMyId(), adjacent_list_);
+			positive_line_moving_count = 0;
+			negative_line_moving_count = 0;
+			direction_line_moving = 1;
+		}
+		PushPullPoint(path, kingCurrent->GetMyId(), kingdMax->GetMyId());
+	}
+}
+
+void MapGameObj::PushPullPoint(std::vector<unsigned>& path, unsigned minId, unsigned maxId)
+{
+	if (adjacent_list_[*path.begin()].owner_id_ == minId)
+	{
+		reverse(path.begin(), path.end());
+	}
+	uint32_t prevNumPoint = 0;
+	vector<KingdomMap>::iterator prevKingd = list_kingdoms_.end();
+	for (uint32_t NumPoint : path) {
+		// если текущий владелец отличается от владельца предыдущей точки меняю владельца точки
+		auto owner = adjacent_list_[NumPoint].owner_id_;
+		vector<KingdomMap>::iterator currentKingd = find_if(list_kingdoms_.begin(), list_kingdoms_.end(), [owner](KingdomMap& kingd) { return owner == kingd.GetMyId(); });																																						   //NumCurrentTerr = adjacent_list_[NumPoint].owner_id_;
+		if (prevKingd != list_kingdoms_.end() && currentKingd->GetMyId() != prevKingd->GetMyId()) {
+			// найти предыдущ terrain и убрать у него точку из списка   find_if
+
+			// нахожу текущую точку(указатель на нее) у предыдущего королевства
+
+			vector<uint32_t>::iterator prevPointIt = find_if(prevKingd->list_v.begin(), prevKingd->list_v.end(), [prevNumPoint](uint32_t& pnt) { return prevNumPoint == pnt; });
+			prevKingd->list_v.erase(prevPointIt); // удалил вершину из пред списка
+			currentKingd->list_v.push_back(prevNumPoint); // добавил вершину в текущ список 
+			prevKingd = currentKingd;
+			adjacent_list_[prevNumPoint].owner_id_ = currentKingd->GetMyId(); // присвоил вершину окончательно в списке смежности
+		}
+		prevNumPoint = NumPoint;
+		prevKingd = currentKingd;
 	}
 	for (auto& kingd : list_kingdoms_)kingd.RefreshBorders(adjacent_list_);
 }
@@ -301,6 +376,7 @@ void MapGameObj::BalanceArea() {
 }
 
 bool MapGameObj::TerrainsDisbalanced(uint32_t offset){ // offset - допуск на равенство 
+	
 	unsigned max= static_cast<unsigned>(list_kingdoms_[0].list_v.size());
 	for(auto terr : list_kingdoms_){
 		if(max < terr.list_v.size())max=static_cast<unsigned>(terr.list_v.size());
@@ -326,15 +402,15 @@ void MapGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 
 void MapGameObj::AddKingdom(unsigned by_id)
 {
-	vector<MapPoint*> free_points;
-	for (MapPoint &mp : adjacent_list_) {
-		if (mp.owner_id_ == -1) free_points.push_back(&mp);
-	}
-	if (free_points.empty()) return; // TODO: throw exception?
-	unsigned number = rand() % free_points.size();
+	unsigned number = 0;
+	if (free_points.size() != 1) {
+		number = rand() % free_points.size();
+	} 
 	unsigned kingdom_start_number = adjacent_list_.GetNum(free_points[number]->GetCoord());
 	adjacent_list_[kingdom_start_number].owner_id_ = by_id;
 	list_kingdoms_.push_back(KingdomMap(kingdom_start_number, by_id));
+	std::vector<MapPoint*>::iterator it = free_points.begin() + number;
+	free_points.erase(it);
 }
 
 KingdomMap* MapGameObj::GetKingdomMap(unsigned by_id)
@@ -399,6 +475,36 @@ void MapGameObj::GenerateMap(){
 	BalanceArea();
 }
 
+void MapGameObj::GenerateMapByLine() {
+	if (list_kingdoms_.size() == 0) return;
+	vector<uint32_t> iterOnBorders;		// список текущего положения итератора перебора 
+					//по пограничным вершинам для всех королевств ( массив итераторов по одному на королевство)
+	for (uint32_t i = 0; i < list_kingdoms_.size(); ++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
+
+	while (FreeSpace()) {// пока свободные клетки не закончатся
+	//Обход
+		for (auto& kingd : list_kingdoms_) {
+			// движение по окружности границы по их порядку начиная с правой
+			if (iterOnBorders[kingd.GetMyId()] >= kingd.borders.size()) {
+				iterOnBorders[kingd.GetMyId()] = 0;  // если итератор вышел за 
+										//"границы королевства" то возвращаем на стартовую поз
+			}
+			//  если заграничная точка ничья то присваиваем (только 1)
+			//  далее прохожу по границе numV - номер заграничной вершины(точки)
+			// двигаюсь по списку смежности - по смежным вершинам вершины "tabSmej[kingd.borders[iterOnBorders[i]]]"
+			for (uint32_t numV : adjacent_list_[kingd.borders[iterOnBorders[kingd.GetMyId()]]].adjacent_points) {
+				if (adjacent_list_[numV].owner_id_ == -1) {
+					adjacent_list_[numV].owner_id_ = kingd.GetMyId();
+					kingd.list_v.push_back(numV);
+					break; // quit if ok
+				}
+			}
+			++iterOnBorders[kingd.GetMyId()]; 	 // перемещаем итератор
+		}
+		for (auto& kingd : list_kingdoms_) kingd.RefreshBorders(adjacent_list_);
+	}
+	BalanceAreaByLine();
+}
 
 AdjacentList::AdjacentList(unsigned width, unsigned height) :width_(width), height_(height), max((unsigned long long)width * height)
 {
@@ -521,11 +627,12 @@ std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj)
 {
 	vector<unsigned> path;
 	unsigned max_x = adj.GetWidth();
-	unsigned y = 0, y_old = line.GetCoordinateY(0);
+	int y = 0, y_old = line.GetCoordinateY(0);
 	if(std::abs(line.k_) == INFINITY)
 		{
 		unsigned max_y = adj.GetHeight();
-		int x = std::roundf( float(line.C_) / line.A_);
+		int x = std::roundf( float(line.C_) / line.A_) * (-1);
+		if (x >= adj.GetWidth() || x < 0) return path;
 		for (unsigned y = 0; y < max_y; ++y) {
 			path.push_back(adj.GetNum(x, y));
 		}
@@ -534,7 +641,22 @@ std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj)
 	// moving coordiantes x from 0 to max_x
 	for (unsigned x = 0; x < max_x; ++x) {
 		y = line.GetCoordinateY(x);
-		if (y != y_old) { // detecting diagonal and vertical  moving
+		if (y < 0) 
+		{
+			y = 0;
+			path.push_back(adj.GetNum(x, y));
+			y_old = y;
+			continue;
+		}
+		if (y >= adj.GetHeight())
+		{
+			y = adj.GetHeight() - 1;
+			path.push_back(adj.GetNum(x, y));
+			y_old = y;
+			continue;
+		}
+		//if (y >= adj.GetHeight() || y < 0) continue;
+		if (y != y_old && y_old <adj.GetHeight()) { // detecting diagonal and vertical  moving
 			while (y != y_old)
 			{
 				if (y_old < y)
@@ -558,6 +680,9 @@ std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj)
 
 std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_by_line, const unsigned first_id, const unsigned second_id, AdjacentList adj)
 {
+
+	// TODO: при появлении других id между first id и second id алгоритм не находит стартовой вершины
+	if (path_by_line.empty()) return std::vector<unsigned>();
 	if (first_id == second_id) return std::vector<unsigned>();
 	std::vector<unsigned> path;
 	unsigned previous_owner_id = UINT_MAX, previous_vertex =0;
@@ -565,7 +690,7 @@ std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_b
 	{
 		unsigned vertex = path_by_line[i]; 
 		unsigned current_id = adj[vertex].owner_id_;
-		if (previous_owner_id != current_id && ((previous_owner_id == first_id && previous_owner_id != second_id) || (previous_owner_id == second_id && previous_owner_id != first_id)))
+		if (previous_owner_id != current_id && ( previous_owner_id == first_id || previous_owner_id == second_id))
 		{
 			path.push_back(previous_vertex);
 			path.push_back(vertex);
@@ -574,12 +699,13 @@ std::vector<unsigned> GetPathBetweenKingdomsByLine(std::vector<unsigned>& path_b
 			while (adj[vertex].owner_id_ != target)
 			{
 				++i;
-				vertex = path_by_line[i];
-				path.push_back(vertex);
 				if (i >= path_by_line.size()) { // if target not found  function return empty vector<>()
 					path.clear();
 					break;
 				}
+				vertex = path_by_line[i];
+				path.push_back(vertex);
+
 			}
 			break; // out of cicle for
 		}
@@ -601,6 +727,14 @@ LineParam::LineParam(int x1, int y1, int x2, int y2)
 	c_ = C_ / A_ * (-1.0);
 }
 
+LineParam::LineParam(int a, int b, float c) :A_(a), B_(b), C_(c), k_(0.0), b_(0.0), l_(0.0), c_(0)
+{
+	k_ = float(A_) / B_ * (-1.0);
+	b_ = C_ / B_ * (-1.0);
+	l_ = float(B_) / A_ * (-1.0);
+	c_ = C_ / A_ * (-1.0);
+}
+
 LineParam::LineParam():A_(0),B_(0),C_(0.0),k_(0.0),b_(0.0),l_(0.0),c_(0)
 {
 	
@@ -612,11 +746,11 @@ unsigned LineParam::GetCoordinateY(unsigned x)
 }
 
 // TODO: return new LineParam !!!
-void LineParam::Move(unsigned line_moving_coord)
+void LineParam::Move(int line_moving_coord)
 { // if line_moving_coord =0 // no moving if even + direction, odd -direction
 	if (line_moving_coord != 0)
 	{
-		if (k_ <= 1.0)
+		if (k_ <= 1.0 && k_ >= -1.0)
 		{
 			// moving by change Y coord
 			b_ += line_moving_coord;

@@ -35,10 +35,11 @@ struct LineParam {
 	float b_;	// to DOWN line increase, or to UP line decrease
 
 	LineParam(int x1, int y1, int x2, int y2);
+	LineParam(int a, int b, float c);
 	LineParam();
 	unsigned GetCoordinateY(unsigned x);
 	// offset the line in both directions alternately
-	// line_moving_coord: 0 - no moving; even +direction , odd -direction,
+	// line_moving_coord: 0 - no moving;
 	// return true if offset done, false if offset unavailable
 	LineParam operator+(const int count);
 	LineParam& operator=(const LineParam& other);
@@ -48,7 +49,7 @@ private:
 	float l_; 
 	float c_;
 
-	void Move(unsigned line_moving_coord);
+	void Move(int line_moving_coord);
 };
 
 
@@ -56,6 +57,7 @@ struct FigureCenter {
 	float x_;
 	float y_;
 	FigureCenter(float x, float y) :x_(x), y_(y) {};
+	FigureCenter() :x_(0.0), y_(0.0) {};
 };
 
 
@@ -146,10 +148,12 @@ class MapGameObj: public EngineGameObjInterface{
 		virtual void SetInterface(std::vector<EngineGameObjInterface*> list_in);
 		unsigned width_,height_;
 		unsigned seed_; // necessary to repeat the result of Map generation
+		vector<MapPoint*> free_points;
 	public:
 		MapGameObj(unsigned width, unsigned height, unsigned seed);
 		void AddKingdom(unsigned by_id);
 		void GenerateMap();
+		void GenerateMapByLine();
 		KingdomMap* GetKingdomMap(unsigned by_id);
 		uint32_t AreaKingdom(unsigned by_id); //TODO: ?
 
@@ -179,8 +183,8 @@ private:
 
 	bool TerrainsDisbalanced(uint32_t offset);
 	void BalanceArea(); 
-	void HeuristicBalanceArea();
-	void SpeedBalanceArea();
+	void BalanceAreaByLine();
+	void PushPullPoint(std::vector<unsigned>& path, unsigned minId, unsigned maxId);
 	void FloydWarshall(vector<vector<uint32_t>> & parentsMatrix); 
 	void RecoveryPath(uint32_t start_vertex, uint32_t end_vertex, vector<vector<uint32_t>> & parent, vector<uint32_t>  & path);
 	void AdjacentMatrixFill(vector<vector<uint32_t>> & inMatrix);
