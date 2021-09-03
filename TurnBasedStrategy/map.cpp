@@ -446,6 +446,7 @@ std::string MapGameObj::GetSummariesString()
 
 void MapGameObj::GenerateMap(){
 	if (list_kingdoms_.size() == 0) return;
+	unsigned average_count_points = std::round(double(adjacent_list_.Size()) / list_kingdoms_.size());
 	vector<uint32_t> iterOnBorders;		// список текущего положения итератора перебора 
 					//по пограничным вершинам для всех королевств ( массив итераторов по одному на королевство)
 	for(uint32_t i=0;i< list_kingdoms_.size();++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
@@ -622,6 +623,57 @@ FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd)
 	return FigureCenter(Xc, Yc);
 }
 
+vector<pair<unsigned, unsigned>> GetCoordOfCircle(unsigned radius, unsigned center_x, unsigned center_y, unsigned x_bound, unsigned y_bound)
+{
+	vector<pair<unsigned, unsigned>> result;
+	vector<pair<unsigned, unsigned>> v_coords_first_quadrant;
+	// find coord in firs quadrant, coord in other quadrant finds by multiple to -1 x or y
+	for (unsigned y = 0; y <= radius; ++y)
+	{
+		unsigned x = round(sqrt(radius*radius - y*y));
+		v_coords_first_quadrant.push_back(make_pair(x, y));
+	}
+
+	// res in 1 quadrant
+	for (unsigned i = 0; i <= radius; ++i) {
+		int x = v_coords_first_quadrant[i].first + center_x;
+		int y = v_coords_first_quadrant[i].second + center_y;
+		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
+		{
+			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
+		}
+	}
+	// res in 2 quadrant
+	for (unsigned i = 0; i <= radius; ++i) {
+		int x = (-1) * v_coords_first_quadrant[i].first + center_x;
+		int y = v_coords_first_quadrant[i].second + center_y;
+		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
+		{
+			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
+		}
+	}
+	// res in 3 quadrant
+	for (unsigned i = 0; i <= radius; ++i) {
+		int x = (-1) * v_coords_first_quadrant[i].first + center_x;
+		int y = (-1) * v_coords_first_quadrant[i].second + center_y;
+		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
+		{
+			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
+		}
+	}
+	// res in 4 quadrant
+	for (unsigned i = 0; i <= radius; ++i) {
+		int x = v_coords_first_quadrant[i].first + center_x;
+		int y = (-1) * v_coords_first_quadrant[i].second + center_y;
+		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
+		{
+			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
+		}
+	}
+
+	return result;
+}
+
 
 std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj)
 {
@@ -641,7 +693,7 @@ std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj)
 	// moving coordiantes x from 0 to max_x
 	for (unsigned x = 0; x < max_x; ++x) {
 		y = line.GetCoordinateY(x);
-		if (y < 0) 
+		if (y < 0)  // в конце пути рисует горизонтальную линию
 		{
 			y = 0;
 			path.push_back(adj.GetNum(x, y));

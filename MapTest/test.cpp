@@ -607,6 +607,7 @@ TEST(MapGameObjGenerateMap, generate_33x33_map_byLineGeneration)
 	EXPECT_TRUE(game_map.GetKingdomMap(4)->list_v.size() >= 217);
 }
 
+/*
 TEST(MapGameObjGenerateMap, generate_100x100_map_byLineGeneration)
 {
 	MapGameObj game_map(100, 100, 1);
@@ -647,14 +648,14 @@ TEST(MapGameObjGenerateMap, generate_100x100_map_byLineGeneration)
 	EXPECT_TRUE(game_map.GetKingdomMap(16)->list_v.size() >= 588);
 
 }
-
+*/
 /*
 TEST(MapGameObjGenerateMap, generate_large_map)
 {
 	MapGameObj game_map(1000000000, 1000000000, 1);
 	EXPECT_TRUE(true);
 }
-*/
+
 
 TEST(MapGameObjGenerateMap, balance_check_with_odd_points_and_even_count_kingdoms)
 {
@@ -668,5 +669,5 @@ TEST(MapGameObjGenerateMap, balance_check_with_odd_points_and_even_count_kingdom
 	}
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() - game_map.GetKingdomMap(1)->list_v.size() == 1); // KingdomMap with id=0 +1 point disbalanced
 }
-
+*/
 

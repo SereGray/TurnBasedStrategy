@@ -64,6 +64,7 @@ struct FigureCenter {
 // finds the center of mass of a figure on the map
 FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd);
 
+vector<pair<unsigned, unsigned>> GetCoordOfCircle(unsigned radius, unsigned center_x, unsigned center_y, unsigned x_bound, unsigned y_bound);
 
 std::vector<unsigned> GetPathByLine(LineParam& line, AdjacentList& adj);
 // return path as vector of vertex number
