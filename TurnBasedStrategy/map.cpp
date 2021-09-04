@@ -625,52 +625,57 @@ FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd)
 
 vector<pair<unsigned, unsigned>> GetCoordOfCircle(unsigned &radius, unsigned &center_x, unsigned &center_y, unsigned &x_bound, unsigned &y_bound)
 {
-	vector<pair<unsigned, unsigned>> result;
-	vector<pair<unsigned, unsigned>> v_coords_first_quadrant;
+	vector<pair<unsigned, unsigned>> result, quadrant_1, quadrant_2, quadrant_3, quadrant_4;
 	// find coord in firs quadrant, coord in other quadrant finds by multiple to -1 x or y
-	for (unsigned y = 0; y <= radius; ++y)
+	for (unsigned y_rel = 0; y_rel <= radius; ++y_rel)
 	{
-		unsigned x = round(sqrt(radius*radius - y*y));
-		v_coords_first_quadrant.push_back(make_pair(x, y));
-	}
+		unsigned x_rel = round(sqrt(radius*radius - y_rel *y_rel));
 
-	// res in 1 quadrant with zero point
-	for (unsigned i = 0; i <= radius; ++i) {
-		int x = v_coords_first_quadrant[i].first + center_x;
-		int y = v_coords_first_quadrant[i].second + center_y;
-		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
+		// res in 1 quadrant with zero point
+		
+			int x = x_rel + center_x;
+			int y = y_rel + center_y;
+			if (x > 0 && y > 0 && x < x_bound && y < y_bound)
+			{
+				quadrant_1.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
+			}
+		
+		// res in 2 quadrant without finish zero point
+		if (y_rel < radius)
 		{
-			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
+			x = (-1) * x_rel + center_x;
+			y = y_rel + center_y;
+			if (x > 0 && y > 0 && x < x_bound && y < y_bound)
+			{
+				quadrant_2.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
+			}
+		}
+		// res in 3 quadrant withoit start zero point
+		if (y_rel > 0)
+		{
+			x = (-1) * x_rel + center_x;
+			y = (-1) * y_rel + center_y;
+			if (x > 0 && y > 0 && x < x_bound && y < y_bound)
+			{
+				quadrant_3.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
+			}
+		}
+		// res in 4 quadrant without all zeropoints
+		if (y_rel > 0 && y_rel < radius) 
+		{
+			x = x_rel + center_x;
+			y = (-1) * y_rel + center_y;
+			if (x > 0 && y > 0 && x < x_bound && y < y_bound)
+			{
+				quadrant_4.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
+			}
 		}
 	}
-	// res in 2 quadrant without finish zero point
-	for (unsigned i = 0; i <= radius-1; ++i) {
-		int x = (-1) * v_coords_first_quadrant[i].first + center_x;
-		int y = v_coords_first_quadrant[i].second + center_y;
-		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
-		{
-			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
-		}
-	}
-	// res in 3 quadrant withoit start zero point
-	for (unsigned i = 1; i <= radius; ++i) {
-		int x = (-1) * v_coords_first_quadrant[i].first + center_x;
-		int y = (-1) * v_coords_first_quadrant[i].second + center_y;
-		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
-		{
-			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
-		}
-	}
-	// res in 4 quadrant without all zeropoints
-	for (unsigned i = 1; i <= radius -1 ; ++i) {
-		int x = v_coords_first_quadrant[i].first + center_x;
-		int y = (-1) * v_coords_first_quadrant[i].second + center_y;
-		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
-		{
-			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
-		}
-	}
-
+	result.clear();
+	result.insert(result.end(), quadrant_1.begin(), quadrant_1.end());
+	result.insert(result.end(), quadrant_2.begin(), quadrant_2.end());
+	result.insert(result.end(), quadrant_3.begin(), quadrant_3.end());
+	result.insert(result.end(), quadrant_4.begin(), quadrant_4.end());
 	return result;
 }
 
