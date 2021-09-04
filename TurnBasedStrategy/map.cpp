@@ -623,7 +623,7 @@ FigureCenter GetFigureCenterOfMass(AdjacentList& adjlist, KingdomMap* kingd)
 	return FigureCenter(Xc, Yc);
 }
 
-vector<pair<unsigned, unsigned>> GetCoordOfCircle(unsigned radius, unsigned center_x, unsigned center_y, unsigned x_bound, unsigned y_bound)
+vector<pair<unsigned, unsigned>> GetCoordOfCircle(unsigned &radius, unsigned &center_x, unsigned &center_y, unsigned &x_bound, unsigned &y_bound)
 {
 	vector<pair<unsigned, unsigned>> result;
 	vector<pair<unsigned, unsigned>> v_coords_first_quadrant;
@@ -634,7 +634,7 @@ vector<pair<unsigned, unsigned>> GetCoordOfCircle(unsigned radius, unsigned cent
 		v_coords_first_quadrant.push_back(make_pair(x, y));
 	}
 
-	// res in 1 quadrant
+	// res in 1 quadrant with zero point
 	for (unsigned i = 0; i <= radius; ++i) {
 		int x = v_coords_first_quadrant[i].first + center_x;
 		int y = v_coords_first_quadrant[i].second + center_y;
@@ -643,8 +643,8 @@ vector<pair<unsigned, unsigned>> GetCoordOfCircle(unsigned radius, unsigned cent
 			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
 		}
 	}
-	// res in 2 quadrant
-	for (unsigned i = 0; i <= radius; ++i) {
+	// res in 2 quadrant without finish zero point
+	for (unsigned i = 0; i <= radius-1; ++i) {
 		int x = (-1) * v_coords_first_quadrant[i].first + center_x;
 		int y = v_coords_first_quadrant[i].second + center_y;
 		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
@@ -652,8 +652,8 @@ vector<pair<unsigned, unsigned>> GetCoordOfCircle(unsigned radius, unsigned cent
 			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
 		}
 	}
-	// res in 3 quadrant
-	for (unsigned i = 0; i <= radius; ++i) {
+	// res in 3 quadrant withoit start zero point
+	for (unsigned i = 1; i <= radius; ++i) {
 		int x = (-1) * v_coords_first_quadrant[i].first + center_x;
 		int y = (-1) * v_coords_first_quadrant[i].second + center_y;
 		if (x > 0 && y > 0 && x < x_bound && y < y_bound)
@@ -661,8 +661,8 @@ vector<pair<unsigned, unsigned>> GetCoordOfCircle(unsigned radius, unsigned cent
 			result.push_back(make_pair(static_cast<unsigned>(x), static_cast<unsigned>(y)));
 		}
 	}
-	// res in 4 quadrant
-	for (unsigned i = 0; i <= radius; ++i) {
+	// res in 4 quadrant without all zeropoints
+	for (unsigned i = 1; i <= radius -1 ; ++i) {
 		int x = v_coords_first_quadrant[i].first + center_x;
 		int y = (-1) * v_coords_first_quadrant[i].second + center_y;
 		if (x > 0 && y > 0 && x < x_bound && y < y_bound)

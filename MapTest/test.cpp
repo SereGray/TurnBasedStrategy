@@ -175,6 +175,90 @@ TEST(GetFigureCenterFuncion, Four_points_center) {
 	EXPECT_FLOAT_EQ(0.5, GetFigureCenterOfMass(adj, &king).y_);
 }
 
+TEST(GetCoordOfCircleFuncion, FullTest1) 
+{
+	unsigned radius = 5;
+	unsigned center_x = 6;
+	unsigned center_y = 6;
+	unsigned bound_x = 15;
+	unsigned bound_y = 15;
+	vector<pair<unsigned, unsigned>> coords = GetCoordOfCircle(radius, center_x, center_y, bound_x, bound_y);
+	EXPECT_EQ(20, coords.size());
+	for (auto p : coords) {
+		EXPECT_TRUE(p.first < 15);
+		EXPECT_TRUE(p.second < 15);
+	}
+	EXPECT_EQ(11, coords[0].first);
+	EXPECT_EQ(6, coords[0].second);
+	EXPECT_EQ(11, coords[1].first);
+	EXPECT_EQ(7, coords[1].second);
+	EXPECT_EQ(11, coords[2].first);
+	EXPECT_EQ(8, coords[2].second);
+	EXPECT_EQ(10, coords[3].first);
+	EXPECT_EQ(9, coords[3].second);
+	EXPECT_EQ(9, coords[4].first);
+	EXPECT_EQ(10, coords[4].second);
+	EXPECT_EQ(6, coords[5].first);
+	EXPECT_EQ(11, coords[5].second);
+
+	EXPECT_EQ(1, coords[6].first);
+	EXPECT_EQ(6, coords[6].second);
+	EXPECT_EQ(1, coords[7].first);
+	EXPECT_EQ(7, coords[7].second);
+	EXPECT_EQ(1, coords[8].first);
+	EXPECT_EQ(8, coords[8].second);
+	EXPECT_EQ(2, coords[9].first);
+	EXPECT_EQ(9, coords[9].second);
+	EXPECT_EQ(3, coords[10].first);
+	EXPECT_EQ(10, coords[10].second);
+
+	EXPECT_EQ(1, coords[11].first);
+	EXPECT_EQ(5, coords[11].second);
+	EXPECT_EQ(1, coords[12].first);
+	EXPECT_EQ(4, coords[12].second);
+	EXPECT_EQ(2, coords[13].first);
+	EXPECT_EQ(3, coords[13].second);
+	EXPECT_EQ(3, coords[14].first);
+	EXPECT_EQ(2, coords[14].second);
+	EXPECT_EQ(6, coords[15].first);
+	EXPECT_EQ(1, coords[15].second);
+
+	EXPECT_EQ(11, coords[16].first);
+	EXPECT_EQ(5, coords[16].second);
+	EXPECT_EQ(11, coords[17].first);
+	EXPECT_EQ(4, coords[17].second);
+	EXPECT_EQ(10, coords[18].first);
+	EXPECT_EQ(3, coords[18].second);
+	EXPECT_EQ(9, coords[19].first);
+	EXPECT_EQ(2, coords[19].second);
+};
+
+TEST(GetCoordOfCircleFuncion, bounds_check)
+{
+	unsigned radius = 5;
+	unsigned center_x = 6;
+	unsigned center_y = 6;
+	unsigned bound_x = 8;
+	unsigned bound_y = 8;
+	vector<pair<unsigned, unsigned>> coords = GetCoordOfCircle(radius, center_x, center_y, bound_x, bound_y);
+	EXPECT_EQ(7, coords.size());
+	for (auto p : coords) {
+		EXPECT_TRUE(p.first < 8);
+		EXPECT_TRUE(p.second < 8);
+	}
+
+};
+
+TEST(GetCoordOfCircleFuncion, bounds_clipping_no_points_return)
+{
+	unsigned radius = 10;
+	unsigned center_x = 4;
+	unsigned center_y = 4;
+	unsigned bound_x = 8;
+	unsigned bound_y = 8;
+	vector<pair<unsigned, unsigned>> coords = GetCoordOfCircle(radius, center_x, center_y, bound_x, bound_y);
+	EXPECT_EQ(0, coords.size());
+};
 TEST(GetPathByLineFunction, BigDiagonalTest) {
 	AdjacentList adj(6, 6);
 	int x1 = 0, y1 = 0, x2 = 5, y2 = 5;
