@@ -130,7 +130,8 @@ class KingdomMap{ //  клас предсавляющий изображение
 		vector<unsigned> borders; // список границ 
 		vector<KingdomMapNeighbor> v_neighbors_; // список id сосдей и количества контактирующих вершин
 		// создание экземпляра из первой точки
-		KingdomMap(unsigned num, unsigned my_id);
+		KingdomMap(unsigned my_id);
+		KingdomMap(unsigned start_num, unsigned by_id);
 		unsigned  GetMyId();
 		unsigned MyArea(); // TODO:this
 		void RefreshBorders(AdjacentList &  adjacent_list);

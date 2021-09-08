@@ -177,7 +177,7 @@ namespace KingdoomEconomicsFakeNameSpace{
 			kd = master->GetKingdoomEconomics(0);
 			map = new MapGameObj(3, 3, 1); // 3 x 3  kingdoom
 			map->AddKingdom(0);
-			map->GenerateMap();
+			map->GenerateMapByLine();
 			science = new ScienceGameObj();
 			science->AddKingdoom(0);
 			master->SetInterface({ map, science });

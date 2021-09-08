@@ -573,17 +573,7 @@ TEST(MapGameObjCreateMap, CreateMap3x3x9)
 	EXPECT_EQ(3*3, game_map.list_kingdoms_.size());
 }
 
-TEST(MapGameObjCreateMap, Compare_Kingdom_StartPos_With_Its_MapPoints) 
-{
-	MapGameObj game_map(3, 3, 1);
-	for (int i = 0; i < 9; ++i) {
-		game_map.AddKingdom(i);
-	}
-	for (int i = 0; i < 9; ++i) {
-		EXPECT_EQ(game_map.adjacent_list_[game_map.list_kingdoms_[i].list_v[0]].owner_id_, game_map.list_kingdoms_[i].GetMyId());  // ¹ owner of start point == id owner
-	}
-}
-
+/*
 TEST(MapGameObjGenerateMap, all_points_owner_check) 
 {
 	MapGameObj game_map(3, 3, 1);
@@ -602,7 +592,7 @@ TEST(MapGameObjGenerateMap, full_balance_check_with_even_points_count) {
 	game_map.GenerateMap();
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(1)->list_v.size());
 }
-
+*/
 TEST(MapGameObjGenerateMap, full_balance_check_with_even_points_count_byLineGeneration) {
 	MapGameObj game_map(4, 4, 1);
 	game_map.AddKingdom(0);
@@ -610,7 +600,7 @@ TEST(MapGameObjGenerateMap, full_balance_check_with_even_points_count_byLineGene
 	game_map.GenerateMapByLine();
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(1)->list_v.size());
 }
-
+/*
 TEST(MapGameObjGenerateMap, full_balance_check_with_odd_points_count) {
 	MapGameObj game_map(3, 3, 1);
 	game_map.AddKingdom(0);
@@ -620,6 +610,7 @@ TEST(MapGameObjGenerateMap, full_balance_check_with_odd_points_count) {
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(1)->list_v.size());
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(2)->list_v.size());
 }
+*/
 
 TEST(MapGameObjGenerateMap, full_balance_check_with_odd_points_count_byLineGeneration) {
 	MapGameObj game_map(3, 3, 1);
@@ -630,6 +621,7 @@ TEST(MapGameObjGenerateMap, full_balance_check_with_odd_points_count_byLineGener
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(1)->list_v.size());
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(2)->list_v.size());
 }
+/*
 TEST(MapGameObjGenerateMap, balance_check_with_odd_points_count_and_2kingdom) {
 	MapGameObj game_map(3, 3, 1);
 	game_map.AddKingdom(0);
@@ -638,6 +630,7 @@ TEST(MapGameObjGenerateMap, balance_check_with_odd_points_count_and_2kingdom) {
 	EXPECT_FALSE(game_map.GetKingdomMap(0)->list_v.size() == game_map.GetKingdomMap(1)->list_v.size());
 	EXPECT_TRUE(game_map.GetKingdomMap(0)->list_v.size() - game_map.GetKingdomMap(1)->list_v.size() == 1); // KingdomMap with id=0 +1 point disbalanced
 }
+*/
 
 TEST(MapGameObjGenerateMap, balance_check_with_odd_points_count_and_2kingdom_byLineGeneration) {
 	MapGameObj game_map(3, 3, 1);

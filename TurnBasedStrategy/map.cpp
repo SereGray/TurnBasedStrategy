@@ -20,9 +20,12 @@ void MapPoint::SetY(uint32_t Y){
 }
 
 
-KingdomMap::KingdomMap(unsigned start_PointNum, unsigned my_id) :my_id_(my_id) {
-	list_v.push_back(start_PointNum);
-	borders.push_back(start_PointNum);
+KingdomMap::KingdomMap(unsigned my_id) :my_id_(my_id) {
+}
+
+KingdomMap::KingdomMap(unsigned start_num, unsigned by_id):my_id_(by_id)
+{
+	list_v.push_back(start_num);
 }
 
 
@@ -402,15 +405,7 @@ void MapGameObj::SetInterface(std::vector<EngineGameObjInterface*> list_in)
 
 void MapGameObj::AddKingdom(unsigned by_id)
 {
-	unsigned number = 0;
-	if (free_points.size() != 1) {
-		number = rand() % free_points.size();
-	} 
-	unsigned kingdom_start_number = adjacent_list_.GetNum(free_points[number]->GetCoord());
-	adjacent_list_[kingdom_start_number].owner_id_ = by_id;
-	list_kingdoms_.push_back(KingdomMap(kingdom_start_number, by_id));
-	std::vector<MapPoint*>::iterator it = free_points.begin() + number;
-	free_points.erase(it);
+	list_kingdoms_.push_back(KingdomMap(by_id));
 }
 
 KingdomMap* MapGameObj::GetKingdomMap(unsigned by_id)
@@ -447,37 +442,54 @@ std::string MapGameObj::GetSummariesString()
 void MapGameObj::GenerateMap(){
 	if (list_kingdoms_.size() == 0) return;
 	unsigned average_count_points = std::round(double(adjacent_list_.Size()) / list_kingdoms_.size());
-	vector<uint32_t> iterOnBorders;		// список текущего положения итератора перебора 
-					//по пограничным вершинам для всех королевств ( массив итераторов по одному на королевство)
-	for(uint32_t i=0;i< list_kingdoms_.size();++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
-
+	unsigned width = adjacent_list_.GetWidth();
+	unsigned height = adjacent_list_.GetHeight();
 	while(FreeSpace()){// пока свободные клетки не закончатся
 	//Обход
+		unsigned radius = 1;
 		for(auto &kingd: list_kingdoms_){
-			// движение по окружности границы по их порядку начиная с правой
-			if (iterOnBorders[kingd.GetMyId() ] >= kingd.borders.size()) {
-				iterOnBorders[kingd.GetMyId() ] = 0;  // если итератор вышел за 
-										//"границы королевства" то возвращаем на стартовую поз
-			}
-			//  если заграничная точка ничья то присваиваем (только 1)
-			//  далее прохожу по границе numV - номер заграничной вершины(точки)
-			// двигаюсь по списку смежности - по смежным вершинам вершины "tabSmej[kingd.borders[iterOnBorders[i]]]"
-			for(uint32_t numV: adjacent_list_[kingd.borders[iterOnBorders[kingd.GetMyId()]]].adjacent_points){
-				if(adjacent_list_[numV].owner_id_==-1){
-					adjacent_list_[numV].owner_id_=kingd.GetMyId();
-					kingd.list_v.push_back(numV);
-					break; // quit if ok
+			if (kingd.list_v.size() < average_count_points)
+			{
+				pair<unsigned, unsigned> start_coord = adjacent_list_.GetCoord(kingd.list_v[0]);
+				unsigned start_x = start_coord.first;
+				unsigned start_y = start_coord.second;
+				vector<pair<unsigned, unsigned>> coordinates_of_points = GetCoordOfCircle(radius, start_x, start_y, width, height);
+				if (!coordinates_of_points.empty()) {
+					for (pair<unsigned, unsigned>& coord : coordinates_of_points)
+						{
+							if (adjacent_list_[adjacent_list_.GetNum(coord)].owner_id_ == -1)
+							{
+								adjacent_list_[adjacent_list_.GetNum(coord)].owner_id_ = kingd.GetMyId();
+								kingd.list_v.push_back(adjacent_list_.GetNum(coord));
+							}
+						}
 				}
 			}
-			++iterOnBorders[kingd.GetMyId() ]; 	 // перемещаем итератор
+			else continue;
+		
+
+			
 		}	
-		for(auto & kingd : list_kingdoms_) kingd.RefreshBorders(adjacent_list_);
 	}	
+	for (auto& kingd : list_kingdoms_) kingd.RefreshBorders(adjacent_list_);
 	BalanceArea();
 }
 
 void MapGameObj::GenerateMapByLine() {
 	if (list_kingdoms_.size() == 0) return;
+	for (auto &king : list_kingdoms_) {
+		unsigned by_id = king.GetMyId();
+		unsigned number = 0;
+		if (free_points.size() != 1) {
+			number = rand() % free_points.size();
+		}
+		unsigned kingdom_start_number = adjacent_list_.GetNum(free_points[number]->GetCoord());
+		king.list_v.push_back(kingdom_start_number);
+		adjacent_list_[kingdom_start_number].owner_id_ = by_id;
+		std::vector<MapPoint*>::iterator it = free_points.begin() + number;
+		free_points.erase(it);
+	}
+	for (auto& kingd : list_kingdoms_) kingd.RefreshBorders(adjacent_list_);
 	vector<uint32_t> iterOnBorders;		// список текущего положения итератора перебора 
 					//по пограничным вершинам для всех королевств ( массив итераторов по одному на королевство)
 	for (uint32_t i = 0; i < list_kingdoms_.size(); ++i) iterOnBorders.push_back(0);  //  установка начального значения итератора на 0
